@@ -16,4 +16,7 @@ public class ShiftInfo {
 	public String	keiyakuId;			// 契約配置ID
 	public String	bgnStampTime;		// 打刻済上番時刻
 	public String	endStampTime;		// 打刻済下番時刻
+	public String	adrPostNo;			// ローカル業務区分郵便番号
+	public String	adrMain;			// ローカル業務区分住所１
+	public String	adrSub;				// ローカル業務区分住所２
 }

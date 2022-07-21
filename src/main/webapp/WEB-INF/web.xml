@@ -75,6 +75,84 @@
   	<description></description>
   	<servlet-class>mobile.WorkEndExecute</servlet-class>
   </servlet>
+  <servlet>
+  	<servlet-name>Driver</servlet-name>
+  	<display-name>Driver</display-name>
+  	<description></description>
+  	<servlet-class>mobile.Driver</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>DeptConfirm</servlet-name>
+  	<display-name>DeptConfirm</display-name>
+  	<description></description>
+  	<servlet-class>mobile.DeptConfirm</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>DeptExecute</servlet-name>
+  	<display-name>DeptExecute</display-name>
+  	<description></description>
+  	<servlet-class>mobile.DeptExecute</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>DeptUpdate</servlet-name>
+  	<display-name>DeptUpdate</display-name>
+  	<description></description>
+  	<servlet-class>mobile.DeptUpdate</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>OnTimeConfirm</servlet-name>
+  	<display-name>OnTimeConfirm</display-name>
+  	<description></description>
+  	<servlet-class>mobile.OnTimeConfirm</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>StampCancel</servlet-name>
+  	<display-name>StampCancel</display-name>
+  	<description></description>
+  	<servlet-class>mobile.StampCancel</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>NextWorkPlace</servlet-name>
+  	<display-name>NextWorkPlace</display-name>
+  	<description></description>
+  	<servlet-class>mobile.NextWorkPlace</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>StampConfirm</servlet-name>
+  	<display-name>StampConfirm</display-name>
+  	<description></description>
+  	<servlet-class>mobile.StampConfirm</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>StampExecute</servlet-name>
+  	<display-name>StampExecute</display-name>
+  	<description></description>
+  	<servlet-class>mobile.StampExecute</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>WorkConfirm</servlet-name>
+  	<display-name>WorkConfirm</display-name>
+  	<description></description>
+  	<servlet-class>mobile.WorkConfirm</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>WorkCancel</servlet-name>
+  	<display-name>WorkCancel</display-name>
+  	<description></description>
+  	<servlet-class>mobile.WorkCancel</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>WorkExecute</servlet-name>
+  	<display-name>WorkExecute</display-name>
+  	<description></description>
+  	<servlet-class>mobile.WorkExecute</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>ShiftInquiry</servlet-name>
+  	<display-name>ShiftInquiry</display-name>
+  	<description></description>
+  	<servlet-class>mobile.ShiftInquiry</servlet-class>
+  </servlet>
 
   <servlet-mapping>
   	<servlet-name>MainServlet</servlet-name>
@@ -123,6 +201,58 @@
   <servlet-mapping>
   	<servlet-name>WorkEndExecute</servlet-name>
   	<url-pattern>/WorkEndExecute</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>Driver</servlet-name>
+  	<url-pattern>/Driver</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>DeptConfirm</servlet-name>
+  	<url-pattern>/DeptConfirm</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>DeptExecute</servlet-name>
+  	<url-pattern>/DeptExecute</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>DeptUpdate</servlet-name>
+  	<url-pattern>/DeptUpdate</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>OnTimeConfirm</servlet-name>
+  	<url-pattern>/OnTimeConfirm</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>StampCancel</servlet-name>
+  	<url-pattern>/StampCancel</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>NextWorkPlace</servlet-name>
+  	<url-pattern>/NextWorkPlace</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>StampConfirm</servlet-name>
+  	<url-pattern>/StampConfirm</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>StampExecute</servlet-name>
+  	<url-pattern>/StampExecute</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>WorkConfirm</servlet-name>
+  	<url-pattern>/WorkConfirm</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>WorkCancel</servlet-name>
+  	<url-pattern>/WorkCancel</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>WorkExecute</servlet-name>
+  	<url-pattern>/WorkExecute</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>ShiftInquiry</servlet-name>
+  	<url-pattern>/ShiftInquiry</url-pattern>
   </servlet-mapping>
 
 </web-app>

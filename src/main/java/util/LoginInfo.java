@@ -3,14 +3,14 @@ package util;
 //当日シフト一覧のコンテナクラス
 public class LoginInfo {
 	// メンバ変数としてP_MW_Workerテーブルのカラムを定義
-	public String	id;
+	public String	id;					// 社員番号
 	public String	workerIndex;
 	public String	workerCD;
-	public String	firstName_Value;
-	public String	lastName_Value;
+	public String	firstName_Value;	// 苗字　※暗号化
+	public String	lastName_Value;		// 名前　※暗号化
 	public String	firstRubi_Value;
 	public String	lastRubi_Value;
-	public String	email_Value;
+	public String	email_Value;		// メールアドレス　※暗号化
 	public String	nushaDate_Value;
 	public String	retireDate_Value;
 	public String	koyoFlag;
@@ -18,10 +18,10 @@ public class LoginInfo {
 	public String	orderFlag1;
 	public String	orderFlag2;
 	public String	aspIdentityId;
-	public String	geoIdo_Value;
-	public String	geoKeido_Value;
-	public String	loginInfo1_Value;
-	public String	loginInfo2_Value;
+	public String	geoIdo_Value;		// 緯度　※暗号化
+	public String	geoKeido_Value;		// 経度　※暗号化
+	public String	loginInfo1_Value;	// パスワード１　※暗号化
+	public String	loginInfo2_Value;	// パスワード２　※暗号化
 	public String	workerValue01;
 	public String	workerValue02;
 	public String	workerValue03;
@@ -40,5 +40,6 @@ public class LoginInfo {
 	public String	company_ID;
 	public String	division_ID;
 	public String	shozokuKubun_ID;
-
+	public String	sessionId;			// ログインセッション　※暗号化
+	public String	stampDate;			// 出発／定時打刻日時
 }

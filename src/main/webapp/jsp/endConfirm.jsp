@@ -8,6 +8,14 @@ String stringDate = (String)request.getAttribute("stringDate");
 String formatDate = stringDate.substring(11,16);
 LoginInfo loginInfo = (LoginInfo)request.getAttribute("loginInfo");
 ShiftInfo shiftInfo = (ShiftInfo)request.getAttribute("shiftInfo");
+
+// セッションがNULLだったらログイン画面を表示する
+if(loginInfo.sessionId == null){
+	// ログイン画面を表示する
+%>
+	<jsp:forward page="login.jsp" />
+<%
+}
 %>
 <!DOCTYPE html>
 <html>
@@ -22,13 +30,13 @@ ShiftInfo shiftInfo = (ShiftInfo)request.getAttribute("shiftInfo");
 <!-- ブートストラップ呼び出し -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   <div class="container-fluid bg-info">
-    container
+    <%=loginInfo.firstName_Value %>&nbsp<%=loginInfo.lastName_Value %>
   </div>
   <p style="font-size:30px;">
     <span class="label label-info">下番報告確認</span>
   </p>
 <%
-if(shiftInfo.bgnStampTime == null || shiftInfo.bgnStampTime.equals("null")){
+if(shiftInfo.bgnStampTime == null){
 %>
   <p style="font-size:30px;">
     <span class="label label-warning">上番の打刻がありません</span>
@@ -62,6 +70,12 @@ if(shiftInfo.bgnStampTime == null || shiftInfo.bgnStampTime.equals("null")){
   <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
   <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
   <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
+  <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
+  <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
+  <input type="hidden" value="<%=loginInfo.company_ID %>" name="company">
+  <input type="hidden" value="<%=loginInfo.sessionId %>" name="sessionId">
+  <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+  <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
 </form>
 <br><br>
 <form action="<%= request.getContextPath() %>/AttendDetail" method="post" accept-charset="UTF-8">
@@ -86,6 +100,12 @@ if(shiftInfo.bgnStampTime == null || shiftInfo.bgnStampTime.equals("null")){
   <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
   <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
   <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
+  <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
+  <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
+  <input type="hidden" value="<%=loginInfo.company_ID %>" name="company">
+  <input type="hidden" value="<%=loginInfo.sessionId %>" name="sessionId">
+  <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+  <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
 </form>
 
 </body>

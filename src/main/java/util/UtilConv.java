@@ -1,6 +1,8 @@
 package util;
 
+import java.text.SimpleDateFormat;
 import java.util.Base64;
+import java.util.Date;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -95,5 +97,32 @@ public class UtilConv {
 			e.printStackTrace();
 		}
 		return decodeText;
+	}
+	/**
+	   * シフト一覧を取得する為の期日日の様式を取得する
+	   * yyyy年MM月　→　yyyy-MM-dd　に変換する
+	   * @param		subDate		対象日付
+	   * @return	formatDate	フォーマット変換済み日付
+	   */
+	public String GetForShiftList(String subDate) {
+		
+		// パラメータを「yyyy-MM-dd」の形式に変換
+		String formatDate = null;
+		formatDate = subDate.replace("年", "-");
+		formatDate = formatDate.replace("月", "-");
+		// 「yyyy年MM月」の為、日にち「01」を追加
+		formatDate += "01";
+		
+		try{
+			SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");	
+			Date date = sdFormat.parse(formatDate);
+			//sdFormat = new SimpleDateFormat("yyyy-MM-dd");
+			formatDate = sdFormat.format(date);
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		return formatDate;
 	}
 }

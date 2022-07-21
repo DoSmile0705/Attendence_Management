@@ -115,8 +115,7 @@ public class P_Time_StampData {
 		/**
 	   * selectメソッド
 	   * P_Time_StampDataの検索結果を返す
-	   * @param　	workerId	隊員ID
-	   * @param　	keiyakuId	契約配置ID
+	   * @param　	workInfo	パラメータリスト
 	   * @return	stampTime	打刻時刻
 	   */
 	public String select(List workInfo) {
@@ -166,5 +165,51 @@ public class P_Time_StampData {
 	    	}
 	    }
 	    return stampTime;
+	}
+	/**
+	   * deleteメソッド※削除フラグを立てる
+	   * P_Time_StampDataを更新する
+	   * @param　	workInfo 登録情報
+	   * @return	なし
+	   */
+	public void delete(List workInfo) {
+		
+		// コネクション格納用
+	    Connection conn = null;
+	    try {
+	    	
+	    	Class.forName(DRIVER).getDeclaredConstructor().newInstance();
+	    	conn = DriverManager.getConnection(URL);
+
+	    	Statement stmt = conn.createStatement();
+	    	
+	    	// SQL構築用
+	    	StringBuilder strBuf = new StringBuilder();
+	    	strBuf.append("UPDATE P_Time_StampData");
+	    	strBuf.append(" SET IsDeleteFlag = 1");
+	    	strBuf.append(" WHERE StampFlag = " + workInfo.get(0));
+	    	strBuf.append(" AND StampTime >= " + workInfo.get(3));
+	    	strBuf.append(" AND IsDeleteFlag = 0");
+	    	strBuf.append(" AND Worker_ID = " + workInfo.get(4));
+	    	strBuf.append(" AND Keiyaku_ID = " + workInfo.get(5));
+
+	    	stmt.executeUpdate(strBuf.toString());
+	    	
+	    	// 接続をクローズ
+	    	stmt.close();
+
+	    }catch (SQLException e){
+	    	e.printStackTrace();
+	    }catch (Exception e){
+	    	e.printStackTrace();
+	    }finally{
+	    	try{
+	    		if (conn != null){
+	    			conn.close();
+	    		}
+	    	}catch (SQLException e){
+		    	e.printStackTrace();
+	    	}
+	    }
 	}
 }
