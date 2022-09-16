@@ -6,15 +6,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import util.Constant;
 import util.LoginInfo;
 import util.UtilConv;
 
 public class P_MW_Worker {
 	
-	// SQL Server接続文字列
-	private static final String URL = "jdbc:sqlserver://sac.database.windows.net:1433;database=SAC_Data;user=dbadmin@sac;password=sac001SAC001;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
-	// JDBCドライバ
-	private static final String DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 	/**
 	   * selectメソッド
 	   * P_MW_Workerの検索結果を返す
@@ -30,50 +27,55 @@ public class P_MW_Worker {
         UtilConv utilConv = new UtilConv();
 	    try {
 	    	
-	    	Class.forName(DRIVER).getDeclaredConstructor().newInstance();
-	    	conn = DriverManager.getConnection(URL);
+	    	Class.forName(Constant.DRIVER).getDeclaredConstructor().newInstance();
+	    	conn = DriverManager.getConnection(Constant.URL);
 	    	Statement stmt = conn.createStatement();
 	    	StringBuilder strBuf = new StringBuilder();
 	    	strBuf.append("SELECT ");
-	    	strBuf.append("Id ");
-	    	strBuf.append(",WorkerIndex ");
-	    	strBuf.append(",WorkerCD ");
-	    	strBuf.append(",FirstName_Value ");
-	    	strBuf.append(",LastName_Value ");
-	    	strBuf.append(",FirstRubi_Value ");
-	    	strBuf.append(",LastRubi_Value ");
-	    	strBuf.append(",Email_Value ");
-	    	strBuf.append(",NushaDate_Value ");
-	    	strBuf.append(",RetireDate_Value ");
-	    	strBuf.append(",KoyoFlag ");
-	    	strBuf.append(",AdminLv ");
-	    	strBuf.append(",OrderFlag1 ");
-	    	strBuf.append(",OrderFlag2 ");
-	    	strBuf.append(",AspIdentityId ");
-	    	strBuf.append(",GeoIdo_Value ");
-	    	strBuf.append(",GeoKeido_Value ");
-	    	strBuf.append(",LoginInfo1_Value ");
-	    	strBuf.append(",LoginInfo2_Value ");
-	    	strBuf.append(",WorkerValue01 ");
-	    	strBuf.append(",WorkerValue02 ");
-	    	strBuf.append(",WorkerValue03 ");
-	    	strBuf.append(",WorkerValue04 ");
-	    	strBuf.append(",WorkerValue05 ");
-	    	strBuf.append(",WorkerValue06 ");
-	    	strBuf.append(",WorkerValue07 ");
-	    	strBuf.append(",WorkerValue08 ");
-	    	strBuf.append(",WorkerValue09 ");
-	    	strBuf.append(",WorkerValue10 ");
-	    	strBuf.append(",BranchCD ");
-	    	strBuf.append(",IsDeleteFlag ");
-	    	strBuf.append(",CONVERT(VARCHAR(30), EntryDate) AS EntryDate ");
-	    	strBuf.append(",PassCode ");
-	    	strBuf.append(",PassCode2 ");
-	    	strBuf.append(",Company_ID ");
-	    	strBuf.append(",Division_ID ");
-	    	strBuf.append(",ShozokuKubun_ID ");
-	    	strBuf.append("FROM P_MW_Worker ");
-	    	strBuf.append("WHERE Id = ");
+	    	strBuf.append("WK.Id ");
+	    	strBuf.append(",WK.WorkerIndex ");
+	    	strBuf.append(",WK.WorkerCD ");
+	    	strBuf.append(",WK.FirstName_Value ");
+	    	strBuf.append(",WK.LastName_Value ");
+	    	strBuf.append(",WK.FirstRubi_Value ");
+	    	strBuf.append(",WK.LastRubi_Value ");
+	    	strBuf.append(",WK.Email_Value ");
+	    	strBuf.append(",WK.NushaDate_Value ");
+	    	strBuf.append(",WK.RetireDate_Value ");
+	    	strBuf.append(",WK.KoyoFlag ");
+	    	strBuf.append(",WK.AdminLv ");
+	    	strBuf.append(",WK.OrderFlag1 ");
+	    	strBuf.append(",WK.OrderFlag2 ");
+	    	strBuf.append(",WK.AspIdentityId ");
+	    	strBuf.append(",WK.GeoIdo_Value ");
+	    	strBuf.append(",WK.GeoKeido_Value ");
+	    	strBuf.append(",WK.LoginInfo1_Value ");
+	    	strBuf.append(",WK.LoginInfo2_Value ");
+	    	strBuf.append(",WK.WorkerValue01 ");
+	    	strBuf.append(",WK.WorkerValue02 ");
+	    	strBuf.append(",WK.WorkerValue03 ");
+	    	strBuf.append(",WK.WorkerValue04 ");
+	    	strBuf.append(",WK.WorkerValue05 ");
+	    	strBuf.append(",WK.WorkerValue06 ");
+	    	strBuf.append(",WK.WorkerValue07 ");
+	    	strBuf.append(",WK.WorkerValue08 ");
+	    	strBuf.append(",WK.WorkerValue09 ");
+	    	strBuf.append(",WK.WorkerValue10 ");
+	    	strBuf.append(",WK.BranchCD ");
+	    	strBuf.append(",WK.IsDeleteFlag ");
+	    	strBuf.append(",CONVERT(VARCHAR(30), WK.EntryDate) AS EntryDate ");
+	    	strBuf.append(",WK.PassCode ");
+	    	strBuf.append(",WK.PassCode2 ");
+	    	strBuf.append(",WK.Company_ID ");
+	    	strBuf.append(",WK.Division_ID ");
+	    	strBuf.append(",WK.ShozokuKubun_ID ");
+	    	strBuf.append(",WK.AdminLv ");
+	    	strBuf.append(",CO.CompanyCode ");
+	    	strBuf.append(",CO.CompanyName ");
+	    	strBuf.append("FROM P_MW_Worker WK ");
+	    	strBuf.append("LEFT OUTER JOIN P_MC_Company CO ");
+	    	strBuf.append("ON WK.Company_ID = CO.Id ");
+	    	strBuf.append("WHERE WK.WorkerIndex = ");
 	    	strBuf.append(loginid);
 	    	
 	    	ResultSet result = stmt.executeQuery(strBuf.toString());
@@ -104,7 +106,9 @@ public class P_MW_Worker {
 		    	loginInfo.geoIdo_Value		= utilConv.decrypt(result.getString("GeoIdo_Value"));
 		    	loginInfo.geoKeido_Value	= utilConv.decrypt(result.getString("GeoKeido_Value"));
 		    	loginInfo.loginInfo1_Value	= utilConv.decrypt(result.getString("LoginInfo1_Value"));
-		    	loginInfo.loginInfo2_Value	= utilConv.decrypt(result.getString("LoginInfo2_Value"));
+		    	// パスワード２は当面使わないので復号化しない
+		    	//loginInfo.loginInfo2_Value	= utilConv.decrypt(result.getString("LoginInfo2_Value"));
+		    	loginInfo.loginInfo2_Value	= result.getString("LoginInfo2_Value");
 		    	loginInfo.workerValue01		= Integer.valueOf(result.getInt("WorkerValue01")).toString();
 		    	loginInfo.workerValue02		= Integer.valueOf(result.getInt("WorkerValue02")).toString();
 		    	loginInfo.workerValue03		= Integer.valueOf(result.getInt("WorkerValue03")).toString();
@@ -123,6 +127,8 @@ public class P_MW_Worker {
 		    	loginInfo.company_ID		= Integer.valueOf(result.getInt("Company_ID")).toString();
 		    	loginInfo.division_ID		= Integer.valueOf(result.getInt("Division_ID")).toString();
 		    	loginInfo.shozokuKubun_ID	= Integer.valueOf(result.getInt("ShozokuKubun_ID")).toString();
+		    	loginInfo.companyCode		= Integer.valueOf(result.getInt("CompanyCode")).toString();
+		    	loginInfo.companyName		= result.getString("CompanyName");
 	    	}
 
 	    	// 接続をクローズ

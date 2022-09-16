@@ -1,0 +1,164 @@
+<!-- 現場詳細ページ -->
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <!-- Basic Page Needs
+  -------------------------------------------------- -->
+  <meta charset="utf-8">
+  <title>警備業ポータルサイト</title>
+  <meta name="description" content="">
+  <meta name="format-detection" content="telephone=no">
+
+  <!-- Mobile Specific Metas
+  -------------------------------------------------- -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- CSS
+  -------------------------------------------------- -->
+  <!-- フォント読み込み -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
+  <!-- bootstrap CSS読み込み -->
+  <link href="../assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- スタイルシート読み込み -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+
+  <!-- Favicon
+  -------------------------------------------------- -->
+  <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+
+
+
+</head>
+<body>
+  <!-- ヘッダー部 -->
+  <header>
+    <!-- 固定ヘッダー -->
+    <section class="fixed above u-layer">
+      <div class="row">
+        <div class="nav-item"><a href="#" onclick="history.back(-1);return false;">＜戻る</a></div>
+        <div class="nav-item">2022年07月19日(火)</div>
+        <div class="nav-item">12:00</div>
+      </div>
+    </section>
+
+    <!-- 固定フッター -->
+    <section class="fixed bottom">
+      <div class="row">
+        <div class="ico mail">
+          <button onclick="location.href='../news/news-1.html'">
+            <img src="../assets/images/mail.png" alt="">
+            <span class="num">123</span>
+          </button>
+        </div>
+        <div class="ico">
+          <button onclick="location.href='../top.html'">
+            <img src="../assets/images/home.png" alt="">
+          </button>
+        </div>
+        <div class="ico">
+          <button onclick="location.href='#'">
+            <img src="../assets/images/top-arrow.png" alt="">
+          </button>
+        </div>
+      </div>
+    </section>
+  </header>
+  <!-- ヘッダー部end -->
+
+  <!-- メインコンテンツ -->
+  <main class="p-work">
+    <section class="inner">
+      <!-- ページタイトル -->
+      <h1 class="m-ttl">
+        交通費・経費申請
+      </h1>
+    </section>
+
+    <div class="w-box inner">
+      <span class="dt">日時</span>
+      <select name="dt-num" id="dt-num">
+        <option value="2022年9月21日" selected>2022年9月21日</option>
+        <option value="2022年9月22日">2022年9月22日</option>
+        <option value="2022年9月23日">2022年9月23日</option>
+        <option value="2022年9月24日">2022年9月24日</option>
+        <option value="2022年9月25日">2022年9月25日</option>
+      </select>
+    </div>
+
+    <hr class="mt-6">
+
+    <section class="inner">
+
+      <!-- 現在の申請状況 -->
+      <div class="w-box mt-8">
+        <h2>現在の申請状況</h2>
+        <ul class="status-archive">
+          <li class="row"><span class="ttl">交通費・経費申請</span><span class="tag red"><span>申請却下</span></li>
+        </ul>
+      </div>
+
+      <!-- 各種申請 -->
+      <div class="w-box mt-8">
+        <h2>申請内容</h2>
+        <!-- ボタン -->
+        <form method="post" action="work-7.html">
+
+          <label for="name">経費申請（交通費等）</label>
+          <input class="txt price" type="text" name="name" id="name">円
+
+          <label for="textarea">その他・申請内容</label>
+          <textarea name="textarea" id="textarea"></textarea>
+
+        
+
+
+          <div class="submit">
+            <button type="submit">申請確認画面へ</button>
+          </div>
+
+        </form>
+      </div>
+
+      <div class="btn mt-8">
+        <button class="red" onclick="location.href='work-8.html'">申請削除</button>
+      </div>
+
+
+    </section>
+
+
+    
+
+    <!-- 前の画面に戻る -->
+    <div class="btn mt-8 mb-10">
+      <button class="white" onclick="history.back(-1);return false;">前の画面に戻る</button>
+    </div>
+    
+  </main>
+  <!-- メインコンテンツend -->
+
+  <!-- フッター部 -->
+  <footer>
+    <ul>
+      <li><button onclick="location.href='#'">使い方</button></li>
+      <li><button onclick="location.href='#'">会社概要</button></li>
+      <li><button onclick="location.href='#'">ログアウト</button></li>
+    </ul>
+  </footer>
+  <!-- フッター部end -->
+
+
+
+   <!-- Script
+  -------------------------------------------------- -->
+  <!-- Jquery読み込み -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <!-- bootstrap JS読み込み -->
+  <script src="../assets/bootstrap/js/bootstrap.min.js"></script>
+  
+</body>
+</html>

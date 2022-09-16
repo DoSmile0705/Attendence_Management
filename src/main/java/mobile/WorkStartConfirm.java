@@ -58,20 +58,29 @@ public class WorkStartConfirm extends HttpServlet {
         shiftInfo.adrSub			= check.emptyOrNull(request.getParameter("adrSub"));
         // ログイン情報の受け取り
         LoginInfo loginInfo = new LoginInfo();
-        loginInfo.id				= check.emptyOrNull(request.getParameter("loginid"));
+        /** ▼▼▼2022/7/28 Id → WorkerIndexに変更▼▼▼ **/
+        //loginInfo.id				= check.emptyOrNull(request.getParameter("loginid"));
+        loginInfo.workerIndex		= check.emptyOrNull(request.getParameter("loginid"));
+        loginInfo.id				= check.emptyOrNull(request.getParameter("id"));
+        /** ▲▲▲2022/7/28 Id → WorkerIndexに変更▲▲▲ **/
         loginInfo.loginInfo1_Value	= check.emptyOrNull(request.getParameter("password1"));
         loginInfo.loginInfo2_Value	= check.emptyOrNull(request.getParameter("password2"));
         loginInfo.email_Value		= check.emptyOrNull(request.getParameter("mailaddress"));
         loginInfo.firstName_Value	= check.emptyOrNull(request.getParameter("firstName_Value"));
         loginInfo.lastName_Value	= check.emptyOrNull(request.getParameter("lastName_Value"));
-        loginInfo.company_ID		= check.emptyOrNull(request.getParameter("company"));
         loginInfo.geoIdo_Value		= check.emptyOrNull(request.getParameter("geoIdo"));
         loginInfo.geoKeido_Value	= check.emptyOrNull(request.getParameter("geoKeido"));
         loginInfo.sessionId			= check.emptyOrNull(request.getParameter("sessionId"));
+        loginInfo.companyCode		= check.emptyOrNull(request.getParameter("companyCode"));
+        loginInfo.companyName		= check.emptyOrNull(request.getParameter("companyName"));
+        loginInfo.company_ID		= check.emptyOrNull(request.getParameter("company_ID"));
         // 遷移元のURLを取得
         String url					= request.getHeader("REFERER");
         // 打刻種別
         String stampFlag			= check.emptyOrNull(request.getParameter("stampFlag"));
+        String attendStamp			= check.emptyOrNull(request.getParameter("attendStamp"));
+        String leaveStamp			= check.emptyOrNull(request.getParameter("leaveStamp"));
+        String shiftFlag			= check.emptyOrNull(request.getParameter("shiftFlag"));
 
         PrintWriter out = response.getWriter();
 
@@ -87,15 +96,36 @@ public class WorkStartConfirm extends HttpServlet {
             request.setAttribute("shiftInfo", shiftInfo);
             request.setAttribute("loginInfo", loginInfo);
             request.setAttribute("stampFlag", stampFlag);	// 打刻種別
-    		RequestDispatcher dispatch = request.getRequestDispatcher("jsp/cancelConfirm.jsp");
+            // ▼▼▼ 2022.08.16 HTML→JSP変換対応 ▼▼▼
+    		//RequestDispatcher dispatch = request.getRequestDispatcher("jsp/cancelConfirm.jsp");
+    		RequestDispatcher dispatch = request.getRequestDispatcher("stamp/stamp-7.jsp");
+            // ▲▲▲ 2022.08.16 HTML→JSP変換対応 ▲▲▲
             dispatch.forward(request, response);
         } else {
-            request.setAttribute("stringDate", stringDate);	// 現在日時※多分使ってない
-            request.setAttribute("shiftInfo", shiftInfo);
-            request.setAttribute("loginInfo", loginInfo);
-            request.setAttribute("stampFlag", stampFlag);	// 打刻種別
-    		RequestDispatcher dispatch = request.getRequestDispatcher("jsp/startConfirm.jsp");
-            dispatch.forward(request, response);
+        	if(shiftFlag == null) {
+                request.setAttribute("stringDate", stringDate);	// 現在日時※多分使ってない
+                request.setAttribute("shiftInfo", shiftInfo);
+                request.setAttribute("loginInfo", loginInfo);
+                request.setAttribute("stampFlag", stampFlag);	// 打刻種別
+                request.setAttribute("attendStamp", attendStamp);
+                request.setAttribute("leaveStamp", leaveStamp);
+                request.setAttribute("shiftFlag", shiftFlag);
+                // ▼▼▼ 2022.08.16 HTML→JSP変換対応 ▼▼▼
+        		//RequestDispatcher dispatch = request.getRequestDispatcher("jsp/startConfirm.jsp");
+        		RequestDispatcher dispatch = request.getRequestDispatcher("stamp/stamp-3.jsp");
+                // ▲▲▲ 2022.08.16 HTML→JSP変換対応 ▲▲▲
+                dispatch.forward(request, response);
+            // シフトなしの場合はstamp-9へ
+        	}else {
+                request.setAttribute("stringDate", stringDate);	// 現在日時※多分使ってない
+                request.setAttribute("loginInfo", loginInfo);
+                request.setAttribute("stampFlag", stampFlag);	// 打刻種別
+                request.setAttribute("attendStamp", attendStamp);
+                request.setAttribute("leaveStamp", leaveStamp);
+                request.setAttribute("shiftFlag", shiftFlag);
+        		RequestDispatcher dispatch = request.getRequestDispatcher("stamp/stamp-9.jsp");
+                dispatch.forward(request, response);
+        	}
         }
 		
 	}

@@ -9,6 +9,13 @@
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 
+<%
+// ***************************************************
+// shiftlist.jsp
+// 3-1：現場確認
+// ログインユーザーの直近のシフト一覧を表示する
+// ***************************************************
+%>
 
 <%
 LoginInfo loginInfo = (LoginInfo)request.getAttribute("loginInfo");
@@ -81,7 +88,7 @@ private String GetFormatStampDate(String dateTime) {
 <html>
 <head>
 <meta charset="UTF-8">
-<title>シフト一覧</title>
+<title>現場確認</title>
 <!-- ブートストラップ呼び出し -->
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
 <meta name="viewport" content="width=device-width,user-scalable=no,maximum-scale=1" />
@@ -90,11 +97,11 @@ private String GetFormatStampDate(String dateTime) {
 <!-- ブートストラップ呼び出し -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   <div class="container-fluid bg-info">
-    <%=loginInfo.firstName_Value %>&nbsp<%=loginInfo.lastName_Value %>
+    <%=loginInfo.companyName %>
   </div>
 <br>
   <div class="container-fluid bg-info">
-    会社名
+    <%=loginInfo.firstName_Value %>&nbsp<%=loginInfo.lastName_Value %>
   </div>
 <br>
   <div class="container-fluid bg-info">
@@ -170,13 +177,17 @@ if(listInfo.get(i).endStampTime != null){
   <input type="hidden" value="<%=listInfo.get(i).adrPostNo %>" name="adrPostNo">
   <input type="hidden" value="<%=listInfo.get(i).adrMain %>" name="adrMain">
   <input type="hidden" value="<%=listInfo.get(i).adrSub %>" name="adrSub">
-  <input type="hidden" value="<%=loginInfo.id %>" name="loginid">
+  <!-- ▼▼▼2022/7/28 Id → WorkerIndexに変更▼▼▼  -->
+  <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
+  <input type="hidden" value="<%=loginInfo.id %>" name="id">
+  <!-- ▲▲▲2022/7/28 Id → WorkerIndexに変更▲▲▲  -->
   <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
   <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
   <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
   <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
   <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
-  <input type="hidden" value="<%=loginInfo.company_ID %>" name="company">
+  <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
+  <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
   <input type="hidden" value="<%=loginInfo.sessionId %>" name="sessionId">
   <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
   <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
@@ -187,21 +198,22 @@ if(listInfo.get(i).endStampTime != null){
 }
 %>
 
-<%
-if(listInfo.size() == 0){
-%>
 <form action="<%= request.getContextPath() %>/WorkStartConfirm" method="post" accept-charset="UTF-8">
   <button class="btn btn-warning">
     <font size="5">上番報告</font>
   </button>
   <!-- サーブレットパラメータ用に隠し項目に格納 -->
-  <input type="hidden" value="<%=loginInfo.id %>" name="loginid">
+  <!-- ▼▼▼2022/7/28 Id → WorkerIndexに変更▼▼▼  -->
+  <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
+  <input type="hidden" value="<%=loginInfo.id %>" name="id">
+  <!-- ▲▲▲2022/7/28 Id → WorkerIndexに変更▲▲▲  -->
   <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
   <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
   <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
   <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
   <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
-  <input type="hidden" value="<%=loginInfo.company_ID %>" name="company">
+  <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
+  <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
   <input type="hidden" value="<%=loginInfo.sessionId %>" name="sessionId">
   <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
   <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
@@ -213,34 +225,39 @@ if(listInfo.size() == 0){
     <font size="5">下番報告</font>
   </button>
   <!-- サーブレットパラメータ用に隠し項目に格納 -->
-  <input type="hidden" value="<%=loginInfo.id %>" name="loginid">
+  <!-- ▼▼▼2022/7/28 Id → WorkerIndexに変更▼▼▼  -->
+  <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
+  <input type="hidden" value="<%=loginInfo.id %>" name="id">
+  <!-- ▲▲▲2022/7/28 Id → WorkerIndexに変更▲▲▲  -->
   <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
   <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
   <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
   <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
   <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
-  <input type="hidden" value="<%=loginInfo.company_ID %>" name="company">
+  <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
+  <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
   <input type="hidden" value="<%=loginInfo.sessionId %>" name="sessionId">
   <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
   <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
   <input type="hidden" value="2" name="stampFlag"><!-- 打刻種別 -->
 </form>
 <br><br><br>
-<%
-}
-%>
 
 <form action="<%= request.getContextPath() %>/Login" method="post" accept-charset="UTF-8">
   <button class="btn btn-danger">最初に戻る
   </button>
   <!-- サーブレットパラメータ用に隠し項目に格納 -->
-  <input type="hidden" value="<%=loginInfo.id %>" name="loginid">
+<!-- ▼▼▼2022/7/28 Id → WorkerIndexに変更▼▼▼  -->
+  <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
+  <input type="hidden" value="<%=loginInfo.id %>" name="id">
+<!-- ▲▲▲2022/7/28 Id → WorkerIndexに変更▲▲▲  -->
   <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
   <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
   <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
   <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
   <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
-  <input type="hidden" value="<%=loginInfo.company_ID %>" name="company">
+  <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
+  <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
   <input type="hidden" value="<%=loginInfo.sessionId %>" name="sessionId">
   <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
   <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">

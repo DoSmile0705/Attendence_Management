@@ -7,12 +7,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import util.Constant;
+
 public class P_Time_StampData {
 
-	// SQL Server接続文字列
-	private static final String URL = "jdbc:sqlserver://sac.database.windows.net:1433;database=SAC_Data;user=dbadmin@sac;password=sac001SAC001;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
-	// JDBCドライバ
-	private static final String DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 	/**
 	   * insertメソッド
 	   * P_Time_StampDataにデータを登録する
@@ -25,8 +23,8 @@ public class P_Time_StampData {
 	    Connection conn = null;
 	    try {
 	    	
-	    	Class.forName(DRIVER).getDeclaredConstructor().newInstance();
-	    	conn = DriverManager.getConnection(URL);
+	    	Class.forName(Constant.DRIVER).getDeclaredConstructor().newInstance();
+	    	conn = DriverManager.getConnection(Constant.URL);
 
 	    	Statement stmt = conn.createStatement();
 	    	
@@ -77,8 +75,8 @@ public class P_Time_StampData {
 	    Connection conn = null;
 	    try {
 	    	
-	    	Class.forName(DRIVER).getDeclaredConstructor().newInstance();
-	    	conn = DriverManager.getConnection(URL);
+	    	Class.forName(Constant.DRIVER).getDeclaredConstructor().newInstance();
+	    	conn = DriverManager.getConnection(Constant.URL);
 
 	    	Statement stmt = conn.createStatement();
 	    	
@@ -126,8 +124,8 @@ public class P_Time_StampData {
 	    String res = null;
 	    try {
 	    	
-	    	Class.forName(DRIVER).getDeclaredConstructor().newInstance();
-	    	conn = DriverManager.getConnection(URL);
+	    	Class.forName(Constant.DRIVER).getDeclaredConstructor().newInstance();
+	    	conn = DriverManager.getConnection(Constant.URL);
 
 	    	Statement stmt = conn.createStatement();
 	    	
@@ -178,8 +176,8 @@ public class P_Time_StampData {
 	    Connection conn = null;
 	    try {
 	    	
-	    	Class.forName(DRIVER).getDeclaredConstructor().newInstance();
-	    	conn = DriverManager.getConnection(URL);
+	    	Class.forName(Constant.DRIVER).getDeclaredConstructor().newInstance();
+	    	conn = DriverManager.getConnection(Constant.URL);
 
 	    	Statement stmt = conn.createStatement();
 	    	

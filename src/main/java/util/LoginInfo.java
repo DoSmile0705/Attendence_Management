@@ -42,4 +42,6 @@ public class LoginInfo {
 	public String	shozokuKubun_ID;
 	public String	sessionId;			// ログインセッション　※暗号化
 	public String	stampDate;			// 出発／定時打刻日時
+	public String	companyCode;		// 会社コード
+	public String	companyName;		// 会社名
 }

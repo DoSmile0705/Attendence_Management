@@ -1,0 +1,404 @@
+@charset "UTF-8";
+@import "mixin";
+
+/* 基本設定 */
+html,body{
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+    
+html{
+    font-size: 62.5%;
+}
+    
+body{
+    font-family:"ヒラギノ丸ゴ Pro W4","ヒラギノ丸ゴ Pro","Hiragino Maru Gothic Pro","ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","HG丸ｺﾞｼｯｸM-PRO","HGMaruGothicMPRO";    font-size: 1.6rem;
+    line-height: 1.8;
+    letter-spacing: .1em;
+    color: black;
+    font-size: $md;
+    background-color: $bg;
+}
+
+@-moz-document url-prefix() {
+    body {
+        font-family: "游ゴシック体", YuGothic, "游ゴシック", "Yu Gothic", sans-serif;
+    }
+}
+
+ul,li,p,h1,h2,h3,h4,h5,h6{
+    margin: 0;
+    padding: 0;
+}
+
+h1,h2,h3,h4,h5,h6{
+    font-weight: bold;
+}
+
+li{
+    list-style: none;
+}
+a{
+    text-decoration: none;
+}
+
+img{
+    width: 100%;
+    vertical-align: top;
+}
+
+button{
+    border: 0;
+    width: 100%;
+    background-color: initial;
+    letter-spacing: 0.1rem;
+}
+
+.mt-6{
+    margin-top: 4rem;
+}
+
+.mt-7{
+    margin-top: 5rem;
+}
+
+.mt-8{
+    margin-top: 6rem;
+}
+
+.mt-9{
+    margin-top: 7rem;
+}
+.mt-10{
+    margin-top: 8rem;
+}
+.mt-15{
+    margin-top: 12rem;
+}
+
+.mb-6{
+    margin-bottom: 4rem;
+}
+.mb-7{
+    margin-bottom: 5rem;
+}
+.mb-8{
+    margin-bottom: 6rem;
+}
+.mb-9{
+    margin-bottom: 7rem;
+}
+.mb-10{
+    margin-bottom: 8rem;
+}
+
+
+
+.inner{
+    padding: 0 2rem;
+}
+
+/* 共通スタイル */
+
+//ボタン
+.btn{
+    display: block;
+    padding: 0;
+    width: 330px;
+    border: 0;
+    margin: auto;
+    margin-top: 3rem;
+    a,button{
+        display: block;
+        width: 100%;
+        border: 0;
+        background-color: $main;
+        color: $text4;
+        font-size: 3rem;
+        box-shadow: 3px 4px 8px 2px gray;
+        border-radius: 5px;
+        padding: 0.5rem 0;
+        font-weight: bold;
+        &.white{
+            background-color: $white;
+            color: $text2;
+            font-size: $lg;
+            border-radius: 3px;
+        }
+        &.red{
+            background-color: $red;
+        }
+        &.ac1{
+            background-color: $ac1;
+        }
+        &.ac2{
+            background-color: $ac2;
+        }
+        &.ac3{
+            background-color: $ac3;
+        }
+        &.mor{
+            background-color: $mor;
+        }
+        &.eve{
+            background-color: $eve;
+        }
+        &.all{
+            background-color: $all;
+        }
+        &.gray{
+            background-color: $text2;
+        }
+        img{
+            position: relative;
+            top: 5px;
+            width: 22px;
+            margin-left: 1rem;
+        }
+    }
+    &.mt-6{
+        margin-top: 4rem;
+    }
+    
+    &.mt-7{
+        margin-top: 5rem;
+    }
+    &.mt-8{
+        margin-top: 6rem;
+    }
+    &.mt-9{
+        margin-top: 7rem;
+    }
+    &.mt-10{
+        margin-top: 8rem;
+    }
+    &.mb-6{
+        margin-bottom: 4rem;
+    }
+    &.mb-7{
+        margin-bottom: 5rem;
+    }
+    &.mb-8{
+        margin-bottom: 6rem;
+    }
+    &.mb-9{
+        margin-bottom: 7rem;
+    }
+    &.mb-10{
+        margin-bottom: 8rem;
+    }
+}
+
+//お知らせ一覧
+.news-archive{
+    .news-item{
+        border-bottom: 1px solid #EEEEEE;
+        padding-bottom: 1rem;
+        margin-top: 1.5rem;
+        a,button{
+            display: block;
+            position: relative;
+            color: $text1;
+            text-align: left;
+            .day{
+                font-size: $sm;
+            }
+            .read-tag{
+                position: absolute;
+                display: block;
+                height: fit-content;
+                width: fit-content;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                margin: auto;
+                background-color: $red;
+                color: $text3;
+                font-size: $sm;
+                padding: 0 1rem;
+                border-radius: 15px;
+                font-weight: bold;
+                &.read{
+                    background-color: $main
+                }
+            }
+        }
+    }
+}
+
+//フォーム基本
+form{
+    label,input{
+        display: block;
+    }
+    .txt{
+        width: 100%;
+        border-radius: 5px;
+        border: 1px solid #BBBBBB;
+
+    }
+    label{
+        font-weight: bold;
+        margin-top: 3rem;
+        margin-bottom: 0.5rem;
+        span{
+            font-size: $sm;
+        }
+    }
+    ul{
+        li{
+            input{
+                position: relative;
+                top: 4px;
+                display: inline;
+                margin-right: 1.5rem;
+                width: 20px;
+                height: 20px;
+                border-radius: 5px;
+            }
+        }
+    }
+    .submit{
+        display: block;
+        padding: 0;
+        width: 330px;
+        border: 0;
+        margin: auto;
+        margin-top: 3rem;
+        input,button{
+            display: block;
+            background-color: $main;
+            color: $text4;
+            font-size: 3rem;
+            box-shadow: 3px 4px 8px 2px gray;
+            border-radius: 5px;
+            padding: 0.5rem 0;
+            font-weight: bold;
+            border: 0;
+            width: 100%;
+        }
+    }
+}
+
+//下層ページ　メインタイトル
+.m-ttl{
+    font-size: $xxl;
+    margin-top: 8rem;
+    color: $main;
+    line-height: 5rem;
+}
+
+//現場詳細
+.site-item{
+    padding: 2rem 0 0;
+    color: $text3;
+    .item-inner{
+        max-width: 380px;
+        margin: auto;
+    }
+    a,button{
+        color: $text4;
+    }
+    .above{
+        padding: 0 2rem 2rem;
+        justify-content: space-between;
+        --bs-gutter-x: 0rem;
+        .left{
+            width: 23%;
+            margin-top: 1rem;
+        }
+        .right{
+            width: 75%;
+            .item-ttl{
+                h2{
+                    font-size: $xl;
+                    line-height: 3.5rem;
+                }
+            }
+            .item-time{
+                margin-top: 2rem;
+                font-weight: bold;
+                .time-zone{
+                    display: block;
+                    font-size: $xxl;
+                    font-family: 'Kosugi Maru', sans-serif;
+                    margin-top: -1rem;
+                }
+            }
+        }
+    }
+    .middle{
+        .stamp-time{
+            background-color: $white;
+            justify-content: space-between;
+            color: $text1;
+            border-bottom: 1px solid #BBBBBB;
+            padding: 1rem 3rem;
+            --bs-gutter-x: 0rem;
+            .left{
+                position: relative;
+                width: 40%;
+                span{
+                    display: block;
+                    position: absolute;
+                    width: fit-content;
+                    height: fit-content;
+                    top: 0;
+                    right: auto;
+                    left: 0;
+                    bottom: 0;
+                    margin: auto;
+                }
+            }
+            .right{
+                position: relative;
+                width: 60%;
+                font-weight: bold;
+                font-size: $xxl;
+                font-family: 'Kosugi Maru', sans-serif;
+                text-align: left;
+                span{
+                    display: block;
+                    text-align: center;
+                    position: absolute;
+                    font-size: $lg;
+                    border-radius: 50%;
+                    color: $red;
+                    border: 1px solid $red;
+                    width: fit-content;
+                    height: fit-content;
+                    padding: 0 8px;
+                    right: 0;
+                    top: 0;
+                    bottom: 0;
+                    margin: auto;
+                }
+            }
+            &.done{
+                .right{
+                    span{
+                        border: 0;
+                        background-color: $main;
+                        color: $text4;
+                    }
+                }
+            }
+        }
+    }
+    &.mor{
+        background-color: $mor;
+    }
+    &.eve{
+        background-color: $eve;
+    }
+    &.all{
+        background-color: $all;
+    }
+    &.ac2{
+        background-color: $ac2;
+    }
+    &.ac3{
+        background-color: $ac3;
+    }
+}

@@ -1,0 +1,161 @@
+<!-- お知らせ詳細ぺージ -->
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <!-- Basic Page Needs
+  -------------------------------------------------- -->
+  <meta charset="utf-8">
+  <title>警備業ポータルサイト</title>
+  <meta name="description" content="">
+  <meta name="format-detection" content="telephone=no">
+
+  <!-- Mobile Specific Metas
+  -------------------------------------------------- -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- CSS
+  -------------------------------------------------- -->
+  <!-- フォント読み込み -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
+  <!-- bootstrap CSS読み込み -->
+  <link href="../assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- スタイルシート読み込み -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+
+  <!-- Favicon
+  -------------------------------------------------- -->
+  <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+
+
+
+</head>
+<body>
+  <!-- ヘッダー部 -->
+  <header>
+    <!-- 固定ヘッダー -->
+    <section class="fixed above u-layer">
+      <div class="row">
+        <div class="nav-item"><a href="#" onclick="history.back(-1);return false;">＜戻る</a></div>
+        <div class="nav-item">2022年07月19日(火)</div>
+        <div class="nav-item">12:00</div>
+      </div>
+    </section>
+
+    <!-- 固定フッター -->
+    <section class="fixed bottom">
+      <div class="row">
+        <div class="ico mail">
+          <button onclick="location.href='../news/news-1.html'">
+            <img src="../assets/images/mail.png" alt="">
+            <span class="num">123</span>
+          </button>
+        </div>
+        <div class="ico">
+          <button onclick="location.href='../top.html'">
+            <img src="../assets/images/home.png" alt="">
+          </button>
+        </div>
+        <div class="ico">
+          <button onclick="location.href='#'">
+            <img src="../assets/images/top-arrow.png" alt="">
+          </button>
+        </div>
+      </div>
+    </section>
+  </header>
+  <!-- ヘッダー部end -->
+
+  <!-- メインコンテンツ -->
+  <main>
+    <!-- お知らせ内容 -->
+    <div class="news-con">
+      <div class="n-ttl">
+        <span>2022年7月20日(火)</span>
+        <h1>タイトル名が入ります</h1>
+      </div>
+      <div class="n-txt">
+        <p>
+          テキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキスト
+        </p>
+        <div class="btn">
+          <button class="white" onclick="location.href='../news/news-1.html'">添付ファイルを開く<img src="../assets/images/file.png" alt=""></button>
+        </div>
+        <div class="btn">
+          <button class="white" onclick="location.href='../news/news-1.html'">リンク先はこちら<img src="../assets/images/link.png" alt=""></button>
+        </div>
+      </div>
+
+      <!-- 回答フォーム -->
+      <div class="ansform">
+        <h2>回答フォーム</h2>
+        <div class="dline">
+          回答有効期限
+          <span>2022年12月21日 10時まで</span>
+        </div>
+        <form method="post" action="">
+
+          <label for="name">名前を入力</label>
+          <input class="txt" type="text" name="name" id="name">
+        
+          <label for="radio">選択してください<span>(いずれか１つを選択)</span></label>
+          <ul>
+            <li><input type="radio" name="redio" value="2022年9月21日">2022年9月21日</li>
+            <li><input type="radio" name="redio" value="2022年9月20日">2022年9月20日</li>
+            <li><input type="radio" name="redio" value="選択しない">選択しない</li>
+          </ul>
+
+          <label for="check">選択してください<span>(複数選択可能)</span></label>
+          <ul>
+            <li><input type="checkbox" name="check" value="2022年9月21日">2022年9月21日</li>
+            <li><input type="checkbox" name="check" value="2022年9月20日">2022年9月20日</li>
+          </ul>
+
+          <p>
+            選択した内容を事務所へ通知します。<br>
+            よろしいでしょうか？
+          </p>
+
+          <div class="submit">
+            <button type="submit">事務所へ通知</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- 線 -->
+    <hr class="mt-7">
+
+    <!-- お知らせ一覧へ戻る -->
+    <div class="btn mt-7">
+      <button class="white" onclick="location.href='../news/news-1.html'">お知らせ一覧に戻る</button>
+    </div>
+
+  </main>
+  <!-- メインコンテンツend -->
+
+  <!-- フッター部 -->
+  <footer>
+    <ul>
+      <li><button onclick="location.href='#'">使い方</button></li>
+      <li><button onclick="location.href='#'">会社概要</button></li>
+      <li><button onclick="location.href='#'">ログアウト</button></li>
+    </ul>
+  </footer>
+  <!-- フッター部end -->
+
+
+
+   <!-- Script
+  -------------------------------------------------- -->
+  <!-- Jquery読み込み -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <!-- bootstrap JS読み込み -->
+  <script src="../assets/bootstrap/js/bootstrap.min.js"></script>
+  
+</body>
+</html>

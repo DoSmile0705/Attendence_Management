@@ -58,16 +58,22 @@ public class WorkEndExecute extends HttpServlet {
         shiftInfo.endStampTime		= check.emptyOrNull(request.getParameter("endStampTime"));
         // ログイン情報の受け取り
         LoginInfo loginInfo = new LoginInfo();
-        loginInfo.id				= check.emptyOrNull(request.getParameter("loginid"));
+        /** ▼▼▼2022/7/28 Id → WorkerIndexに変更▼▼▼ **/
+        //loginInfo.id				= check.emptyOrNull(request.getParameter("loginid"));
+        loginInfo.workerIndex		= check.emptyOrNull(request.getParameter("loginid"));
+        loginInfo.id				= check.emptyOrNull(request.getParameter("id"));
+       /** ▲▲▲2022/7/28 Id → WorkerIndexに変更▲▲▲ **/
         loginInfo.loginInfo1_Value	= check.emptyOrNull(request.getParameter("password1"));
         loginInfo.loginInfo2_Value	= check.emptyOrNull(request.getParameter("password2"));
         loginInfo.email_Value		= check.emptyOrNull(request.getParameter("mailaddress"));
         loginInfo.firstName_Value	= check.emptyOrNull(request.getParameter("firstName_Value"));
         loginInfo.lastName_Value	= check.emptyOrNull(request.getParameter("lastName_Value"));
-        loginInfo.company_ID		= check.emptyOrNull(request.getParameter("company"));
         loginInfo.geoIdo_Value		= check.emptyOrNull(request.getParameter("geoIdo"));
         loginInfo.geoKeido_Value	= check.emptyOrNull(request.getParameter("geoKeido"));
         loginInfo.sessionId			= check.emptyOrNull(request.getParameter("sessionId"));
+        loginInfo.companyCode		= check.emptyOrNull(request.getParameter("companyCode"));
+        loginInfo.companyName		= check.emptyOrNull(request.getParameter("companyName"));
+        loginInfo.company_ID		= check.emptyOrNull(request.getParameter("company_ID"));
 
         PrintWriter out = response.getWriter();
         List workInfo =  new ArrayList();
