@@ -4,6 +4,13 @@
 <%@ page import="java.util.Date" %>
 <%@ page import="java.text.DateFormatSymbols" %>
 <%@ page import="java.util.Locale" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.util.Base64" %>
+<%@ page import="java.util.Calendar" %>
+<%@ page import="javax.crypto.Cipher" %>
+<%@ page import="javax.crypto.spec.IvParameterSpec" %>
+<%@ page import="javax.crypto.spec.SecretKeySpec" %>
+
 <%
 // ***************************************************
 // index.jsp
@@ -18,7 +25,7 @@ String mailaddress = (String)request.getAttribute("mailaddress");
 String requestDate = "2022年08月30日(火)";
 String overtime_1		= "22:30";
 String time		= "0830";
-
+String ango		= "Afqe5TN6/BgfZeEkKHA4vw==";
 %>
 <%!
 //フォーマットを変更して日付を返す関数
@@ -56,6 +63,42 @@ private String GetValue(String dateTime){
 	}
 	return resTime;
 }
+//復号化メソッド
+public String decrypt (String text) {
+	// 文字列暗号化用
+	final String ENCRYPT_KEY	= "oP3feFoWLoEwaa12";
+	final String ENCRYPT_IV		= "eF20TGd0kdfe5Ye9";
+	// 文字コード
+	final String CHARSET		= "UTF-8";
+	// 暗号方式
+	final String CRYRTOGRAPHY	= "AES";
+	final String CIPHERTEXT		= "AES/CBC/PKCS5Padding";
+
+	String decodeText = null;
+	//パラメータがnullだったら処理しない
+	if(text != null) {
+		try {
+			// 暗号化キーと初期化ベクトルをバイト配列へ変換
+			byte[] byteKey = ENCRYPT_KEY.getBytes(CHARSET);
+			byte[] byteIv  = ENCRYPT_IV.getBytes(CHARSET);
+			// 復号化キーと初期化ベクトルのオブジェクト生成
+			SecretKeySpec key = new SecretKeySpec(byteKey, CRYRTOGRAPHY);
+			IvParameterSpec iv = new IvParameterSpec(byteIv);
+			// Cipherオブジェクト生成
+			Cipher cipher = Cipher.getInstance(CIPHERTEXT);
+			// Cipherオブジェクトの初期化
+			cipher.init(Cipher.DECRYPT_MODE, key, iv);
+			// 復号化の結果格納
+			byte[] byteResult = cipher.doFinal(Base64.getDecoder().decode(text));
+			// デコード
+			decodeText = new String(byteResult, CHARSET);
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	return decodeText;
+}
 %>
 <!DOCTYPE html>
 <html>
@@ -63,6 +106,7 @@ private String GetValue(String dateTime){
 <meta charset="UTF-8">
 <title>ドライバ画面</title>
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+<link href="assets/css/mobile.css" rel="stylesheet">
 <meta name="viewport" content="width=device-width,user-scalable=no,maximum-scale=1" />
 
 </head>
@@ -72,6 +116,7 @@ private String GetValue(String dateTime){
 <%=request.getParameter("password2") %>
 <%=request.getParameter("mailaddress") %>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="assets/js/script.js"></script>
 <form action="<%= request.getContextPath() %>/Driver" method="post">
   <div class="container-fluid bg-info">
     ポータルサイト利用開始
@@ -80,10 +125,11 @@ private String GetValue(String dateTime){
   <button type="submit" class="btn btn-primary">ログイン画面へ</button>
 </form>
 <br>
-
+暗号：<%=ango %><br>
+復号：[<%=decrypt(ango) %>]<br>
 <br>
 <form action="<%= request.getContextPath() %>/InformationPageLink" method="post" accept-charset="UTF-8">
-  <button type="submit" class="btn btn-primary">TEMP登録テスト</button>
+  <button data-id="sample10" type="submit" class="btn btn-primary">TEMP登録テスト</button>
     <input type="hidden" value="93" name="DataId">
     <input type="hidden" value="3" name="id">
     <input type="hidden" value="1" name="pageCnt">
@@ -122,5 +168,59 @@ private String GetValue(String dateTime){
               <td class="none"><button onclick="location.href='#29'"><span>29</span></button></td><td class="none"><button onclick="location.href='#30'"><span>30</span></button></td><td class="none"><button onclick="location.href='#31'"><span>31</span></button></td><td class="none"><button onclick="location.href='#1'"><span>1</button></span></td><td class="none"><button onclick="location.href='#2'"><span>2</button></span></td><td class="none"><button onclick="location.href='#3'"><span>3</button></span></td><td class="none"><button onclick="location.href='#4'"><span>4</button></span></td>
             </tr>
           </table>
+
+<!-- ローディング処理 -->
+ <div id="sample01" class="loading">
+ </div>
+ <div id="sample10" class="loading">
+ 	<div class="load-circle"></div>
+	<div class="load-text load-blink load-absolute">表示中です</div>
+</div>
+
+<!-- URLパラメータで自動ログインするサンプル -->
+<form name="form2" action="<%= request.getContextPath() %>/Login" method="post">
+  <input type="hidden" id="loginid" name="loginid">
+</form>
+
+<script>
+// 位置情報を取得する処理
+window.onload = function() {
+    //URLのパラメータで自動ログインするサンプル
+    if(location.search != null){
+        //URLパラメータをリクエストにセットする
+        document.getElementById("loginid").value = "あああ";
+    	//document.forms["form2"].submit();
+    }
+	//alert("スリープ");
+	//sleep(3000);
+	//alert("３秒経過");
+    navigator.geolocation.getCurrentPosition(test2);
+    showDate();
+}
+function sleep(waitMsec) {
+	var startMsec = new Date();
+	// 指定ミリ秒間だけループさせる（CPUは常にビジー状態）
+	while (new Date() - startMsec < waitMsec);
+}
+function test2(position) {
+
+    var geo_text = "緯度:" + position.coords.latitude + "\n";
+    geo_text += "経度:" + position.coords.longitude + "\n";
+    geo_text += "高度:" + position.coords.altitude + "\n";
+    geo_text += "位置精度:" + position.coords.accuracy + "\n";
+    geo_text += "高度精度:" + position.coords.altitudeAccuracy  + "\n";
+    geo_text += "移動方向:" + position.coords.heading + "\n";
+    geo_text += "速度:" + position.coords.speed + "\n";
+
+    var date = new Date(position.timestamp);
+    geo_text += "取得時刻:" + date.toLocaleString() + "\n";
+    const formatDate = (date)=>{
+        let formatted_date = date.getFullYear() + "年" + date.getMonth() + "月" + date.getDate() + "日" + "(" + [ "日", "月", "火", "水", "木", "金", "土" ][date.getDay()] + ")"
+        return formatted_date;
+    }
+    geo_text += "取得時刻:" + formatDate(date) + "\n";
+    geo_text += "取得時刻:" + date.getHours() + ":" + date.getMinutes() + "\n";
+}
+</script>
 </body>
 </html>

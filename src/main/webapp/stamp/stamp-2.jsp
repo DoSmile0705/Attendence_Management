@@ -10,6 +10,7 @@
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.text.DateFormatSymbols" %>
+<%@ page import="util.Constant" %>
 <%
 // ***************************************************
 // stamp-2.jsp
@@ -22,12 +23,16 @@ ShiftInfo shiftInfo = (ShiftInfo)request.getAttribute("shiftInfo");
 RequestData requestOver = (RequestData)request.getAttribute("requestOver");
 RequestData requestEarly = (RequestData)request.getAttribute("requestEarly");
 RequestData requestTransport = (RequestData)request.getAttribute("requestTransport");
+//シフトなし上番打刻5分後
+String attendStampFive = (String)request.getAttribute("attendStampFive");
+//シフトなし下番打刻5分後
+String leaveStampFive = (String)request.getAttribute("leaveStampFive");
 
 // セッションがNULLだったらログイン画面を表示する
 if(loginInfo.sessionId == null){
 	// ログイン画面を表示する
 %>
-	<jsp:forward page="login.jsp" />
+	<jsp:forward page="/login.jsp" />
 <%
 }
 %>
@@ -57,7 +62,7 @@ private String GetFormatshiftHiduke(String dateTime) {
 private String GetFormatStampDate(String dateTime) {
 	String datestr = null;
 	try{
-		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSSS");	
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = sdFormat.parse(dateTime);
 		sdFormat = new SimpleDateFormat("HH:mm");
 		datestr = sdFormat.format(date);
@@ -66,6 +71,32 @@ private String GetFormatStampDate(String dateTime) {
 		e.printStackTrace();
 	}
 	return datestr;
+}
+// カレンダーのシフトの色を返す
+private String CalShiftCol(String kinmuKubunName){
+	String shiftColor = null;
+	switch(kinmuKubunName){
+	  //0：昼　1：夜　2：昼夜　3：24勤務　4：その他
+	  case "0":
+	    shiftColor = "mor";
+		break;
+	  case "1":
+		shiftColor = "eve";
+		break;
+	  case "2":
+		shiftColor = "se";
+		break;
+	  case "3":
+		shiftColor = "all";
+		break;
+	  case "4":
+		shiftColor = "none";
+		break;
+	  default:
+		shiftColor = "none";
+		break;
+	}
+	return shiftColor;
 }
 %>
 <!DOCTYPE html>
@@ -98,56 +129,6 @@ private String GetFormatStampDate(String dateTime) {
   -------------------------------------------------- -->
   <link rel="icon" type="image/png" href="./assets/images/favicon.png">
 
-<script>
-// 画面表示用のリアルタイム日付
-function showDate() {
-    var nowTime		= new Date();
-    // 時間を9時間進ませる
-    //nowTime.setHours(nowTime.getHours() + 9);
-    var nowYear		= nowTime.getFullYear();
-    var nowMonth	= nowTime.getMonth() + 1;
-    var nowDate		= nowTime.getDate();
-    var nowDay		= nowTime.getDay();
-    var dayname		= ['日','月','火','水','木','金','土'];
-    var dspDate		= nowYear + "年" + nowMonth + "月" + nowDate + "日" + "(" + dayname[nowDay] + ")" ;
-    document.getElementById("realDate").innerHTML = dspDate;
-
-    var nowHour		= ddigit(nowTime.getHours());
-    var nowMinute	= ddigit(nowTime.getMinutes());
-    var dspTime		= nowHour + ":" + nowMinute; 
-    document.getElementById("realTime").innerHTML = dspTime;
-}
-setInterval('showDate()',60000);
-
-//画面表示用のリアルタイム時間
-/***
-function showTime() {
-    var nowTime		= new Date();
-    // 時間を9時間進ませる
-    //nowTime.setHours(nowTime.getHours() + 9);
-    var nowHour		= ddigit(nowTime.getHours());
-    var nowMinute	= ddigit(nowTime.getMinutes());
-    var dspTime		= nowHour + ":" + nowMinute; 
-    document.getElementById("realTime").innerHTML = dspTime;
-}
-setInterval('showTime()',1000);
-***/
-//0合わせの為の関数
-function ddigit(num) {
-	var dd;
-	if( num < 10 ) {
-		dd = '0' + num;
-	}else{
-		dd = num;
-	}
-	return dd;
-}
-//ロード時に日時をリアルタイム表示する
-window.onload = function(){
-	showDate();
-}
-</script>
-
 </head>
 <body>
   <!-- ヘッダー部 -->
@@ -168,7 +149,7 @@ window.onload = function(){
         <form name="form1" action="<%= request.getContextPath() %>/InformationList" method="post">
           <button>
             <img src="./assets/images/mail.png" alt="">
-            <span class="num">123</span>
+            <span class="num"><%=Constant.UNREAD%></span>
           </button>
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
@@ -191,6 +172,7 @@ window.onload = function(){
             <img src="./assets/images/home.png" alt="">
           </button>
           <input type="hidden" value="<%=shiftInfo.shiftHiduke %>" name="shiftHiduke">
+          <input type="hidden" value="<%=shiftInfo.note %>" name="shiftNote">
           <input type="hidden" value="<%=shiftInfo.bgnTime %>" name="bgnTime">
           <input type="hidden" value="<%=shiftInfo.bgnTimeDate %>" name="bgnTimeDate">
           <input type="hidden" value="<%=shiftInfo.endTime %>" name="endTime">
@@ -206,6 +188,8 @@ window.onload = function(){
           <input type="hidden" value="<%=shiftInfo.adrPostNo %>" name="adrPostNo">
           <input type="hidden" value="<%=shiftInfo.adrMain %>" name="adrMain">
           <input type="hidden" value="<%=shiftInfo.adrSub %>" name="adrSub">
+          <input type="hidden" value="<%=shiftInfo.id %>" name="shiftDataId">
+          <input type="hidden" value="<%=shiftInfo.timeFlag %>" name="timeFlag">
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
           <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
@@ -235,11 +219,11 @@ window.onload = function(){
   <main class="d-stamp">
 
     <!-- 現場(site-itemのclassでカラー変更＆アイコン画像の変更) -->
-    <div class="site-item mor">
+    <div class="site-item <%=CalShiftCol(shiftInfo.timeFlag)%>">
       <div class="item-inner">
         <div class="above row">
           <div class="left">
-            <img src="./assets/images/mor.png" alt="">
+            <img src="./assets/images/<%=CalShiftCol(shiftInfo.timeFlag)%>.png" alt="">
           </div>
           <div class="right">
             <div class="item-ttl">
@@ -257,6 +241,7 @@ window.onload = function(){
         <form action="<%= request.getContextPath() %>/AttendDetail" method="post" accept-charset="UTF-8">
           <button class="white" onclick="location.href='#'">現場の詳細</button>
           <input type="hidden" value="<%=shiftInfo.shiftHiduke %>" name="shiftHiduke">
+          <input type="hidden" value="<%=shiftInfo.note %>" name="shiftNote">
           <input type="hidden" value="<%=shiftInfo.bgnTime %>" name="bgnTime">
           <input type="hidden" value="<%=shiftInfo.bgnTimeDate %>" name="bgnTimeDate">
           <input type="hidden" value="<%=shiftInfo.endTime %>" name="endTime">
@@ -272,6 +257,8 @@ window.onload = function(){
           <input type="hidden" value="<%=shiftInfo.adrPostNo %>" name="adrPostNo">
           <input type="hidden" value="<%=shiftInfo.adrMain %>" name="adrMain">
           <input type="hidden" value="<%=shiftInfo.adrSub %>" name="adrSub">
+          <input type="hidden" value="<%=shiftInfo.id %>" name="shiftDataId">
+          <input type="hidden" value="<%=shiftInfo.timeFlag %>" name="timeFlag">
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
           <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
@@ -284,9 +271,7 @@ window.onload = function(){
           <input type="hidden" value="<%=loginInfo.sessionId %>" name="sessionId">
           <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
           <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
-          <!-- ▼▼▼ 2022.08.20 HTML→JSP変換対応 ▼▼▼ -->
           <input type="hidden" value="1" name="linkFlg">
-          <!-- ▲▲▲ 2022.08.20 HTML→JSP変換対応 ▲▲▲ -->
           <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
         </form>
         </div>
@@ -329,10 +314,15 @@ if(shiftInfo.endStampTime != null){
     
     <!-- classをd-noneｓで非表示 -->
       <!-- 上番報告ボタン -->
+<%
+if(shiftInfo.endStampTime == null){
+	if(attendStampFive == null){
+%>
       <div class="btn mt-5">
         <form action="<%= request.getContextPath() %>/WorkStartConfirm" method="post" accept-charset="UTF-8">
         <button>上番報告</button>
           <input type="hidden" value="<%=shiftInfo.shiftHiduke %>" name="shiftHiduke">
+          <input type="hidden" value="<%=shiftInfo.note %>" name="shiftNote">
           <input type="hidden" value="<%=shiftInfo.bgnTime %>" name="bgnTime">
           <input type="hidden" value="<%=shiftInfo.bgnTimeDate %>" name="bgnTimeDate">
           <input type="hidden" value="<%=shiftInfo.endTime %>" name="endTime">
@@ -348,6 +338,8 @@ if(shiftInfo.endStampTime != null){
           <input type="hidden" value="<%=shiftInfo.adrPostNo %>" name="adrPostNo">
           <input type="hidden" value="<%=shiftInfo.adrMain %>" name="adrMain">
           <input type="hidden" value="<%=shiftInfo.adrSub %>" name="adrSub">
+          <input type="hidden" value="<%=shiftInfo.id %>" name="shiftDataId">
+          <input type="hidden" value="<%=shiftInfo.timeFlag %>" name="timeFlag">
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
           <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
@@ -364,15 +356,20 @@ if(shiftInfo.endStampTime != null){
           <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
         </form>
       </div>
-
 <%
-if(shiftInfo.bgnStampTime != null){
+	}
 %>
+
       <!-- 上番取り消しボタン -->
+<%
+	if(shiftInfo.bgnStampTime != null){
+		if(attendStampFive == null){
+%>
       <div class="btn mt-5">
         <form action="<%= request.getContextPath() %>/WorkStampCancel" method="post" accept-charset="UTF-8">
-        <button onclick="location.href='stamp-7.html'" class="red">上番取り消し</button>
+        <button class="red">上番取り消し</button>
           <input type="hidden" value="<%=shiftInfo.shiftHiduke %>" name="shiftHiduke">
+          <input type="hidden" value="<%=shiftInfo.note %>" name="shiftNote">
           <input type="hidden" value="<%=shiftInfo.bgnTime %>" name="bgnTime">
           <input type="hidden" value="<%=shiftInfo.bgnTimeDate %>" name="bgnTimeDate">
           <input type="hidden" value="<%=shiftInfo.endTime %>" name="endTime">
@@ -388,6 +385,8 @@ if(shiftInfo.bgnStampTime != null){
           <input type="hidden" value="<%=shiftInfo.adrPostNo %>" name="adrPostNo">
           <input type="hidden" value="<%=shiftInfo.adrMain %>" name="adrMain">
           <input type="hidden" value="<%=shiftInfo.adrSub %>" name="adrSub">
+          <input type="hidden" value="<%=shiftInfo.id %>" name="shiftDataId">
+          <input type="hidden" value="<%=shiftInfo.timeFlag %>" name="timeFlag">
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
           <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
@@ -401,6 +400,54 @@ if(shiftInfo.bgnStampTime != null){
           <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
           <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
           <input type="hidden" value="1" name="stampFlag"><!-- 打刻種別 -->
+          <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+        </form>
+      </div>
+<%
+		}
+	}
+}
+%>
+
+      <!-- 下番報告ボタン -->
+<%
+if(leaveStampFive == null){
+%>
+      <div class="btn mt-5">
+        <form action="<%= request.getContextPath() %>/WorkStartConfirm" method="post" accept-charset="UTF-8">
+        <button>下番報告</button>
+          <input type="hidden" value="<%=shiftInfo.shiftHiduke %>" name="shiftHiduke">
+          <input type="hidden" value="<%=shiftInfo.note %>" name="shiftNote">
+          <input type="hidden" value="<%=shiftInfo.bgnTime %>" name="bgnTime">
+          <input type="hidden" value="<%=shiftInfo.bgnTimeDate %>" name="bgnTimeDate">
+          <input type="hidden" value="<%=shiftInfo.endTime %>" name="endTime">
+          <input type="hidden" value="<%=shiftInfo.endTimeDate %>" name="endTimeDate">
+          <input type="hidden" value="<%=shiftInfo.gyomuKubunName %>" name="gyomuKubunName">
+          <input type="hidden" value="<%=shiftInfo.keiyakuKubunName %>" name="keiyakuKubunName">
+          <input type="hidden" value="<%=shiftInfo.kinmuBashoName %>" name="kinmuBashoName">
+          <input type="hidden" value="<%=shiftInfo.kinmuKubunName %>" name="kinmuKubunName">
+          <input type="hidden" value="<%=shiftInfo.workerId %>" name="workerId">
+          <input type="hidden" value="<%=shiftInfo.keiyakuId %>" name="keiyakuId">
+          <input type="hidden" value="<%=shiftInfo.bgnStampTime %>" name="bgnStampTime">
+          <input type="hidden" value="<%=shiftInfo.endStampTime %>" name="endStampTime">
+          <input type="hidden" value="<%=shiftInfo.adrPostNo %>" name="adrPostNo">
+          <input type="hidden" value="<%=shiftInfo.adrMain %>" name="adrMain">
+          <input type="hidden" value="<%=shiftInfo.adrSub %>" name="adrSub">
+          <input type="hidden" value="<%=shiftInfo.id %>" name="shiftDataId">
+          <input type="hidden" value="<%=shiftInfo.timeFlag %>" name="timeFlag">
+          <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
+          <input type="hidden" value="<%=loginInfo.id %>" name="id">
+          <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
+          <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
+          <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
+          <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
+          <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
+          <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
+          <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
+          <input type="hidden" value="<%=loginInfo.sessionId %>" name="sessionId">
+          <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+          <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
+          <input type="hidden" value="2" name="stampFlag"><!-- 打刻種別 -->
           <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
         </form>
       </div>
@@ -408,51 +455,16 @@ if(shiftInfo.bgnStampTime != null){
 }
 %>
 
-      <!-- 下番報告ボタン -->
-      <div class="btn mt-5">
-        <form action="<%= request.getContextPath() %>/WorkStartConfirm" method="post" accept-charset="UTF-8">
-        <button>下番報告</button>
-          <input type="hidden" value="<%=shiftInfo.shiftHiduke %>" name="shiftHiduke">
-          <input type="hidden" value="<%=shiftInfo.bgnTime %>" name="bgnTime">
-          <input type="hidden" value="<%=shiftInfo.bgnTimeDate %>" name="bgnTimeDate">
-          <input type="hidden" value="<%=shiftInfo.endTime %>" name="endTime">
-          <input type="hidden" value="<%=shiftInfo.endTimeDate %>" name="endTimeDate">
-          <input type="hidden" value="<%=shiftInfo.gyomuKubunName %>" name="gyomuKubunName">
-          <input type="hidden" value="<%=shiftInfo.keiyakuKubunName %>" name="keiyakuKubunName">
-          <input type="hidden" value="<%=shiftInfo.kinmuBashoName %>" name="kinmuBashoName">
-          <input type="hidden" value="<%=shiftInfo.kinmuKubunName %>" name="kinmuKubunName">
-          <input type="hidden" value="<%=shiftInfo.workerId %>" name="workerId">
-          <input type="hidden" value="<%=shiftInfo.keiyakuId %>" name="keiyakuId">
-          <input type="hidden" value="<%=shiftInfo.bgnStampTime %>" name="bgnStampTime">
-          <input type="hidden" value="<%=shiftInfo.endStampTime %>" name="endStampTime">
-          <input type="hidden" value="<%=shiftInfo.adrPostNo %>" name="adrPostNo">
-          <input type="hidden" value="<%=shiftInfo.adrMain %>" name="adrMain">
-          <input type="hidden" value="<%=shiftInfo.adrSub %>" name="adrSub">
-          <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
-          <input type="hidden" value="<%=loginInfo.id %>" name="id">
-          <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
-          <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
-          <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
-          <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
-          <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
-          <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
-          <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
-          <input type="hidden" value="<%=loginInfo.sessionId %>" name="sessionId">
-          <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
-          <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
-          <input type="hidden" value="2" name="stampFlag"><!-- 打刻種別 -->
-          <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
-        </form>
-      </div>
-
+      <!-- 下番取り消しボタン -->
 <%
 if(shiftInfo.endStampTime != null){
+	if(leaveStampFive == null){
 %>
-      <!-- 下番取り消しボタン -->
       <div class="btn mt-5">
         <form action="<%= request.getContextPath() %>/WorkStampCancel" method="post" accept-charset="UTF-8">
-        <button onclick="location.href='stamp-7.html'" class="red">下番取り消し</button>
+        <button class="red">下番取り消し</button>
           <input type="hidden" value="<%=shiftInfo.shiftHiduke %>" name="shiftHiduke">
+          <input type="hidden" value="<%=shiftInfo.note %>" name="shiftNote">
           <input type="hidden" value="<%=shiftInfo.bgnTime %>" name="bgnTime">
           <input type="hidden" value="<%=shiftInfo.bgnTimeDate %>" name="bgnTimeDate">
           <input type="hidden" value="<%=shiftInfo.endTime %>" name="endTime">
@@ -468,6 +480,8 @@ if(shiftInfo.endStampTime != null){
           <input type="hidden" value="<%=shiftInfo.adrPostNo %>" name="adrPostNo">
           <input type="hidden" value="<%=shiftInfo.adrMain %>" name="adrMain">
           <input type="hidden" value="<%=shiftInfo.adrSub %>" name="adrSub">
+          <input type="hidden" value="<%=shiftInfo.id %>" name="shiftDataId">
+          <input type="hidden" value="<%=shiftInfo.timeFlag %>" name="timeFlag">
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
           <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
@@ -485,6 +499,7 @@ if(shiftInfo.endStampTime != null){
         </form>
       </div>
 <%
+	}
 }
 %>
   </main>
@@ -621,6 +636,7 @@ if(requestEarly.certification != null){
         <form action="<%= request.getContextPath() %>/RequestConfirm" method="post" accept-charset="UTF-8">
         <button>残業申請</button>
           <input type="hidden" value="<%=shiftInfo.shiftHiduke %>" name="shiftHiduke">
+          <input type="hidden" value="<%=shiftInfo.note %>" name="shiftNote">
           <input type="hidden" value="<%=shiftInfo.bgnTime %>" name="bgnTime">
           <input type="hidden" value="<%=shiftInfo.bgnTimeDate %>" name="bgnTimeDate">
           <input type="hidden" value="<%=shiftInfo.endTime %>" name="endTime">
@@ -636,6 +652,8 @@ if(requestEarly.certification != null){
           <input type="hidden" value="<%=shiftInfo.adrPostNo %>" name="adrPostNo">
           <input type="hidden" value="<%=shiftInfo.adrMain %>" name="adrMain">
           <input type="hidden" value="<%=shiftInfo.adrSub %>" name="adrSub">
+          <input type="hidden" value="<%=shiftInfo.id %>" name="shiftDataId">
+          <input type="hidden" value="<%=shiftInfo.timeFlag %>" name="timeFlag">
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
           <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
@@ -666,6 +684,7 @@ if(requestEarly.certification != null){
         <form action="<%= request.getContextPath() %>/RequestConfirm" method="post" accept-charset="UTF-8">
         <button>交通費・経費申請</button>
           <input type="hidden" value="<%=shiftInfo.shiftHiduke %>" name="shiftHiduke">
+          <input type="hidden" value="<%=shiftInfo.note %>" name="shiftNote">
           <input type="hidden" value="<%=shiftInfo.bgnTime %>" name="bgnTime">
           <input type="hidden" value="<%=shiftInfo.bgnTimeDate %>" name="bgnTimeDate">
           <input type="hidden" value="<%=shiftInfo.endTime %>" name="endTime">
@@ -681,6 +700,8 @@ if(requestEarly.certification != null){
           <input type="hidden" value="<%=shiftInfo.adrPostNo %>" name="adrPostNo">
           <input type="hidden" value="<%=shiftInfo.adrMain %>" name="adrMain">
           <input type="hidden" value="<%=shiftInfo.adrSub %>" name="adrSub">
+          <input type="hidden" value="<%=shiftInfo.id %>" name="shiftDataId">
+          <input type="hidden" value="<%=shiftInfo.timeFlag %>" name="timeFlag">
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
           <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
@@ -711,6 +732,7 @@ if(requestEarly.certification != null){
         <form action="<%= request.getContextPath() %>/RequestConfirm" method="post" accept-charset="UTF-8">
         <button>早出申請</button>
           <input type="hidden" value="<%=shiftInfo.shiftHiduke %>" name="shiftHiduke">
+          <input type="hidden" value="<%=shiftInfo.note %>" name="shiftNote">
           <input type="hidden" value="<%=shiftInfo.bgnTime %>" name="bgnTime">
           <input type="hidden" value="<%=shiftInfo.bgnTimeDate %>" name="bgnTimeDate">
           <input type="hidden" value="<%=shiftInfo.endTime %>" name="endTime">
@@ -726,6 +748,8 @@ if(requestEarly.certification != null){
           <input type="hidden" value="<%=shiftInfo.adrPostNo %>" name="adrPostNo">
           <input type="hidden" value="<%=shiftInfo.adrMain %>" name="adrMain">
           <input type="hidden" value="<%=shiftInfo.adrSub %>" name="adrSub">
+          <input type="hidden" value="<%=shiftInfo.id %>" name="shiftDataId">
+          <input type="hidden" value="<%=shiftInfo.timeFlag %>" name="timeFlag">
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
           <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
@@ -752,9 +776,6 @@ if(requestEarly.certification != null){
           <input type="hidden" value="0" name="requestFlag">
         </form>
       </div>
-      <div class="btn">
-        <button>シフト変更申請</button>
-      </div>
     </div>
     <!-- 前の画面に戻る -->
     <div class="btn mt-8">
@@ -767,8 +788,24 @@ if(requestEarly.certification != null){
   <!-- フッター部 -->
   <footer>
     <ul>
-      <li><button onclick="location.href='#'">使い方</button></li>
-      <li><button onclick="location.href='#'">会社概要</button></li>
+<%
+if(Constant.RIYOBTN != null){
+	if(!Constant.RIYOBTN.equals("未設定")){
+%>
+      <li><button onclick="window.open('<%=Constant.RIYOURL%>', '_blank')"><%=Constant.RIYOBTN%></button></li>
+<%
+	}
+}
+%>
+<%
+if(Constant.GAIYOBTN != null){
+	if(!Constant.GAIYOBTN.equals("未設定")){
+%>
+      <li><button onclick="window.open('<%=Constant.GAIYOURL%>', '_blank')"><%=Constant.GAIYOBTN%></button></li>
+<%
+	}
+}
+%>
       <li>
         <form action="<%= request.getContextPath() %>/Logout" method="post" accept-charset="UTF-8">
         <button>ログアウト</button>
@@ -786,6 +823,43 @@ if(requestEarly.certification != null){
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <!-- bootstrap JS読み込み -->
   <script src="./assets/bootstrap/js/bootstrap.min.js"></script>
-  
+
+<script>
+// 画面表示用のリアルタイム日付
+function showDate() {
+    var nowTime		= new Date();
+    // 時間を9時間進ませる
+    //nowTime.setHours(nowTime.getHours() + 9);
+    var nowYear		= nowTime.getFullYear();
+    var nowMonth	= nowTime.getMonth() + 1;
+    var nowDate		= nowTime.getDate();
+    var nowDay		= nowTime.getDay();
+    var dayname		= ['日','月','火','水','木','金','土'];
+    var dspDate		= nowYear + "年" + nowMonth + "月" + nowDate + "日" + "(" + dayname[nowDay] + ")" ;
+    document.getElementById("realDate").innerHTML = dspDate;
+
+    var nowHour		= ddigit(nowTime.getHours());
+    var nowMinute	= ddigit(nowTime.getMinutes());
+    var dspTime		= nowHour + ":" + nowMinute; 
+    document.getElementById("realTime").innerHTML = dspTime;
+}
+setInterval('showDate()',60000);
+
+//0合わせの為の関数
+function ddigit(num) {
+	var dd;
+	if( num < 10 ) {
+		dd = '0' + num;
+	}else{
+		dd = num;
+	}
+	return dd;
+}
+//ロード時に日時をリアルタイム表示する
+window.onload = function(){
+	showDate();
+}
+</script>
+
 </body>
 </html>

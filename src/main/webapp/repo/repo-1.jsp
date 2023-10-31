@@ -3,12 +3,18 @@
     pageEncoding="UTF-8"%>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="util.LoginInfo" %>
-<%@ page import="util.ShiftInfo" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Locale" %>
+<%@ page import="java.text.DateFormatSymbols" %>
 <%@ page import="java.time.LocalDateTime" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
+<%@ page import="util.Constant" %>
+
 <%
 // ***************************************************
-// deptConfirm.jsp
+// repo-1.jsp
 // 2-1：出発確認、2-2：定時確認
 // 出発、定時の打刻確認をする
 // ***************************************************
@@ -25,6 +31,8 @@ String stampFlag = (String)request.getAttribute("stampFlag");
 String msg = null;
 // ボタン出力メッセージ
 String btnMsg = null;
+//ログイン情報の受け取り
+List historyList = (List)request.getAttribute("historyList");
 
 // 打刻種別によって出力メッセージを変更
 if(stampFlag.equals("0")){
@@ -39,11 +47,26 @@ if(stampFlag.equals("0")){
 if(loginInfo.sessionId == null){
 	// ログイン画面を表示する
 %>
-	<jsp:forward page="./login.jsp" />
+	<jsp:forward page="/login.jsp" />
 <%
 }
 %>
-
+<%!
+//フォーマットを変更して日付を返す関数
+private String GetHistoryFormat(String dateTime) {
+	String datestr = null;
+	try{
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");	
+		Date date = sdFormat.parse(dateTime);
+		sdFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
+		datestr = sdFormat.format(date);
+		
+	}catch(Exception e){
+		e.printStackTrace();
+	}
+	return datestr;
+}
+%>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -73,75 +96,9 @@ if(loginInfo.sessionId == null){
   <!-- Favicon
   -------------------------------------------------- -->
   <link rel="icon" type="image/png" href="./assets/images/favicon.png">
+<script type="text/javascript">
 
-<script>
-// 画面表示用のリアルタイム日付
-function showDate() {
-    var nowTime		= new Date();
-    // 時間を9時間進ませる
-    //nowTime.setHours(nowTime.getHours() + 9);
-    var nowYear		= nowTime.getFullYear();
-    var nowMonth	= nowTime.getMonth() + 1;
-    var nowDate		= nowTime.getDate();
-    var nowDay		= nowTime.getDay();
-    var dayname		= ['日','月','火','水','木','金','土'];
-    var dspDate		= nowYear + "年" + nowMonth + "月" + nowDate + "日" + "(" + dayname[nowDay] + ")" ;
-    document.getElementById("realDate").innerHTML = dspDate;
-    document.getElementById("realDate2").innerHTML = dspDate;
-
-    var nowHour		= ddigit(nowTime.getHours());
-    var nowMinute	= ddigit(nowTime.getMinutes());
-    var dspTime		= nowHour + ":" + nowMinute; 
-    document.getElementById("realTime").innerHTML = dspTime;
-    document.getElementById("realTime2").innerHTML = dspTime;
-}
-setInterval('showDate()',60000);
-
-//画面表示用のリアルタイム時間
-/***
-function showTime() {
-    var nowTime		= new Date();
-    // 時間を9時間進ませる
-    //nowTime.setHours(nowTime.getHours() + 9);
-    var nowHour		= ddigit(nowTime.getHours());
-    var nowMinute	= ddigit(nowTime.getMinutes());
-    var dspTime		= nowHour + ":" + nowMinute; 
-    document.getElementById("realTime").innerHTML = dspTime;
-    document.getElementById("realTime2").innerHTML = dspTime;
-}
-setInterval('showTime()',1000);
-***/
-//0合わせの為の関数
-function ddigit(num) {
-	var dd;
-	if( num < 10 ) {
-		dd = '0' + num;
-	}else{
-		dd = num;
-	}
-	return dd;
-}
-//パラメータ用のリアルタイム時間
-function GetDateTime() {
-    var nowDateTime		= new Date();
-    var nowYear			= ddigit(nowDateTime.getFullYear());
-    var nowMonth		= ddigit(nowDateTime.getMonth() + 1);
-    var nowDate			= ddigit(nowDateTime.getDate());
-    var nowHours		= ddigit(nowDateTime.getHours());
-    var nowMinites		= ddigit(nowDateTime.getMinutes());
-    var nowSrconds		= ddigit(nowDateTime.getSeconds());
-    var nowMilliseconds	= ddigit(nowDateTime.getMilliseconds());
-    var dspDateTime		= nowYear + "-" + nowMonth + "-" + nowDate + " " + nowHours + ":" + nowMinites + ":" + nowSrconds + "." + nowMilliseconds; 
-	document.getElementById('stampDate').value = dspDateTime;
-}
-setInterval('GetDateTime()',60000);
-//ロード時に日時をリアルタイム表示する
-window.onload = function(){
-	showDate();
-	GetDateTime();
-}
 </script>
-
 </head>
 <body>
   <!-- ヘッダー部 -->
@@ -162,7 +119,7 @@ window.onload = function(){
           <form name="form1" onclick="GetDateTime()" action="<%= request.getContextPath() %>/InformationList" method="post">
           <button>
             <img src="./assets/images/mail.png" alt="">
-            <span class="num">123</span>
+            <span class="num"><%=Constant.UNREAD%></span>
           </button>
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
@@ -230,27 +187,34 @@ if(stampFlag.equals("0")){
         <span id="realDate2"></span>
         <div><p id="realTime2"></p></div>
       </div>
+<%
+if(stampFlag.equals("0")){
+%>
       <div class="confirm-txt mt-5">
         <p class="">
-          上記時刻を事務所に報告します。<br>
-          よろしいでしょうか？
-        </p>
-        <p class="d-none">
-          上記時刻を事務所に報告します。<br>
-          よろしいでしょうか？
+          事務所に出発時刻を報告してもよろしいですか？
         </p>
       </div>
+<%
+} else if (stampFlag.equals("3")){
+%>
+      <div class="confirm-txt mt-5">
+        <p class="">
+          事務所に定時連絡を報告してもよろしいですか？
+        </p>
+      </div>
+<%
+}
+%>
     </section>
 
     <!-- 報告するボタン(classにd-noneを入れると非表示) -->
     <div class="btn mt-9">
-      <form onclick="GetDateTime()" action="<%= request.getContextPath() %>/DeptExecute" method="post" accept-charset="UTF-8">
-      <button>報告する</button>
+      <form id="deptExecute" action="<%= request.getContextPath() %>/DeptExecute" method="post" accept-charset="UTF-8">
+      <button type="button" onclick="doPreSubmit(this.form);">報告する</button>
         <!-- サーブレットパラメータ用に隠し項目に格納 -->
-        <!-- ▼▼▼2022/7/28 Id → WorkerIndexに変更▼▼▼  -->
         <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
         <input type="hidden" value="<%=loginInfo.id %>" name="id">
-        <!-- ▲▲▲2022/7/28 Id → WorkerIndexに変更▲▲▲  -->
         <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
         <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
         <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
@@ -265,7 +229,29 @@ if(stampFlag.equals("0")){
         <input type="hidden" value="<%=stampFlag %>" name="stampFlag"><!-- 打刻種別 -->
         <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
       </form>
-    </div>    
+    </div>
+
+<%
+//履歴がある場合は表示
+if(historyList.size() > 0){
+%>
+    <section class="news">
+      <h2 align="center"><%=btnMsg%>報告の履歴</h2>
+      <ul>
+<%
+	for(int i = 0; i < historyList.size(); i ++){
+%>
+        <li class="news-item">
+            <p class="n-ttl" align="center"><%=GetHistoryFormat((String)historyList.get(i)) %></p>
+        </li>
+<%
+	}
+%>
+      </ul>
+    </section>
+<%
+}
+%>
 
 <%
 // 5分以内の前打刻レコードがあった場合は削除ボタンを表示する
@@ -276,10 +262,8 @@ if(delStampTime != null){
       <form action="<%= request.getContextPath() %>/DeptExecute" method="post" accept-charset="UTF-8">
       <button class="red">報告を取り消す</button>
         <!-- サーブレットパラメータ用に隠し項目に格納 -->
-        <!-- ▼▼▼2022/7/28 Id → WorkerIndexに変更▼▼▼  -->
         <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
         <input type="hidden" value="<%=loginInfo.id %>" name="id">
-      <!-- ▲▲▲2022/7/28 Id → WorkerIndexに変更▲▲▲  -->
         <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
         <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
         <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
@@ -311,8 +295,24 @@ if(delStampTime != null){
   <!-- フッター部 -->
   <footer>
     <ul>
-      <li><button onclick="location.href='#'">使い方</button></li>
-      <li><button onclick="location.href='#'">会社概要</button></li>
+<%
+if(Constant.RIYOBTN != null){
+	if(!Constant.RIYOBTN.equals("未設定")){
+%>
+      <li><button onclick="window.open('<%=Constant.RIYOURL%>', '_blank')"><%=Constant.RIYOBTN%></button></li>
+<%
+	}
+}
+%>
+<%
+if(Constant.GAIYOBTN != null){
+	if(!Constant.GAIYOBTN.equals("未設定")){
+%>
+      <li><button onclick="window.open('<%=Constant.GAIYOURL%>', '_blank')"><%=Constant.GAIYOBTN%></button></li>
+<%
+	}
+}
+%>
       <li>
         <form action="<%= request.getContextPath() %>/Logout" method="post" accept-charset="UTF-8">
         <button>ログアウト</button>
@@ -328,8 +328,70 @@ if(delStampTime != null){
   -------------------------------------------------- -->
   <!-- Jquery読み込み -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <!-- 共通部品JS読み込み -->
+  <script src="./assets/js/script.js?<%=(new SimpleDateFormat("yyyyMMddHHmmssSSS")).format(new Date())%>"></script>
   <!-- bootstrap JS読み込み -->
   <script src="./assets/bootstrap/js/bootstrap.min.js"></script>
   
+<script>
+// 画面表示用のリアルタイム日付
+function showDate() {
+    var nowTime		= new Date();
+    // 時間を9時間進ませる
+    //nowTime.setHours(nowTime.getHours() + 9);
+    var nowYear		= nowTime.getFullYear();
+    var nowMonth	= nowTime.getMonth() + 1;
+    var nowDate		= nowTime.getDate();
+    var nowDay		= nowTime.getDay();
+    var dayname		= ['日','月','火','水','木','金','土'];
+    var dspDate		= nowYear + "年" + nowMonth + "月" + nowDate + "日" + "(" + dayname[nowDay] + ")" ;
+    document.getElementById("realDate").innerHTML = dspDate;
+    document.getElementById("realDate2").innerHTML = dspDate;
+
+    var nowHour		= ddigit(nowTime.getHours());
+    var nowMinute	= ddigit(nowTime.getMinutes());
+    var dspTime		= nowHour + ":" + nowMinute; 
+    document.getElementById("realTime").innerHTML = dspTime;
+    document.getElementById("realTime2").innerHTML = dspTime;
+}
+setInterval('showDate()',60000);
+
+//0合わせの為の関数
+function ddigit(num) {
+	var dd;
+	if( num < 10 ) {
+		dd = '0' + num;
+	}else{
+		dd = num;
+	}
+	return dd;
+}
+//パラメータ用のリアルタイム時間
+function GetDateTime() {
+    var nowDateTime		= new Date();
+    var nowYear			= ddigit(nowDateTime.getFullYear());
+    var nowMonth		= ddigit(nowDateTime.getMonth() + 1);
+    var nowDate			= ddigit(nowDateTime.getDate());
+    var nowHours		= ddigit(nowDateTime.getHours());
+    var nowMinites		= ddigit(nowDateTime.getMinutes());
+    var nowSrconds		= ddigit(nowDateTime.getSeconds());
+    var nowMilliseconds	= ddigit(nowDateTime.getMilliseconds());
+    var dspDateTime		= nowYear + "-" + nowMonth + "-" + nowDate + " " + nowHours + ":" + nowMinites + ":" + nowSrconds + "." + nowMilliseconds; 
+	document.getElementById('stampDate').value = dspDateTime;
+}
+setInterval('GetDateTime()',60000);
+//ロード時に日時をリアルタイム表示する
+window.onload = function(){
+	showDate();
+	GetDateTime();
+	
+}
+
+//サブミット前に時刻情報とGPS情報を取得する
+function doPreSubmit(frm){
+	GetDateTime();
+	getGpsData(frm);
+}
+</script>
 </body>
 </html>

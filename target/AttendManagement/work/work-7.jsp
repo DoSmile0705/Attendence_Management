@@ -11,6 +11,7 @@
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.text.DateFormatSymbols" %>
+<%@ page import="util.Constant" %>
 <%
 // ***************************************************
 // work-7.jsp
@@ -28,12 +29,17 @@ String reason			= (String)request.getAttribute("reason");
 String textarea			= (String)request.getAttribute("textarea");
 String name				= (String)request.getAttribute("name");
 String deleteFlag		= (String)request.getAttribute("deleteFlag");
+//申請理由がnullの場合は空文字に
+if(textarea == null){
+	textarea = "";
+}
+
 
 // セッションがNULLだったらログイン画面を表示する
 if(loginInfo.sessionId == null){
 	// ログイン画面を表示する
 %>
-	<jsp:forward page="login.jsp" />
+	<jsp:forward page="/login.jsp" />
 <%
 }
 %>
@@ -42,14 +48,37 @@ if(loginInfo.sessionId == null){
 private String ChangeshiftHiduke(String dateTime) {
 	String datestr = null;
 	try{
-		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy年MM月dd日(E)");	
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy年MM月dd日(E)", Locale.JAPANESE);	
 		Date date = sdFormat.parse(dateTime);
 		DateFormatSymbols dfs = DateFormatSymbols.getInstance(Locale.JAPANESE);
 		sdFormat = new SimpleDateFormat("yyyyMMdd", dfs);
 		datestr = sdFormat.format(date);
-		
 	}catch(Exception e){
 		e.printStackTrace();
+	}
+	return datestr;
+}
+//フォーマットを変更して日付を返す関数
+private String GetFormatshiftHiduke(String dateTime) {
+	String datestr = null;
+	if(dateTime != null){
+		datestr = dateTime.substring(0, 4);
+		datestr += "/";
+		datestr += dateTime.substring(4, 6);
+		datestr += "/";
+		datestr += dateTime.substring(6, 8);
+		try{
+			SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy/MM/dd");	
+			Date date = sdFormat.parse(datestr);
+			DateFormatSymbols dfs = DateFormatSymbols.getInstance(Locale.JAPANESE);
+	        String[] newWeek = {"","日","月","火","水","木","金","土"};
+	        dfs.setWeekdays(newWeek);		 
+			sdFormat = new SimpleDateFormat("yyyy年MM月dd日(E)", dfs);
+			datestr = sdFormat.format(date);
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 	return datestr;
 }
@@ -85,65 +114,6 @@ private String ChangeshiftHiduke(String dateTime) {
   -------------------------------------------------- -->
   <link rel="icon" type="image/png" href="./assets/images/favicon.png">
 
-
-<script>
-// 画面表示用のリアルタイム日付
-function showDate() {
-    var nowTime		= new Date();
-    // 時間を9時間進ませる
-    //nowTime.setHours(nowTime.getHours() + 9);
-    var nowYear		= nowTime.getFullYear();
-    var nowMonth	= nowTime.getMonth() + 1;
-    var nowDate		= nowTime.getDate();
-    var nowDay		= nowTime.getDay();
-    var dayname		= ['日','月','火','水','木','金','土'];
-    var dspDate		= nowYear + "年" + nowMonth + "月" + nowDate + "日" + "(" + dayname[nowDay] + ")" ;
-    document.getElementById("realDate").innerHTML = dspDate;
-
-    var nowHour		= ddigit(nowTime.getHours());
-    var nowMinute	= ddigit(nowTime.getMinutes());
-    var dspTime		= nowHour + ":" + nowMinute; 
-    document.getElementById("realTime").innerHTML = dspTime;
-}
-setInterval('showDate()',60000);
-
-//画面表示用のリアルタイム時間
-/***
-function showTime() {
-    var nowTime		= new Date();
-    // 時間を9時間進ませる
-    //nowTime.setHours(nowTime.getHours() + 9);
-    var nowHour		= ddigit(nowTime.getHours());
-    var nowMinute	= ddigit(nowTime.getMinutes());
-    var dspTime		= nowHour + ":" + nowMinute; 
-    document.getElementById("realTime").innerHTML = dspTime;
-}
-setInterval('showTime()',1000);
-***/
-//0合わせの為の関数
-function ddigit(num) {
-	var dd;
-	if( num < 10 ) {
-		dd = '0' + num;
-	}else{
-		dd = num;
-	}
-	return dd;
-}
-// 選択した日時をリクエストのパラメータにセットする関数
-function GetRequestDate(){
-	var nowDate = document.getElementById('dt-num').value;
-	var changeDate = nowDate.substring(0,4)
-	               + nowDate.substring(5,7)
-	               + nowDate.substring(8,10);
-	document.getElementById('RequestDate').value = changeDate;
-}
-//ロード時に日時をリアルタイム表示する
-window.onload = function(){
-	showDate();
-}
-</script>
-
 </head>
 <body>
   <!-- ヘッダー部 -->
@@ -162,9 +132,9 @@ window.onload = function(){
       <div class="row">
         <div class="ico mail">
         <form name="form1" action="<%= request.getContextPath() %>/InformationList" method="post">
-          <button onclick="location.href='../news/news-1.html'">
+          <button>
             <img src="./assets/images/mail.png" alt="">
-            <span class="num">123</span>
+            <span class="num"><%=Constant.UNREAD%></span>
           </button>
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
@@ -183,10 +153,11 @@ window.onload = function(){
         </div>
         <div class="ico">
         <form action="<%= request.getContextPath() %>/Login" method="post" accept-charset="UTF-8">
-          <button onclick="location.href='../top.html'">
+          <button>
             <img src="./assets/images/home.png" alt="">
           </button>
           <input type="hidden" value="<%=shiftInfo.shiftHiduke %>" name="shiftHiduke">
+          <input type="hidden" value="<%=shiftInfo.note %>" name="shiftNote">
           <input type="hidden" value="<%=shiftInfo.bgnTime %>" name="bgnTime">
           <input type="hidden" value="<%=shiftInfo.bgnTimeDate %>" name="bgnTimeDate">
           <input type="hidden" value="<%=shiftInfo.endTime %>" name="endTime">
@@ -202,6 +173,8 @@ window.onload = function(){
           <input type="hidden" value="<%=shiftInfo.adrPostNo %>" name="adrPostNo">
           <input type="hidden" value="<%=shiftInfo.adrMain %>" name="adrMain">
           <input type="hidden" value="<%=shiftInfo.adrSub %>" name="adrSub">
+          <input type="hidden" value="<%=shiftInfo.id %>" name="shiftDataId">
+          <input type="hidden" value="<%=shiftInfo.timeFlag %>" name="timeFlag">
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
           <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
@@ -238,7 +211,7 @@ window.onload = function(){
 
     <div class="w-box inner">
       <span class="dt">日時</span>
-      <P><%=requestDate %></P>
+      <P><%=GetFormatshiftHiduke(requestData.kinmuHiduke) %></P>
     </div>
 
 
@@ -265,6 +238,7 @@ if(deleteFlag == null){
           <div class="submit mt-8">
             <button type="submit">申請する</button>
               <input type="hidden" value="<%=shiftInfo.shiftHiduke %>" name="shiftHiduke">
+              <input type="hidden" value="<%=shiftInfo.note %>" name="shiftNote">
               <input type="hidden" value="<%=shiftInfo.bgnTime %>" name="bgnTime">
               <input type="hidden" value="<%=shiftInfo.bgnTimeDate %>" name="bgnTimeDate">
               <input type="hidden" value="<%=shiftInfo.endTime %>" name="endTime">
@@ -280,6 +254,8 @@ if(deleteFlag == null){
               <input type="hidden" value="<%=shiftInfo.adrPostNo %>" name="adrPostNo">
               <input type="hidden" value="<%=shiftInfo.adrMain %>" name="adrMain">
               <input type="hidden" value="<%=shiftInfo.adrSub %>" name="adrSub">
+              <input type="hidden" value="<%=shiftInfo.id %>" name="shiftDataId">
+              <input type="hidden" value="<%=shiftInfo.timeFlag %>" name="timeFlag">
               <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
               <input type="hidden" value="<%=loginInfo.id %>" name="id">
               <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
@@ -323,8 +299,9 @@ if(deleteFlag != null){
 %>
       <div class="btn mt-8">
         <form method="post" action="<%= request.getContextPath() %>/RequestUpdate" method="post" accept-charset="UTF-8">
-        <button class="red" onclick="location.href='work-8.html'">申請を取り消す</button>
+        <button class="red">申請を取り消す</button>
               <input type="hidden" value="<%=shiftInfo.shiftHiduke %>" name="shiftHiduke">
+              <input type="hidden" value="<%=shiftInfo.note %>" name="shiftNote">
               <input type="hidden" value="<%=shiftInfo.bgnTime %>" name="bgnTime">
               <input type="hidden" value="<%=shiftInfo.bgnTimeDate %>" name="bgnTimeDate">
               <input type="hidden" value="<%=shiftInfo.endTime %>" name="endTime">
@@ -340,6 +317,8 @@ if(deleteFlag != null){
               <input type="hidden" value="<%=shiftInfo.adrPostNo %>" name="adrPostNo">
               <input type="hidden" value="<%=shiftInfo.adrMain %>" name="adrMain">
               <input type="hidden" value="<%=shiftInfo.adrSub %>" name="adrSub">
+              <input type="hidden" value="<%=shiftInfo.id %>" name="shiftDataId">
+              <input type="hidden" value="<%=shiftInfo.timeFlag %>" name="timeFlag">
               <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
               <input type="hidden" value="<%=loginInfo.id %>" name="id">
               <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
@@ -375,24 +354,8 @@ if(deleteFlag != null){
 
     <!-- シフト一覧に戻る -->
     <div class="btn mt-8">
-      <form action="<%= request.getContextPath() %>/AttendList" method="post" accept-charset="UTF-8">
-      <button class="white" onclick="location.href='../work/work-1.html'">シフト一覧に戻る</button>
-              <input type="hidden" value="<%=shiftInfo.shiftHiduke %>" name="shiftHiduke">
-              <input type="hidden" value="<%=shiftInfo.bgnTime %>" name="bgnTime">
-              <input type="hidden" value="<%=shiftInfo.bgnTimeDate %>" name="bgnTimeDate">
-              <input type="hidden" value="<%=shiftInfo.endTime %>" name="endTime">
-              <input type="hidden" value="<%=shiftInfo.endTimeDate %>" name="endTimeDate">
-              <input type="hidden" value="<%=shiftInfo.gyomuKubunName %>" name="gyomuKubunName">
-              <input type="hidden" value="<%=shiftInfo.keiyakuKubunName %>" name="keiyakuKubunName">
-              <input type="hidden" value="<%=shiftInfo.kinmuBashoName %>" name="kinmuBashoName">
-              <input type="hidden" value="<%=shiftInfo.kinmuKubunName %>" name="kinmuKubunName">
-              <input type="hidden" value="<%=shiftInfo.workerId %>" name="workerId">
-              <input type="hidden" value="<%=shiftInfo.keiyakuId %>" name="keiyakuId">
-              <input type="hidden" value="<%=shiftInfo.bgnStampTime %>" name="bgnStampTime">
-              <input type="hidden" value="<%=shiftInfo.endStampTime %>" name="endStampTime">
-              <input type="hidden" value="<%=shiftInfo.adrPostNo %>" name="adrPostNo">
-              <input type="hidden" value="<%=shiftInfo.adrMain %>" name="adrMain">
-              <input type="hidden" value="<%=shiftInfo.adrSub %>" name="adrSub">
+      <form name="form1" onclick="GetDateTime()" action="<%= request.getContextPath() %>/ShiftInquiry" method="post">
+      <button class="white">シフト一覧に戻る</button>
               <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
               <input type="hidden" value="<%=loginInfo.id %>" name="id">
               <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
@@ -406,6 +369,7 @@ if(deleteFlag != null){
               <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
               <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
               <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+              <input type="hidden" id="nowDate" name="nowDate">
       </form>
     </div>
     
@@ -415,8 +379,24 @@ if(deleteFlag != null){
   <!-- フッター部 -->
   <footer>
     <ul>
-      <li><button onclick="location.href='#'">使い方</button></li>
-      <li><button onclick="location.href='#'">会社概要</button></li>
+<%
+if(Constant.RIYOBTN != null){
+	if(!Constant.RIYOBTN.equals("未設定")){
+%>
+      <li><button onclick="window.open('<%=Constant.RIYOURL%>', '_blank')"><%=Constant.RIYOBTN%></button></li>
+<%
+	}
+}
+%>
+<%
+if(Constant.GAIYOBTN != null){
+	if(!Constant.GAIYOBTN.equals("未設定")){
+%>
+      <li><button onclick="window.open('<%=Constant.GAIYOURL%>', '_blank')"><%=Constant.GAIYOBTN%></button></li>
+<%
+	}
+}
+%>
       <li>
         <form action="<%= request.getContextPath() %>/Logout" method="post" accept-charset="UTF-8">
         <button>ログアウト</button>
@@ -435,5 +415,64 @@ if(deleteFlag != null){
   <!-- bootstrap JS読み込み -->
   <script src="./assets/bootstrap/js/bootstrap.min.js"></script>
   
+<script>
+// 画面表示用のリアルタイム日付
+function showDate() {
+    var nowTime		= new Date();
+    // 時間を9時間進ませる
+    //nowTime.setHours(nowTime.getHours() + 9);
+    var nowYear		= nowTime.getFullYear();
+    var nowMonth	= nowTime.getMonth() + 1;
+    var nowDate		= nowTime.getDate();
+    var nowDay		= nowTime.getDay();
+    var dayname		= ['日','月','火','水','木','金','土'];
+    var dspDate		= nowYear + "年" + nowMonth + "月" + nowDate + "日" + "(" + dayname[nowDay] + ")" ;
+    document.getElementById("realDate").innerHTML = dspDate;
+
+    var nowHour		= ddigit(nowTime.getHours());
+    var nowMinute	= ddigit(nowTime.getMinutes());
+    var dspTime		= nowHour + ":" + nowMinute; 
+    document.getElementById("realTime").innerHTML = dspTime;
+}
+setInterval('showDate()',60000);
+
+//0合わせの為の関数
+function ddigit(num) {
+	var dd;
+	if( num < 10 ) {
+		dd = '0' + num;
+	}else{
+		dd = num;
+	}
+	return dd;
+}
+// 選択した日時をリクエストのパラメータにセットする関数
+function GetRequestDate(){
+	var nowDate = document.getElementById('dt-num').value;
+	var changeDate = nowDate.substring(0,4)
+	               + nowDate.substring(5,7)
+	               + nowDate.substring(8,10);
+	document.getElementById('RequestDate').value = changeDate;
+}
+//ロード時に日時をリアルタイム表示する
+window.onload = function(){
+	showDate();
+}
+//パラメータ用のリアルタイム時間
+function GetDateTime() {
+    var nowDateTime		= new Date();
+    var nowYear			= ddigit(nowDateTime.getFullYear());
+    var nowMonth		= ddigit(nowDateTime.getMonth() + 1);
+    var nowDate			= ddigit(nowDateTime.getDate());
+    var nowHours		= ddigit(nowDateTime.getHours());
+    var nowMinites		= ddigit(nowDateTime.getMinutes());
+    var nowSrconds		= ddigit(nowDateTime.getSeconds());
+    var nowMilliseconds	= ddigit(nowDateTime.getMilliseconds());
+    var dspDateTime		= nowYear + "-" + nowMonth + "-" + nowDate + " " + nowHours + ":" + nowMinites + ":" + nowSrconds + "." + nowMilliseconds; 
+	document.getElementById('nowDate').value = dspDateTime;
+}
+setInterval('GetDateTime()',60000);
+</script>
+
 </body>
 </html>

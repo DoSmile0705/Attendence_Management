@@ -23,12 +23,15 @@ public class StampConfirm extends HttpServlet {
      */
     public StampConfirm() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doPost(request,response);
+	}
+
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+     * 画面からのリクエストを受け取る
+     */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// リクエスト、レスポンスの文字コードセット
 		request.setCharacterEncoding("UTF-8");
@@ -37,11 +40,8 @@ public class StampConfirm extends HttpServlet {
         // 画面からの項目を受け取り
         // ログイン情報の受け取り
         LoginInfo loginInfo = new LoginInfo();
-        /** ▼▼▼2022/7/28 Id → WorkerIndexに変更▼▼▼ **/
-        //loginInfo.id				= check.emptyOrNull(request.getParameter("loginid"));
         loginInfo.workerIndex		= check.emptyOrNull(request.getParameter("loginid"));
         loginInfo.id				= check.emptyOrNull(request.getParameter("id"));
-        /** ▲▲▲2022/7/28 Id → WorkerIndexに変更▲▲▲ **/
         loginInfo.loginInfo1_Value	= check.emptyOrNull(request.getParameter("password1"));
         loginInfo.loginInfo2_Value	= check.emptyOrNull(request.getParameter("password2"));
         loginInfo.email_Value		= check.emptyOrNull(request.getParameter("mailaddress"));
@@ -60,10 +60,7 @@ public class StampConfirm extends HttpServlet {
 
         request.setAttribute("loginInfo", loginInfo);
         request.setAttribute("stampFlag", stampFlag);	// 打刻種別
-        // ▼▼▼ 2022.08.21 HTML→JSP変換対応 ▼▼▼
-		//RequestDispatcher dispatch = request.getRequestDispatcher("jsp/startConfirm.jsp");
 		RequestDispatcher dispatch = request.getRequestDispatcher("stamp/stamp-3.jsp");
-	     // ▲▲▲ 2022.08.21 HTML→JSP変換対応 ▲▲▲
         dispatch.forward(request, response);
 	}
 

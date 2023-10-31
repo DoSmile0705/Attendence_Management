@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -101,10 +102,7 @@ public class UtilConv {
 	   * @param		subDate		対象日付
 	   * @return	formatDate	フォーマット変換済み日付
 	   */
-    /** ▼▼▼2022.08.06「前の月」「次の月」追加対応▼▼▼ **/
-	//public String GetForShiftList(String subDate) {
 	public String GetForShiftList(String subDate, int addMonth) {
-    /** ▲▲▲2022.08.06「前の月」「次の月」追加対応▲▲▲ **/
 		
 		// パラメータを「yyyy-MM-dd」の形式に変換
 		String formatDate = null;
@@ -120,10 +118,7 @@ public class UtilConv {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(date);
             cal.add(Calendar.MONTH, addMonth);
-			//sdFormat = new SimpleDateFormat("yyyy-MM-dd");
-			//formatDate = sdFormat.format(date);
 			formatDate = sdFormat.format(cal.getTime());
-	        /** ▲▲▲2022.08.06「前の月」「次の月」追加対応▲▲▲ **/
 			
 		}catch(Exception e){
 			e.printStackTrace();
@@ -180,5 +175,102 @@ public class UtilConv {
 			e.printStackTrace();
 		}
 		return formatDate;
+	}
+
+	/**
+	   * 打刻日時を取得すために日時フォーマットを検索条件に合わせる
+	   * 「yyyy-MM-dd HH:mm:ss.sssssss」　→　「yyyy-MM-dd HH:mm:ss.sss」に変換する
+	   * @param		subDate		対象日付
+	   * @return	formatDate	フォーマット変換済み日付
+	   */
+	public String GetWhereDate(String subDate) {
+		
+		// パラメータを「yyyy-MM-dd HH:mm:ss.sss」の形式に変換
+		String formatDate = null;
+		
+		try{
+			SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss", Locale.JAPANESE);	
+			Date date = sdFormat.parse(subDate);
+			formatDate = sdFormat.format(date);
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return formatDate;
+	}
+
+	/**
+	   * 文字列にアルファベットが含まれているかどうか判定
+	   * 「yyyy-MM-dd HH:mm:ss.sssssss」　→　「yyyy-MM-dd HH:mm:ss.sss」に変換する
+	   * @param		text		判定対象
+	   * @return	result		判定結果
+	   * 			true		アルファベットが含まれている
+	   * 			false		アルファベットが含まれていない
+	   */
+	public boolean isAlpha(String text)
+    {
+        boolean result = false;
+
+        if (text == null) {
+			result = false;
+        }else {
+            for (int i = 0; i < text.length(); i++)
+            {
+                char c = text.charAt(i);
+                if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
+                	result = true;
+                }
+            }
+        }
+        return result;
+    }
+	/**
+	   * 日付の前後を比較
+	   * @param		dateText1	単独上番日時
+	   * 			dateText2	単独下番日時
+	   * @return	result		判定結果
+	   * 			true		上番が新しい
+	   * 			false		下番が新しい
+	   */
+	public boolean dateComp(String dateText1, String dateText2)
+  {
+      boolean result = false;
+      
+      if(dateText1 != null && dateText2 != null) {
+			try {
+				SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date date1 = sdFormat.parse(dateText1);
+				Date date2 = sdFormat.parse(dateText2);
+				//上番よりも下番の方が前だったら真
+				if(date2.before(date1)) {
+					result = true;
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+      }
+      return result;
+  }
+	/**
+	   * ログイン情報のGPS情報を取得し暗号化してセットする
+	   * @param		LoginInfo	ログイン情報
+	   * @return	void		
+	   */
+	public void setLoginInfoGpsEncrypt(LoginInfo loginInfo) {
+    	/***位置情報がすでに暗号化されているか確認***/
+    	//暗号化していなかったら暗号化、していたらそのままセット
+    	if(!this.isAlpha(loginInfo.geoIdo_Value)) {
+    		// 端末から取得した緯度を暗号化
+        	loginInfo.geoIdo_Value = this.encrypt(loginInfo.geoIdo_Value);
+    	}else {
+        	loginInfo.geoIdo_Value = loginInfo.geoIdo_Value;
+    	}
+    	//暗号化していなかったら暗号化、していたらそのままセット
+    	if(!this.isAlpha(loginInfo.geoKeido_Value)) {
+    		// 端末から取得した経度を暗号化
+        	loginInfo.geoKeido_Value = this.encrypt(loginInfo.geoKeido_Value);
+    	}else {
+        	loginInfo.geoKeido_Value = loginInfo.geoKeido_Value;
+    	}
 	}
 }

@@ -55,4 +55,18 @@ public class DataCheck {
 		}
 		return result;
 	}
+	/**
+	   * 文字列がNULLもしくは空文字だったら空文字を返す
+	   * @param		text	チェックする文字列
+	   * @return	result	チェック後の文字列
+	   */
+	public String nullToBlank(String text) {
+		
+		// 返却する文字列
+		String result = text;
+		if(text == null || text.isEmpty() || text.isBlank() || text.equals("null")) {
+			result = "";
+		}
+		return result;
+	}
 }

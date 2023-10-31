@@ -14,7 +14,7 @@ import util.UtilConv;
 public class P_MC_Company {
 	/**
 	   * selectメソッド
-	   * P_MW_Workerの検索結果を返す
+	   * P_MC_Companyの検索結果を返す
 	   * @param　loginid ログインID
 	   * @return　検索結果
 	   */

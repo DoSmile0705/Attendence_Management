@@ -11,10 +11,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dbaccess.P_Shift_SheetDataUp;
 import dbaccess.P_Time_StampData;
 import util.DataCheck;
 import util.LoginInfo;
 import util.ShiftInfo;
+import util.UtilConv;
 
 /**
  * Servlet implementation class WorkStartExecute
@@ -22,17 +24,17 @@ import util.ShiftInfo;
 public class WorkStartExecute extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
     public WorkStartExecute() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doPost(request,response);
+	}
+
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+     * 画面からのリクエストを受け取る
+     */
 	@SuppressWarnings("unchecked")
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// リクエスト、レスポンスの文字コードセット
@@ -44,6 +46,7 @@ public class WorkStartExecute extends HttpServlet {
         // シフト情報パラメータ受け取り
         ShiftInfo shiftInfo = new ShiftInfo();
         shiftInfo.shiftHiduke		= check.emptyOrNull(request.getParameter("shiftHiduke"));
+        shiftInfo.note				= check.emptyOrNull(request.getParameter("shiftNote"));
         shiftInfo.bgnTimeDate		= check.emptyOrNull(request.getParameter("bgnTimeDate"));
         shiftInfo.bgnTime			= check.emptyOrNull(request.getParameter("bgnTime"));
         shiftInfo.endTimeDate		= check.emptyOrNull(request.getParameter("endTimeDate"));
@@ -59,13 +62,12 @@ public class WorkStartExecute extends HttpServlet {
         shiftInfo.adrPostNo			= check.emptyOrNull(request.getParameter("adrPostNo"));
         shiftInfo.adrMain			= check.emptyOrNull(request.getParameter("adrMain"));
         shiftInfo.adrSub			= check.emptyOrNull(request.getParameter("adrSub"));
+        shiftInfo.id				= check.emptyOrNull(request.getParameter("shiftDataId"));
+        shiftInfo.timeFlag			= check.emptyOrNull(request.getParameter("timeFlag"));
         // ログイン情報の受け取り
         LoginInfo loginInfo = new LoginInfo();
-        /** ▼▼▼2022/7/28 Id → WorkerIndexに変更▼▼▼ **/
-        //loginInfo.id				= check.emptyOrNull(request.getParameter("loginid"));
         loginInfo.workerIndex		= check.emptyOrNull(request.getParameter("loginid"));
         loginInfo.id				= check.emptyOrNull(request.getParameter("id"));
-       /** ▲▲▲2022/7/28 Id → WorkerIndexに変更▲▲▲ **/
         loginInfo.loginInfo1_Value	= check.emptyOrNull(request.getParameter("password1"));
         loginInfo.loginInfo2_Value	= check.emptyOrNull(request.getParameter("password2"));
         loginInfo.email_Value		= check.emptyOrNull(request.getParameter("mailaddress"));
@@ -73,6 +75,10 @@ public class WorkStartExecute extends HttpServlet {
         loginInfo.lastName_Value	= check.emptyOrNull(request.getParameter("lastName_Value"));
         loginInfo.geoIdo_Value		= check.emptyOrNull(request.getParameter("geoIdo"));
         loginInfo.geoKeido_Value	= check.emptyOrNull(request.getParameter("geoKeido"));
+    	// 共通部品のインスタンス化
+        UtilConv utilConv = new UtilConv();
+        // GPS情報の暗号化
+        utilConv.setLoginInfoGpsEncrypt(loginInfo);
         loginInfo.sessionId			= check.emptyOrNull(request.getParameter("sessionId"));
         loginInfo.companyCode		= check.emptyOrNull(request.getParameter("companyCode"));
         loginInfo.companyName		= check.emptyOrNull(request.getParameter("companyName"));
@@ -83,6 +89,11 @@ public class WorkStartExecute extends HttpServlet {
         PrintWriter out = response.getWriter();
         List workInfo =  new ArrayList();
         String stampTime = null;
+        // シフト情報パラメータ受け取り
+        ShiftInfo nextShiftInfo = new ShiftInfo();
+
+        // GPS情報
+        String gpsInfo = "";
         
     	try {
     		// 上下番区分をセット
@@ -93,6 +104,7 @@ public class WorkStartExecute extends HttpServlet {
             workInfo.add("'" + stringDate.substring(0,19) + "'");
             workInfo.add(shiftInfo.workerId);
             workInfo.add(shiftInfo.keiyakuId);
+            workInfo.add(shiftInfo.id);
 
     		// DBアクセスクラス
     		P_Time_StampData stamp = new P_Time_StampData();
@@ -103,28 +115,14 @@ public class WorkStartExecute extends HttpServlet {
     		if(stampTime != null) {
                 // ログインIDをキーに警備員マスタを取得
         		stamp.update(workInfo);
-            	/*** 2022.7.11 打刻があった場合に打刻しない処理をコメントアウト
-           		// 新しい打刻レコードを登録
-        		stamp.insert(workInfo);
-            } else {
-            	// 打刻レコードがなかった場合は登録する
-            	if(shiftInfo.bgnStampTime == null) {
-               		// 新しい打刻レコードを登録
-            		stamp.insert(workInfo);
-            		// 当日シフト一覧のコンテナに下番打刻時間をセット
-            		shiftInfo.bgnStampTime = stringDate;
-            	} else {
-            		// すでに打刻済の場合は上番打刻時刻にnullをセット
-            		shiftInfo.bgnStampTime = null;
-            	}
-           		// 新しい打刻レコードを登録
-        		stamp.insert(workInfo);
-        		// 当日シフト一覧のコンテナに下番打刻時間をセット
-        		shiftInfo.bgnStampTime = stringDate;
-            	2022.7.11 打刻があった場合に打刻しない処理をコメントアウト ***/
             }
+            workInfo.set(3,"'" + stringDate + "'");
+            workInfo.add(check.stringForDB(loginInfo.geoIdo_Value));
+            workInfo.add(check.stringForDB(loginInfo.geoKeido_Value));
        		// 新しい打刻レコードを登録
     		stamp.insert(workInfo);
+    		// 打刻後のレコードを取得
+    		gpsInfo = stamp.selectCurrentStampData(workInfo);
     		if(stampFlag.equals("1")) {
         		// 当日シフト一覧のコンテナに上番打刻時間をセット
         		shiftInfo.bgnStampTime = stringDate;
@@ -132,18 +130,32 @@ public class WorkStartExecute extends HttpServlet {
         		// 当日シフト一覧のコンテナに上番打刻時間をセット
         		shiftInfo.endStampTime = stringDate;
     		}
+    		if(stampFlag.equals("2")) {
+        		P_Shift_SheetDataUp pssdu = new P_Shift_SheetDataUp();
+        		nextShiftInfo = pssdu.selectNextShift(shiftInfo.workerId, "'" + stringDate.substring(0,19) + "'");
+    		}
 
 	    }catch(Exception e) {
         	e.printStackTrace();
 	    }
 
+    	gpsInfo = check.emptyOrNull(gpsInfo);
+
+        // GPS取得成功用のフラグ
+        String gpsSuccessFlg = "";
+    	// GPS情報が取得できた場合
+    	if(gpsInfo != null) {
+    		gpsSuccessFlg = "success";
+    	// GPS情報が取得できない場合
+    	} else {
+    		gpsSuccessFlg = "error";
+    	}
     	request.setAttribute("shiftInfo", shiftInfo);
         request.setAttribute("loginInfo", loginInfo);
         request.setAttribute("stampFlag", stampFlag);
-        // ▼▼▼ 2022.08.21 HTML→JSP変換対応 ▼▼▼
-		//RequestDispatcher dispatch = request.getRequestDispatcher("jsp/startStampRes.jsp");
+        request.setAttribute("gpsSuccessFlg", gpsSuccessFlg);		// GPS取得成功フラグ
+        request.setAttribute("nextShiftInfo", nextShiftInfo);
 		RequestDispatcher dispatch = request.getRequestDispatcher("stamp/stamp-4.jsp");
-        // ▲▲▲ 2022.08.21 HTML→JSP変換対応 ▲▲▲
         dispatch.forward(request, response);
 	}
 }

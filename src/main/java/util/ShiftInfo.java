@@ -4,6 +4,7 @@ package util;
 public class ShiftInfo {
 	// メンバ変数
 	public String	shiftHiduke;		// シフト日付
+	public String	note;				// ノート
 	public String	bgnTimeDate;		// 上番日付
 	public String	bgnTime;			// 上番時刻
 	public String	endTimeDate;		// 下番日付
@@ -19,4 +20,6 @@ public class ShiftInfo {
 	public String	adrPostNo;			// ローカル業務区分郵便番号
 	public String	adrMain;			// ローカル業務区分住所１
 	public String	adrSub;				// ローカル業務区分住所２
+	public String	timeFlag;
+	public String	id;					//打刻のShiftData_IDと紐づく
 }

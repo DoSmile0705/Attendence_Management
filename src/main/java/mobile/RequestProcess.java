@@ -27,18 +27,14 @@ public class RequestProcess extends HttpServlet {
      */
     public RequestProcess() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+     * 画面からのリクエストを受け取る
+     */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// リクエスト、レスポンスの文字コードセット
 		request.setCharacterEncoding("UTF-8");
@@ -47,6 +43,7 @@ public class RequestProcess extends HttpServlet {
         // シフト情報パラメータ受け取り
         ShiftInfo shiftInfo = new ShiftInfo();
         shiftInfo.shiftHiduke		= check.emptyOrNull(request.getParameter("shiftHiduke"));
+        shiftInfo.note				= check.emptyOrNull(request.getParameter("shiftNote"));
         shiftInfo.bgnTimeDate		= check.emptyOrNull(request.getParameter("bgnTimeDate"));
         shiftInfo.bgnTime			= check.emptyOrNull(request.getParameter("bgnTime"));
         shiftInfo.endTimeDate		= check.emptyOrNull(request.getParameter("endTimeDate"));
@@ -62,6 +59,8 @@ public class RequestProcess extends HttpServlet {
         shiftInfo.adrPostNo			= check.emptyOrNull(request.getParameter("adrPostNo"));
         shiftInfo.adrMain			= check.emptyOrNull(request.getParameter("adrMain"));
         shiftInfo.adrSub			= check.emptyOrNull(request.getParameter("adrSub"));
+        shiftInfo.id				= check.emptyOrNull(request.getParameter("shiftDataId"));
+        shiftInfo.timeFlag			= check.emptyOrNull(request.getParameter("timeFlag"));
         // ログイン情報の受け取り
         LoginInfo loginInfo = new LoginInfo();
         loginInfo.workerIndex		= check.emptyOrNull(request.getParameter("loginid"));
@@ -103,26 +102,55 @@ public class RequestProcess extends HttpServlet {
         P_Kinmu_RequestData pkrd	= new P_Kinmu_RequestData();
         // 申請データパラメータ用
         List workInfo =  new ArrayList();
+        //勤務リクエストデータの認証が存在
+        if(requestData.certification != null) {
+        	//認証が「9」の場合
+            if(requestData.certification.equals("9")) {
+        		workInfo.add(loginInfo.company_ID);
+        		workInfo.add(loginInfo.id);
+        		workInfo.add(requestDate);		//KinmuHiduke
+        		workInfo.add(categoryFlag);		//Category
+        		workInfo.add(overtime_1);		//TimeValue
+        		// 交通費・経費申請の場合は金額
+        		if(categoryFlag.equals("11")) {
+            		workInfo.add(name);			//Value
+           		// 残業、早出申請の場合は時間
+        		}else {
+            		workInfo.add(overtime_2);	//Value
+        		}
+        		workInfo.add(textarea);			//Note
+        		workInfo.add("0");				//Certification
+        		
+        		try {
+            		pkrd.update(workInfo);
+        		}catch(Exception e) {
+                	e.printStackTrace();
+        		}
+        	//現状、勤務リクエストデータの認証が存在して「9」以外はありえない
+            }
+        //勤務リクエストデータの認証がない
+        }else{
+    		workInfo.add(loginInfo.company_ID);
+    		workInfo.add(loginInfo.id);
+    		workInfo.add(requestDate);		//KinmuHiduke
+    		workInfo.add(categoryFlag);		//Category
+    		workInfo.add(overtime_1);		//TimeValue
+    		// 交通費・経費申請の場合は金額
+    		if(categoryFlag.equals("11")) {
+        		workInfo.add(name);			//Value
+       		// 残業、早出申請の場合は時間
+    		}else {
+        		workInfo.add(overtime_2);	//Value
+    		}
+    		workInfo.add(textarea);			//Note
+    		
+    		try {
+    			pkrd.insert(workInfo);
+    		}catch(Exception e) {
+            	e.printStackTrace();
+    		}
+        }
 
-		workInfo.add(loginInfo.company_ID);
-		workInfo.add(loginInfo.id);
-		workInfo.add(requestDate);		//KinmuHiduke
-		workInfo.add(categoryFlag);		//Category
-		workInfo.add(overtime_1);		//TimeValue
-		// 交通費・経費申請の場合は金額
-		if(categoryFlag.equals("11")) {
-    		workInfo.add(name);			//Value
-   		// 残業、早出申請の場合は時間
-		}else {
-    		workInfo.add(overtime_2);	//Value
-		}
-		workInfo.add(textarea);			//Note
-		
-		try {
-    		pkrd.insert(workInfo);
-		}catch(Exception e) {
-        	e.printStackTrace();
-		}
         request.setAttribute("shiftInfo", shiftInfo);
         request.setAttribute("loginInfo", loginInfo);
         request.setAttribute("requestData", requestData);

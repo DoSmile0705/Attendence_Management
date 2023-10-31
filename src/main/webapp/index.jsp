@@ -11,6 +11,7 @@
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.text.DateFormatSymbols" %>
+<%@ page import="util.Constant" %>
 
 <!DOCTYPE html>
 <%
@@ -28,27 +29,18 @@ String onTimeStamp = (String)request.getAttribute("onTimeStamp");
 if(sessionId == null){
 	// ログイン画面を表示する
 %>
-    <!-- ▼▼▼ 2022.08.14 HTML→JSP変換対応 ▼▼▼ -->
 	<jsp:forward page="/login.jsp" />
-	<!-- ▲▲▲ 2022.08.14 HTML→JSP変換対応 ▲▲▲ -->
 <%
 }
 %>
 <%!
-//DB登録用の日時を返す関数
-private String GetFormatDate() {
-	LocalDateTime nowDate = LocalDateTime.now();
-	DateTimeFormatter dtf =DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSS");
-	String datestr = dtf.format(nowDate.plusHours(9));
-	return datestr;
-}
 // フォーマットを変更して時間を返す関数
 private String GetFormatInfoDate(String dateTime) {
 	String datestr = null;
 	try{
-		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSSS");	
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = sdFormat.parse(dateTime);
-		sdFormat = new SimpleDateFormat("MM月dd日");
+		sdFormat = new SimpleDateFormat("yyyy年MM月dd日");
 		datestr = sdFormat.format(date);
 		
 	}catch(Exception e){
@@ -86,105 +78,17 @@ private String GetFormatInfoDate(String dateTime) {
   -------------------------------------------------- -->
   <link rel="icon" type="image/png" href="assets/images/favicon.png">
 
-
-<script>
-// 位置情報を取得する処理
-window.onload = function() {
-    navigator.geolocation.getCurrentPosition(test2);
-    showDate();
-}
-function test2(position) {
-
-    var geo_text = "緯度:" + position.coords.latitude + "\n";
-    geo_text += "経度:" + position.coords.longitude + "\n";
-    geo_text += "高度:" + position.coords.altitude + "\n";
-    geo_text += "位置精度:" + position.coords.accuracy + "\n";
-    geo_text += "高度精度:" + position.coords.altitudeAccuracy  + "\n";
-    geo_text += "移動方向:" + position.coords.heading + "\n";
-    geo_text += "速度:" + position.coords.speed + "\n";
-
-    var date = new Date(position.timestamp);
-    geo_text += "取得時刻:" + date.toLocaleString() + "\n";
-    const formatDate = (date)=>{
-        let formatted_date = date.getFullYear() + "年" + date.getMonth() + "月" + date.getDate() + "日" + "(" + [ "日", "月", "火", "水", "木", "金", "土" ][date.getDay()] + ")"
-        return formatted_date;
-    }
-    geo_text += "取得時刻:" + formatDate(date) + "\n";
-    geo_text += "取得時刻:" + date.getHours() + ":" + date.getMinutes() + "\n";
-
-
-    //alert(geo_text);
-
-    // 緯度経度を取得して隠し項目に格納
-    document.forms['form1'].elements['geoIdo'].value = position.coords.latitude;
-    document.forms['form1'].elements['geoKeido'].value = position.coords.longitude;
-}
-//画面表示用のリアルタイム日付
-function showDate() {
-    var nowTime		= new Date();
-    // 時間を9時間進ませる
-    //nowTime.setHours(nowTime.getHours() + 9);
-    var nowYear		= nowTime.getFullYear();
-    var nowMonth	= nowTime.getMonth() + 1;
-    var nowDate		= nowTime.getDate();
-    var nowDay		= nowTime.getDay();
-    var dayname		= ['日','月','火','水','木','金','土'];
-    var dspDate		= nowYear + "年" + nowMonth + "月" + nowDate + "日" + "(" + dayname[nowDay] + ")" ;
-    //▼▼▼2022.09.05 リアルタイム表示が重いので処理をひとつにする▼▼▼
-    var nowHour		= ddigit(nowTime.getHours());
-    var nowMinute	= ddigit(nowTime.getMinutes());
-    var dspTime		= nowHour + ":" + nowMinute; 
-    document.getElementById("realTime").innerHTML = dspTime;
-    //▲▲▲2022.09.05 リアルタイム表示が重いので処理をひとつにする▲▲▲
-    document.getElementById("realDate").innerHTML = dspDate;
-}
-setInterval('showDate()',60000);
-
-//▼▼▼2022.09.05 リアルタイム表示が重いので処理をひとつにする▼▼▼
-//画面表示用のリアルタイム時間
-/***
-function showTime() {
-    var nowTime		= new Date();
-    // 時間を9時間進ませる
-    //nowTime.setHours(nowTime.getHours() + 9);
-    var nowHour		= ddigit(nowTime.getHours());
-    var nowMinute	= ddigit(nowTime.getMinutes());
-    var dspTime		= nowHour + ":" + nowMinute; 
-    document.getElementById("realTime").innerHTML = dspTime;
-}
-setInterval('showTime()',1000);
-***/
-//▲▲▲2022.09.05 リアルタイム表示が重いので処理をひとつにする▲▲▲
-//0合わせの為の関数
-function ddigit(num) {
-	var dd;
-	if( num < 10 ) {
-		dd = '0' + num;
-	}else{
-		dd = num;
-	}
-	return dd;
-}
-//パラメータ用のリアルタイム時間
-function GetDateTime() {
-    var nowDateTime		= new Date();
-    var nowYear			= ddigit(nowDateTime.getFullYear());
-    var nowMonth		= ddigit(nowDateTime.getMonth() + 1);
-    var nowDate			= ddigit(nowDateTime.getDate());
-    var nowHours		= ddigit(nowDateTime.getHours());
-    var nowMinites		= ddigit(nowDateTime.getMinutes());
-    var nowSrconds		= ddigit(nowDateTime.getSeconds());
-    var nowMilliseconds	= ddigit(nowDateTime.getMilliseconds());
-    var dspDateTime		= nowYear + "-" + nowMonth + "-" + nowDate + " " + nowHours + ":" + nowMinites + ":" + nowSrconds + "." + nowMilliseconds; 
-	document.getElementById('stampDate').value = dspDateTime;
-	//同じ名前にすると認識されないので別名を付ける
-	document.getElementById('stampDate2').value = dspDateTime;
-	document.getElementById('nowDate').value = dspDateTime;
-	//同じ名前にすると認識されないので別名を付ける
-	document.getElementById('nowDate2').value = dspDateTime;
-}
-setInterval('GetDateTime()',60000);
-</script>
+<!-- ************ -->
+<!-- カメラテスト -->
+<!-- ************
+<style>
+  canvas, video{
+    border: 1px solid gray;
+  }
+</style>
+************ -->
+<!-- カメラテスト -->
+<!-- ************ -->
 
 </head>
 <body>
@@ -202,7 +106,7 @@ setInterval('GetDateTime()',60000);
           <form name="form1" action="<%= request.getContextPath() %>/InformationList" method="post">
           <button>
             <img src="assets/images/mail.png" alt="">
-            <span class="num">123</span>
+            <span class="num"><%=Constant.UNREAD%></span>
           </button>
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
@@ -212,11 +116,11 @@ setInterval('GetDateTime()',60000);
           <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
           <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
           <input type="hidden" value="<%=sessionId %>" name="sessionId">
-          <input type="hidden" name="geoIdo"><!-- 緯度情報 -->
-          <input type="hidden" name="geoKeido"><!-- 軽度情報 -->
           <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
           <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
           <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+          <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+          <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
           </form>
         </div>
         <div class="ico">
@@ -232,11 +136,11 @@ setInterval('GetDateTime()',60000);
           <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
           <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
           <input type="hidden" value="<%=sessionId %>" name="sessionId">
-          <input type="hidden" name="geoIdo"><!-- 緯度情報 -->
-          <input type="hidden" name="geoKeido"><!-- 軽度情報 -->
           <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
           <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
           <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+          <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+          <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
           </form>
         </div>
         <div class="ico arrow">
@@ -279,25 +183,20 @@ if(shiftInfo.shiftHiduke != null){
       </div>
       <div class="btn mt-25">
         <form name="form1" action="<%= request.getContextPath() %>/AttendList" method="post">
-          <!-- ▼▼▼ 202208.11 HTML → JSPに伴いコメントアウト ▼▼▼
-        <button class="ac1" onclick="location.href='stamp/stamp-1.html'">上下番報告</button>
-        ▲▲▲ 202208.11 HTML → JSPに伴いコメントアウト ▲▲▲ -->
         <button class="ac1">上下番報告</button>
-        <!-- ▼▼▼2022/7/28 Id → WorkerIndexに変更▼▼▼  -->
         <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
         <input type="hidden" value="<%=loginInfo.id %>" name="id">
-        <!-- ▲▲▲2022/7/28 Id → WorkerIndexに変更▲▲▲  -->
         <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
         <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
         <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
         <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
         <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
         <input type="hidden" value="<%=sessionId %>" name="sessionId">
-        <input type="hidden" name="geoIdo"><!-- 緯度情報 -->
-        <input type="hidden" name="geoKeido"><!-- 軽度情報 -->
         <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
         <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
         <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+        <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+        <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
       </form>
       </div>
       <div class="row">
@@ -320,23 +219,21 @@ if(deptStamp == null){
 <%
 }
 %>
-    <!-- ▼▼▼2022/7/28 Id → WorkerIndexに変更▼▼▼  -->
     <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
     <input type="hidden" value="<%=loginInfo.id %>" name="id">
-    <!-- ▲▲▲2022/7/28 Id → WorkerIndexに変更▲▲▲  -->
     <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
     <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
     <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
     <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
     <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
     <input type="hidden" value="<%=sessionId %>" name="sessionId">
-    <input type="hidden" name="geoIdo"><!-- 緯度情報 -->
-    <input type="hidden" name="geoKeido"><!-- 軽度情報 -->
 	<input type="hidden" id="stampDate" name="stampDate">
 	<input type="hidden" value="0" name="stampFlag"><!-- 打刻種別 -->
     <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
     <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
     <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+    <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+    <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
   </form>
         </div>
 
@@ -359,23 +256,21 @@ if(onTimeStamp == null){
 <%
 }
 %>
-    <!-- ▼▼▼2022/7/28 Id → WorkerIndexに変更▼▼▼  -->
     <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
     <input type="hidden" value="<%=loginInfo.id %>" name="id">
-    <!-- ▲▲▲2022/7/28 Id → WorkerIndexに変更▲▲▲  -->
     <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
     <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
     <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
     <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
     <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
     <input type="hidden" value="<%=sessionId %>" name="sessionId">
-    <input type="hidden" name="geoIdo"><!-- 緯度情報 -->
-    <input type="hidden" name="geoKeido"><!-- 軽度情報 -->
 	<input type="hidden" id="stampDate2" name="stampDate2">
 	<input type="hidden" value="3" name="stampFlag"><!-- 打刻種別 -->
     <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
     <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
     <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+    <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+    <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
   </form>
         </div>
 
@@ -384,27 +279,45 @@ if(onTimeStamp == null){
 
     <!-- シフト一覧ボタン -->
     <div class="btn">
-    <!--▼▼▼2022.9.13 ログイン時に「シフト一覧」即押下でNullPointerException発生回避▼▼▼-->
-    <!--<form name="form1" action="<%= request.getContextPath() %>/ShiftInquiry" method="post">-->
     <form name="form1" onclick="GetDateTime()" action="<%= request.getContextPath() %>/ShiftInquiry" method="post">
-    <!--▲▲▲2022.9.13 ログイン時に「シフト一覧」即押下でNullPointerException発生回避▲▲▲-->
       <button>シフト一覧</button>
-      <!-- ▼▼▼2022/7/28 Id → WorkerIndexに変更▼▼▼  -->
       <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
       <input type="hidden" value="<%=loginInfo.id %>" name="id">
-      <!-- ▲▲▲2022/7/28 Id → WorkerIndexに変更▲▲▲  -->
       <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
       <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
       <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
       <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
       <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
       <input type="hidden" value="<%=sessionId %>" name="sessionId">
-      <input type="hidden" name="geoIdo"><!-- 緯度情報 -->
-      <input type="hidden" name="geoKeido"><!-- 軽度情報 -->
 	  <input type="hidden" id="nowDate" name="nowDate">
       <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
       <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
       <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+      <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+      <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
+    </form>
+    </div>
+
+    <!-- シフト申請ボタン -->
+    <div class="btn">
+    <form name="form1" onclick="GetDateTime()" action="<%= request.getContextPath() %>/ShiftInquiry" method="post">
+      <button>シフト申請</button>
+      <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
+      <input type="hidden" value="<%=loginInfo.id %>" name="id">
+      <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
+      <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
+      <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
+      <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
+      <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
+      <input type="hidden" value="<%=sessionId %>" name="sessionId">
+	  <input type="hidden" id="nowDate3" name="nowDate3">
+      <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
+      <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
+      <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+      <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+      <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
+      <!-- シフト申請から遷移したことを示すフラグ -->
+      <input type="hidden" value="1" name="subFlag">
     </form>
     </div>
 
@@ -420,12 +333,12 @@ if(onTimeStamp == null){
       <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
       <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
       <input type="hidden" value="<%=sessionId %>" name="sessionId">
-      <input type="hidden" name="geoIdo"><!-- 緯度情報 -->
-      <input type="hidden" name="geoKeido"><!-- 軽度情報 -->
 	  <input type="hidden" id="nowDate2" name="nowDate2">
       <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
       <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
       <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+      <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+      <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
     </form>
     </div>
 
@@ -437,7 +350,14 @@ if(onTimeStamp == null){
       <h2>お知らせ</h2>
       <ul class="news-archive">
 <%
-for(int i = 0; i < msgInfo.size(); i ++) {
+if(msgInfo.size() > 0){
+	//表示する最大件数をセット
+	int maxcnt = 10;
+	//メッセージリストが10件より少なかったらリストの最大値をセット
+	if(msgInfo.size() < 10){
+		maxcnt = msgInfo.size();
+	}
+	for(int i = 0; i < maxcnt; i ++) {
 %>
         <li class="news-item">
           <form action="<%= request.getContextPath() %>/InformationPageLink" method="post" accept-charset="UTF-8">
@@ -445,15 +365,15 @@ for(int i = 0; i < msgInfo.size(); i ++) {
             <span class="day"><%=GetFormatInfoDate(msgInfo.get(i).makeDate)%></span>
             <p class="n-ttl"><%=msgInfo.get(i).headerName %></p>
 <%
-    if(msgInfo.get(i).isRead.equals("既読")){
+	    if(msgInfo.get(i).isRead.equals("既読")){
 %>
             <span class="read-tag read"><%=msgInfo.get(i).isRead %></span>
 <%
-    }else{
+	    }else{
 %>
             <span class="read-tag"><%=msgInfo.get(i).isRead %></span>
 <%
-    }
+		}
 %>
           </button>
           <input type="hidden" value="<%=msgInfo.get(i).id %>" name="DataId">
@@ -494,33 +414,32 @@ for(int i = 0; i < msgInfo.size(); i ++) {
           <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
           <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
           <input type="hidden" value="<%=loginInfo.sessionId %>" name="sessionId">
-          <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
-          <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
+          <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo1">
+          <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido1">
           <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
           </form>
         </li>
 <%
+	}
 }
 %>
       </ul>
       <div class="link">
       <form name="form1" action="<%= request.getContextPath() %>/InformationList" method="post">
         <button>お知らせ一覧へ<img src="assets/images/arrow.png" alt=""></button>
-          <!-- ▼▼▼2022/7/28 Id → WorkerIndexに変更▼▼▼  -->
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
-          <!-- ▲▲▲2022/7/28 Id → WorkerIndexに変更▲▲▲  -->
           <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
           <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
           <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
           <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
           <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
           <input type="hidden" value="<%=sessionId %>" name="sessionId">
-          <input type="hidden" name="geoIdo"><!-- 緯度情報 -->
-          <input type="hidden" name="geoKeido"><!-- 軽度情報 -->
           <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
           <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
           <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+          <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+          <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
       </form>
       </div>
     </section>
@@ -530,8 +449,126 @@ for(int i = 0; i < msgInfo.size(); i ++) {
 
     <!-- 労働規約ボタン -->
     <div class="btn">
-      <button onclick="location.href='term/term.html'">労働規約</button>
+    <form name="form1" action="<%= request.getContextPath() %>/LaborNoticeShow" method="post">
+      <button>労働/雇用契約書</button>
+      <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
+      <input type="hidden" value="<%=loginInfo.id %>" name="id">
+      <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
+      <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
+      <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
+      <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
+      <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
+      <input type="hidden" value="<%=sessionId %>" name="sessionId">
+      <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
+      <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
+      <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+      <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+      <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
+    </form>
     </div>
+
+    <!-- 安否確認通知ボタン -->
+    <div class="btn">
+    <form name="form1" onclick="GetDateTime()" action="<%= request.getContextPath() %>/SafetyConfirm" method="post">
+      <button>安否確認通知</button>
+      <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
+      <input type="hidden" value="<%=loginInfo.id %>" name="id">
+      <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
+      <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
+      <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
+      <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
+      <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
+      <input type="hidden" value="<%=sessionId %>" name="sessionId">
+      <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
+      <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
+      <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+      <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+      <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
+    </form>
+    </div>
+
+    <!-- 労働規約ボタン -->
+<%
+if(Constant.KIYAKUBTN != null){
+	if(!Constant.KIYAKUBTN.equals("未設定")){
+%>
+
+    <div class="btn">
+      <button onclick="window.open('<%=Constant.KIYAKUURL%>', '_blank')"><%=Constant.KIYAKUBTN%></button>
+    </div>
+<%
+	}
+}
+%>
+
+<!-- ************ -->
+<!-- カメラテスト -->
+<!-- ************
+<video id="camera" width="300" height="200"></video>
+<canvas id="picture" width="300" height="200"></canvas>
+<form>
+  <button type="button" id="shutter">シャッター</button>
+</form>
+
+<audio id="se" preload="auto">
+  <source src="camera-shutter1.mp3" type="audio/mp3">
+</audio>
+
+<script>
+//window.onload = () => {
+//  const video  = document.querySelector("#camera");
+//  const canvas = document.querySelector("#picture");
+//  const se     = document.querySelector('#se');
+
+  /** カメラ設定 */
+//  const constraints = {
+//    audio: false,
+//    video: {
+//      width: 300,
+//      height: 200,
+	  // フロントカメラを利用する
+      //facingMode: "user"
+      // リアカメラを利用する場合
+//      facingMode: { exact: "environment" }
+//    }
+//  };
+
+  /**
+   * カメラを<video>と同期
+   */
+//  navigator.mediaDevices.getUserMedia(constraints)
+//  .then( (stream) => {
+//    video.srcObject = stream;
+//    video.onloadedmetadata = (e) => {
+//      video.play();
+//    };
+//  })
+//  .catch( (err) => {
+//    console.log(err.name + ": " + err.message);
+//  });
+
+  /**
+   * シャッターボタン
+   */
+//   document.querySelector("#shutter").addEventListener("click", () => {
+//    const ctx = canvas.getContext("2d");
+
+    // 演出的な目的で一度映像を止めてSEを再生する
+//    video.pause();  // 映像を停止
+//    se.play();      // シャッター音
+//    setTimeout( () => {
+//      video.play();    // 0.5秒後にカメラ再開
+//    }, 500);
+
+    // canvasに画像を貼り付ける
+//    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+//  });
+//};
+</script>
+************ -->
+<!-- カメラテスト -->
+<!-- ************ -->
+
 
   </main>
   <!-- メインコンテンツend -->
@@ -539,8 +576,24 @@ for(int i = 0; i < msgInfo.size(); i ++) {
   <!-- フッター部 -->
   <footer>
     <ul>
-      <li><button onclick="location.href='#'">使い方</button></li>
-      <li><button onclick="location.href='#'">会社概要</button></li>
+<%
+if(Constant.RIYOBTN != null){
+	if(!Constant.RIYOBTN.equals("未設定")){
+%>
+      <li><button onclick="window.open('<%=Constant.RIYOURL%>', '_blank')"><%=Constant.RIYOBTN%></button></li>
+<%
+	}
+}
+%>
+<%
+if(Constant.GAIYOBTN != null){
+	if(!Constant.GAIYOBTN.equals("未設定")){
+%>
+      <li><button onclick="window.open('<%=Constant.GAIYOURL%>', '_blank')"><%=Constant.GAIYOBTN%></button></li>
+<%
+	}
+}
+%>
       <li>
         <form action="<%= request.getContextPath() %>/Logout" method="post" accept-charset="UTF-8">
         <button>ログアウト</button>
@@ -550,7 +603,12 @@ for(int i = 0; i < msgInfo.size(); i ++) {
   </footer>
   <!-- フッター部end -->
 
-
+<div id="loader">
+    <div class="spinner">
+      <div class="cube1"></div>
+      <div class="cube2"></div>
+    </div>
+</div>
 
    <!-- Script
   -------------------------------------------------- -->
@@ -558,6 +616,60 @@ for(int i = 0; i < msgInfo.size(); i ++) {
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <!-- bootstrap JS読み込み -->
   <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-  
+<script>
+window.onload = function() {
+    showDate();
+}
+
+//画面表示用のリアルタイム日付
+function showDate() {
+    var nowTime		= new Date();
+    // 時間を9時間進ませる
+    var nowYear		= nowTime.getFullYear();
+    var nowMonth	= nowTime.getMonth() + 1;
+    var nowDate		= nowTime.getDate();
+    var nowDay		= nowTime.getDay();
+    var dayname		= ['日','月','火','水','木','金','土'];
+    var dspDate		= nowYear + "年" + nowMonth + "月" + nowDate + "日" + "(" + dayname[nowDay] + ")" ;
+    var nowHour		= ddigit(nowTime.getHours());
+    var nowMinute	= ddigit(nowTime.getMinutes());
+    var dspTime		= nowHour + ":" + nowMinute; 
+    document.getElementById("realTime").innerHTML = dspTime;
+    document.getElementById("realDate").innerHTML = dspDate;
+}
+setInterval('showDate()',60000);
+
+//0合わせの為の関数
+function ddigit(num) {
+	var dd;
+	if( num < 10 ) {
+		dd = '0' + num;
+	}else{
+		dd = num;
+	}
+	return dd;
+}
+//パラメータ用のリアルタイム時間
+function GetDateTime() {
+    var nowDateTime		= new Date();
+    var nowYear			= ddigit(nowDateTime.getFullYear());
+    var nowMonth		= ddigit(nowDateTime.getMonth() + 1);
+    var nowDate			= ddigit(nowDateTime.getDate());
+    var nowHours		= ddigit(nowDateTime.getHours());
+    var nowMinites		= ddigit(nowDateTime.getMinutes());
+    var nowSrconds		= ddigit(nowDateTime.getSeconds());
+    var nowMilliseconds	= ddigit(nowDateTime.getMilliseconds());
+    var dspDateTime		= nowYear + "-" + nowMonth + "-" + nowDate + " " + nowHours + ":" + nowMinites + ":" + nowSrconds + "." + nowMilliseconds; 
+	document.getElementById('stampDate').value = dspDateTime;
+	//同じ名前にすると認識されないので別名を付ける
+	document.getElementById('stampDate2').value = dspDateTime;
+	document.getElementById('nowDate').value = dspDateTime;
+	//同じ名前にすると認識されないので別名を付ける
+	document.getElementById('nowDate2').value = dspDateTime;
+	document.getElementById('nowDate3').value = dspDateTime;
+}
+setInterval('GetDateTime()',60000);
+</script>
+
 </body>
 </html>

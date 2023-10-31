@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import dbaccess.P_MSG_MessageData;
 import dbaccess.P_MW_Worker;
 import dbaccess.P_Temp_PageConnect;
+import util.Constant;
 import util.DataCheck;
 import util.LoginInfo;
 import util.MessageData;
@@ -35,17 +36,13 @@ public class MessageList extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//Postメソッドを呼び出す（URL呼び出しのためGETが呼び出される）
 		doPost(request, response);
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+     * 画面からのリクエストを受け取る
+     */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// リクエスト、レスポンスの文字コードセット
 		request.setCharacterEncoding("UTF-8");
@@ -88,7 +85,7 @@ public class MessageList extends HttpServlet {
         try {
             /***パラメータからユーザー情報を取得***/
             // ログインIDをキーに警備員マスタを取得
-	    	loginInfo = worker.select(workerId);
+	    	loginInfo = worker.selectAnother(workerId);
 
             /***パラメータからTempテーブルから情報を取得***/
 	    	workInfo.add(companyId);
@@ -153,6 +150,8 @@ public class MessageList extends HttpServlet {
                 	dspList.add(msgData);
                 }
             }
+            // ログインIDをキーに未読メッセージを取得
+            Constant.UNREAD = msg.selectIsRead(loginInfo.id);
 
             //新しいセッションを取得
 			HttpSession session = request.getSession(true);

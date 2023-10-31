@@ -159,6 +159,7 @@ public class P_Kinmu_RequestData {
 	    	strBuf.append(" SET TimeValue = "		+ workInfo.get(4));
 	    	strBuf.append(" ,Value = "				+ workInfo.get(5));
 	    	strBuf.append(" ,Note = "				+ workInfo.get(6));
+	    	strBuf.append(" ,Certification = "		+ workInfo.get(7));
 	    	strBuf.append(" ,UpdateDate = DATEADD(HOUR,9,GETDATE())");
 	    	strBuf.append(" WHERE CompanyId = "		+ workInfo.get(0));
 	    	strBuf.append(" AND WorkerId = "		+ workInfo.get(1));

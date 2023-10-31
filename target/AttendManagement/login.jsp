@@ -2,6 +2,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="util.LoginInfo" %>
 <%@ page import="java.lang.Object" %>
+<%@ page import="util.Constant" %>
 <%
 // ***************************************************
 // login.jsp
@@ -74,26 +75,8 @@ if(companyCode == null){
   <link rel="icon" type="image/png" href="assets/images/favicon.png">
 
 
-
 </head>
 <body class="login">
-<script>
-// ブラウザに保存されているログイン情報を呼び出す
-window.onload = function(){
-	if(localStorage.getItem('loginid') != null){
-		document.getElementById("loginid").value = localStorage.getItem('loginid');
-	}
-	if(localStorage.getItem('password1') != null){
-		document.getElementById("password1").value = localStorage.getItem('password1');
-	}
-	if(localStorage.getItem('companyCode') != null){
-		document.getElementById("companyCode").value = localStorage.getItem('companyCode');
-	}
-	if(localStorage.getItem('mailaddress') != null){
-		document.getElementById("mailaddress").value = localStorage.getItem('mailaddress');
-	}
-}
-</script>
 
   <!-- タイトル部 -->
   <section class="l-ttl">
@@ -160,12 +143,41 @@ if(dispMsg != null){
         <div class="submit">
           <button type="submit" onclick="saveItem()">利用開始</button>
         </div>
+        <input type="hidden" id="geoIdo" name="geoIdo"><!-- 緯度情報 -->
+        <input type="hidden" id="geoKeido" name="geoKeido"><!-- 軽度情報 -->
 
       </form>
   </div>
   </section>
 
 <script>
+// ブラウザに保存されているログイン情報を呼び出す
+window.onload = function(){
+	if(localStorage.getItem('loginid') != null){
+		document.getElementById("loginid").value = localStorage.getItem('loginid');
+	}
+	if(localStorage.getItem('password1') != null){
+		document.getElementById("password1").value = localStorage.getItem('password1');
+	}
+	if(localStorage.getItem('companyCode') != null){
+		document.getElementById("companyCode").value = localStorage.getItem('companyCode');
+	}
+	if(localStorage.getItem('mailaddress') != null){
+		document.getElementById("mailaddress").value = localStorage.getItem('mailaddress');
+	}
+	// 位置情報を取得する処理
+    navigator.geolocation.getCurrentPosition(test2);
+}
+function test2(position) {
+
+    var latitude  = position.coords.latitude;
+    var longitude = position.coords.longitude;
+
+
+    // 緯度経度を取得して隠し項目に格納
+    document.getElementById("geoIdo").value = latitude;
+    document.getElementById("geoKeido").value = longitude;
+}
 // 保存にチェックを入れた場合、ブラウザにログイン情報をセットする
 function saveItem(){
 	if(document.getElementById("save").checked){

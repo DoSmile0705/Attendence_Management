@@ -21,17 +21,18 @@ import util.LoginInfo;
 public class DeptConfirm extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
     public DeptConfirm() {
         super();
         // TODO Auto-generated constructor stub
     }
 
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doPost(request,response);
+	}
+
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+     * 画面からのリクエストを受け取る
+     */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// リクエスト、レスポンスの文字コードセット
 		request.setCharacterEncoding("UTF-8");
@@ -54,12 +55,10 @@ public class DeptConfirm extends HttpServlet {
         loginInfo.geoKeido_Value	= check.emptyOrNull(request.getParameter("geoKeido"));
         loginInfo.sessionId			= check.emptyOrNull(request.getParameter("sessionId"));
         loginInfo.stampDate			= check.emptyOrNull(request.getParameter("stampDate"));
-        //▼▼▼2022.9.15 リクエストの現在日時（stampDate）を別変数名で取得▼▼▼
         //前画面から取得した現在日時（stampDate）がnullだったらもう一方から取得
         if(loginInfo.stampDate == null) {
             loginInfo.stampDate			= check.emptyOrNull(request.getParameter("stampDate2"));
         }
-        //▲▲▲2022.9.15 リクエストの現在日時（stampDate）を別変数名で取得▲▲▲
         loginInfo.companyCode		= check.emptyOrNull(request.getParameter("companyCode"));
         loginInfo.companyName		= check.emptyOrNull(request.getParameter("companyName"));
         loginInfo.company_ID		= check.emptyOrNull(request.getParameter("company_ID"));
@@ -69,7 +68,10 @@ public class DeptConfirm extends HttpServlet {
         String stampFlag			= check.emptyOrNull(request.getParameter("stampFlag"));
         // P_Time_StampData検索のパラメータ用
         List workInfo =  new ArrayList();
-        
+		// DBアクセスクラス
+		P_Time_StampData stamp = new P_Time_StampData();
+		//打刻履歴リスト
+		List historyList = new ArrayList();
         try {
     		// 削除対象の前打刻がない場合は5分前の打刻日時を取得※出発打刻キャンセルから前画面への遷移対応
     		if(delStampTime == null) {
@@ -82,14 +84,19 @@ public class DeptConfirm extends HttpServlet {
                 workInfo.add("'" + loginInfo.stampDate.substring(0,19) + "'");
                 workInfo.add(loginInfo.id);
                 workInfo.add(0);
+                workInfo.add(0);
 
-        		// DBアクセスクラス
-        		P_Time_StampData stamp = new P_Time_StampData();
         		
         		// ５分以内に出発報告を行っていたか確認
         		delStampTime = stamp.select(workInfo);
     		}
-
+    		//パラメータを初期化
+            workInfo =  new ArrayList();
+            workInfo.add(stampFlag);
+            workInfo.add(loginInfo.id);
+            //打刻履歴を取得
+            historyList = stamp.selectHistory(workInfo);
+            
     	}catch(Exception e) {
         	e.printStackTrace();
 	    }
@@ -99,10 +106,8 @@ public class DeptConfirm extends HttpServlet {
         request.setAttribute("loginInfo", loginInfo);
         request.setAttribute("delStampTime", delStampTime);	// 削除対象の打刻データ
         request.setAttribute("stampFlag", stampFlag);		// 打刻種別
-        // ▼▼▼ 2022.08.15 HTML→JSP変換対応 ▼▼▼
-		//RequestDispatcher dispatch = request.getRequestDispatcher("jsp/deptConfirm.jsp");
+        request.setAttribute("historyList", historyList);		// 打刻履歴
 		RequestDispatcher dispatch = request.getRequestDispatcher("repo/repo-1.jsp");
-        // ▲▲▲ 2022.08.15 HTML→JSP変換対応 ▲▲▲
         dispatch.forward(request, response);
 	}
 }

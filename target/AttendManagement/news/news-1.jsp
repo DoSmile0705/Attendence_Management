@@ -9,6 +9,7 @@
 <%@ page import="java.time.LocalDateTime" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="util.Constant" %>
 
 <%
 // ***************************************************
@@ -25,37 +26,22 @@ List<MessageData> dspList = (List<MessageData>)request.getAttribute("dspList");
 int pageCnt = (int)request.getAttribute("pageCnt");
 // 全ページ数を取得
 int pageNum = (int)request.getAttribute("pageNum");
-
 // セッションがNULLだったらログイン画面を表示する
 if(loginInfo.sessionId == null){
 	// ログイン画面を表示する
 %>
-	<jsp:forward page="login.jsp" />
+	<jsp:forward page="/login.jsp" />
 <%
 }
 %>
 <%!
-//現在日付を返す関数
-private String GetDate() {
-	LocalDateTime nowDate = LocalDateTime.now();
-	DateTimeFormatter dtf =DateTimeFormatter.ofPattern("yyyy年MM月dd日(E)");
-	String datestr = dtf.format(nowDate.plusHours(9));
-	return datestr;
-}
-//日付を返す関数
-private String GetTime() {
-	LocalDateTime nowDate = LocalDateTime.now();
-	DateTimeFormatter dtf =DateTimeFormatter.ofPattern("HH:mm");
-	String timestr = dtf.format(nowDate.plusHours(9));
-	return timestr;
-}
 // フォーマットを変更して時間を返す関数
 private String GetFormatInfoDate(String dateTime) {
 	String datestr = null;
 	try{
-		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSSS");	
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = sdFormat.parse(dateTime);
-		sdFormat = new SimpleDateFormat("MM月dd日");
+		sdFormat = new SimpleDateFormat("yyyy年MM月dd日");
 		datestr = sdFormat.format(date);
 		
 	}catch(Exception e){
@@ -94,54 +80,6 @@ private String GetFormatInfoDate(String dateTime) {
   -------------------------------------------------- -->
   <link rel="icon" type="image/png" href="./assets/images/favicon.png">
 
-<script>
-//画面表示用のリアルタイム日付
-function showDate() {
-    var nowTime		= new Date();
-    // 時間を9時間進ませる
-    //nowTime.setHours(nowTime.getHours() + 9);
-    var nowYear		= nowTime.getFullYear();
-    var nowMonth	= nowTime.getMonth() + 1;
-    var nowDate		= nowTime.getDate();
-    var nowDay		= nowTime.getDay();
-    var dayname		= ['日','月','火','水','木','金','土'];
-    var dspDate		= nowYear + "年" + nowMonth + "月" + nowDate + "日" + "(" + dayname[nowDay] + ")" ;
-    document.getElementById("realDate").innerHTML = dspDate;
-    var nowHour		= ddigit(nowTime.getHours());
-    var nowMinute	= ddigit(nowTime.getMinutes());
-    var dspTime		= nowHour + ":" + nowMinute; 
-    document.getElementById("realTime").innerHTML = dspTime;
-}
-setInterval('showDate()',60000);
-
-//画面表示用のリアルタイム時間
-/***
-function showTime() {
-    var nowTime		= new Date();
-    // 時間を9時間進ませる
-    //nowTime.setHours(nowTime.getHours() + 9);
-    var nowHour		= ddigit(nowTime.getHours());
-    var nowMinute	= ddigit(nowTime.getMinutes());
-    var dspTime		= nowHour + ":" + nowMinute; 
-    document.getElementById("realTime").innerHTML = dspTime;
-}
-setInterval('showTime()',1000);
-***/
-//0合わせの為の関数
-function ddigit(num) {
-	var dd;
-	if( num < 10 ) {
-		dd = '0' + num;
-	}else{
-		dd = num;
-	}
-	return dd;
-}
-//ロード時に日時をリアルタイム表示する
-window.onload = function(){
-	showDate();
-}
-</script>
 </head>
 <body>
   <!-- ヘッダー部 -->
@@ -160,9 +98,9 @@ window.onload = function(){
       <div class="row">
         <div class="ico mail">
           <form name="form1" action="<%= request.getContextPath() %>/InformationList" method="post">
-          <button onclick="location.href='../news/news-1.html'">
+          <button>
             <img src="./assets/images/mail.png" alt="">
-            <span class="num">123</span>
+            <span class="num"><%=Constant.UNREAD%></span>
           </button>
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
@@ -182,7 +120,7 @@ window.onload = function(){
         </div>
         <div class="ico">
           <form action="<%= request.getContextPath() %>/Login" method="post" accept-charset="UTF-8">
-          <button onclick="location.href='../top.html'">
+          <button>
             <img src="./assets/images/home.png" alt="">
           </button>
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
@@ -223,14 +161,7 @@ window.onload = function(){
       <!-- お知らせ一覧 -->
       <section class="sec-contents">
         <div class="display">
-          <span>表示件数</span>
-          <select name="dis-num" id="dis-num">
-            <option value="5">5</option>
-            <option value="10" selected>10</option>
-            <option value="20">20</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-          </select>
+          <span><%=pageCnt %></span>&nbsp;ページ
         </div>
         <ul class="news-archive">
 <%
@@ -239,8 +170,8 @@ for(int i = 0; i < dspList.size(); i ++) {
           <li class="news-item">
             <form action="<%= request.getContextPath() %>/InformationPageLink" method="post" accept-charset="UTF-8">
             <button>
-              <span class="day"><%=dspList.get(i).isRead %></span>
-              <p class="n-ttl"><%=GetFormatInfoDate(dspList.get(i).makeDate)%></p>
+              <span class="day"><%=GetFormatInfoDate(dspList.get(i).makeDate)%></span>
+              <p class="n-ttl"><%=dspList.get(i).headerName%></p>
 <%
     if(dspList.get(i).isRead.equals("既読")){
 %>
@@ -310,43 +241,42 @@ for(int i = 0; i < dspList.size(); i ++) {
 if(pageCnt <= 1){
 %>
   <%
-  // 次が2ページ以上ある場合
-  if(pageCnt + 1 < pageNum){
+  // 次が3ページ以上ある場合
+  if(pageCnt + 2 < pageNum){
   %>
-            <li class="previous"><button name="button1" value="前へ" disabled>&#60; 前へ</button></li>
-            <li class="nav-item"><button name="button1" value="<%=pageCnt %>" disabled><%=pageCnt %></button></li>
+            <li class="previous">　</li>
+            <li class="nav-item"><button name="button1" value="<%=pageCnt + 1 %>"><%=pageCnt + 1 %></button></li>
+            <li class="nav-item"><button name="button1" value="<%=pageCnt + 2 %>"><%=pageCnt + 2 %></button></li>
+            <li class="nav-item"><button name="button1" value="<%=pageCnt + 3 %>"><%=pageCnt + 3 %></button></li>
+            <li class="next"><button name="button1" value="次へ">次へ &#62;</button></li>
+  <%
+  // 次が2ページ以上ある場合
+  }else if(pageCnt + 1 < pageNum){
+  %>
+            <li class="previous">　</li>
+            <li class="nav-item">　</li>
             <li class="nav-item"><button name="button1" value="<%=pageCnt + 1 %>"><%=pageCnt + 1 %></button></li>
             <li class="nav-item"><button name="button1" value="<%=pageCnt + 2 %>"><%=pageCnt + 2 %></button></li>
             <li class="next"><button name="button1" value="次へ">次へ &#62;</button></li>
-<!-- ▼▼▼ 2022.8.10.現在が1ページかつ最後のページ対応 ▼▼▼ -->
   <%
   // 現在が1ページかつ最後のページ
   }else if(pageCnt == pageNum) {
   %>
-            <li class="previous"><button name="button1" value="前へ" disabled>&#60; 前へ</button></li>
-            <li class="nav-item"><button name="button1" value="<%=pageCnt %>" disabled><%=pageCnt %></button></li>
-            <li class="nav-item"><button name="button1" value="<%=pageCnt + 1 %>" disabled><%=pageCnt + 1 %></button></li>
-            <li class="nav-item"><button name="button1" value="<%=pageCnt + 2 %>" disabled><%=pageCnt + 2 %></button></li>
-            <li class="next"><button name="button1" value="次へ" disabled>次へ &#62;</button></li>
-<!-- ▲▲▲ 2022.8.10.現在が1ページかつ最後のページ対応 ▲▲▲ -->
+
   <%
-  // 次が1ページの場合
+  // 次が2ページ目で最後の場合
   }else if(pageCnt + 1 == pageNum){
   %>
-            <li class="previous"><button name="button1" value="前へ" disabled>&#60; 前へ</button></li>
-            <li class="nav-item"><button name="button1" value="<%=pageCnt %>" disabled><%=pageCnt %></button></li>
+            <li class="previous">　</li>
+            <li class="nav-item">　</li>
+            <li class="nav-item">　</li>
             <li class="nav-item"><button name="button1" value="<%=pageCnt + 1 %>"><%=pageCnt + 1 %></button></li>
-            <li class="nav-item"><button name="button1" value="<%=pageCnt + 2 %>" disabled><%=pageCnt + 2 %></button></li>
             <li class="next"><button name="button1" value="次へ">次へ &#62;</button></li>
   <%
   // そのページが最後の場合
   }else{
   %>
-            <li class="previous"><button name="button1" value="前へ" disabled>&#60; 前へ</button></li>
-            <li class="nav-item"><button name="button1" value="<%=pageCnt %>" disabled><%=pageCnt %></button></li>
-            <li class="nav-item"><button name="button1" value="<%=pageCnt + 1 %>" disabled><%=pageCnt + 1 %></button></li>
-            <li class="nav-item"><button name="button1" value="<%=pageCnt + 2 %>" disabled><%=pageCnt + 2 %></button></li>
-            <li class="next"><button name="button1" value="次へ" disabled>次へ &#62;</button></li>
+
   <%
   }
   %>
@@ -356,32 +286,48 @@ if(pageCnt <= 1){
   <%
   // 次のページがある場合は
   if(pageCnt < pageNum){
-  %>
+%>
             <li class="previous"><button name="button1" value="前へ">&#60; 前へ</button></li>
-            <li class="nav-item"><button name="button1" value="<%=pageCnt %>"><%=pageCnt %></button></li>
+            <li class="nav-item"><button name="button1" value="<%=pageCnt - 1 %>"><%=pageCnt - 1 %></button></li>
+            <li class="nav-item">　</li>
             <li class="nav-item"><button name="button1" value="<%=pageCnt + 1 %>"><%=pageCnt + 1 %></button></li>
-            <li class="nav-item"><button name="button1" value="<%=pageCnt + 2 %>"><%=pageCnt + 2 %></button></li>
             <li class="next"><button name="button1" value="次へ">次へ &#62;</button></li>
-  <%
+<%
   // そのページが最後の場合
   }else{
-  %>
+	  // 前に3ページ以上
+	  if(pageCnt > 3){
+%>
             <li class="previous"><button name="button1" value="前へ">&#60; 前へ</button></li>
-            <li class="nav-item"><button name="button1" value="<%=pageCnt %>"><%=pageCnt %></button></li>
-            <li class="nav-item"><button name="button1" value="<%=pageCnt + 1 %>"><%=pageCnt + 1 %></button></li>
-            <li class="nav-item"><button name="button1" value="<%=pageCnt + 2 %>" disabled><%=pageCnt + 2 %></button></li>
-            <li class="next"><button name="button1" value="次へ" disabled>次へ &#62;</button></li>
-  <%
-  }
-  %>
+            <li class="nav-item"><button name="button1" value="<%=pageCnt - 3 %>"><%=pageCnt - 3 %></button></li>
+            <li class="nav-item"><button name="button1" value="<%=pageCnt - 2 %>"><%=pageCnt - 2 %></button></li>
+            <li class="nav-item"><button name="button1" value="<%=pageCnt - 1 %>"><%=pageCnt - 1 %></button></li>
+            <li class="next">　</li>
 <%
+	  // 前に2ページ以上
+	  }else if(pageCnt > 2){
+%>
+            <li class="previous"><button name="button1" value="前へ">&#60; 前へ</button></li>
+            <li class="nav-item"><button name="button1" value="<%=pageCnt - 2 %>"><%=pageCnt - 2 %></button></li>
+            <li class="nav-item"><button name="button1" value="<%=pageCnt - 1 %>"><%=pageCnt - 1 %></button></li>
+            <li class="nav-item">　</li>
+            <li class="next">　</li>
+<%
+	  }else{
+%>
+            <li class="previous"><button name="button1" value="前へ">&#60; 前へ</button></li>
+            <li class="nav-item"><button name="button1" value="<%=pageCnt - 1 %>"><%=pageCnt - 1 %></button></li>
+            <li class="nav-item">　</li>
+            <li class="nav-item">　</li>
+            <li class="next">　</li>
+<%
+	  }
+  }
 }
 %>
           </ul>
-          <!-- ▼▼▼2022/7/28 Id → WorkerIndexに変更▼▼▼  -->
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
-          <!-- ▲▲▲2022/7/28 Id → WorkerIndexに変更▲▲▲  -->
           <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
           <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
           <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
@@ -403,10 +349,8 @@ if(pageCnt <= 1){
     <div class="btn mt-7">
       <form action="<%= request.getContextPath() %>/Login" method="post" accept-charset="UTF-8">
       <button class="white">トップ画面に戻る</button>
-        <!-- ▼▼▼2022/7/28 Id → WorkerIndexに変更▼▼▼  -->
         <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
         <input type="hidden" value="<%=loginInfo.id %>" name="id">
-        <!-- ▲▲▲2022/7/28 Id → WorkerIndexに変更▲▲▲  -->
         <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
         <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
         <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
@@ -427,8 +371,25 @@ if(pageCnt <= 1){
   <!-- フッター部 -->
   <footer>
     <ul>
-      <li><button onclick="location.href='#'">使い方</button></li>
-      <li><button onclick="location.href='#'">会社概要</button></li>
+<%
+if(Constant.RIYOBTN != null){
+	if(!Constant.RIYOBTN.equals("未設定")){
+%>
+      <li><button onclick="window.open('<%=Constant.RIYOURL%>', '_blank')"><%=Constant.RIYOBTN%></button></li>
+<%
+	}
+}
+%>
+
+<%
+if(Constant.GAIYOBTN != null){
+	if(!Constant.GAIYOBTN.equals("未設定")){
+%>
+      <li><button onclick="window.open('<%=Constant.GAIYOURL%>', '_blank')"><%=Constant.GAIYOBTN%></button></li>
+<%
+	}
+}
+%>
       <li>
         <form action="<%= request.getContextPath() %>/Logout" method="post" accept-charset="UTF-8">
         <button>ログアウト</button>
@@ -447,5 +408,40 @@ if(pageCnt <= 1){
   <!-- bootstrap JS読み込み -->
   <script src="./assets/bootstrap/js/bootstrap.min.js"></script>
   
+<script>
+//画面表示用のリアルタイム日付
+function showDate() {
+    var nowTime		= new Date();
+    // 時間を9時間進ませる
+    //nowTime.setHours(nowTime.getHours() + 9);
+    var nowYear		= nowTime.getFullYear();
+    var nowMonth	= nowTime.getMonth() + 1;
+    var nowDate		= nowTime.getDate();
+    var nowDay		= nowTime.getDay();
+    var dayname		= ['日','月','火','水','木','金','土'];
+    var dspDate		= nowYear + "年" + nowMonth + "月" + nowDate + "日" + "(" + dayname[nowDay] + ")" ;
+    document.getElementById("realDate").innerHTML = dspDate;
+    var nowHour		= ddigit(nowTime.getHours());
+    var nowMinute	= ddigit(nowTime.getMinutes());
+    var dspTime		= nowHour + ":" + nowMinute; 
+    document.getElementById("realTime").innerHTML = dspTime;
+}
+setInterval('showDate()',60000);
+
+//0合わせの為の関数
+function ddigit(num) {
+	var dd;
+	if( num < 10 ) {
+		dd = '0' + num;
+	}else{
+		dd = num;
+	}
+	return dd;
+}
+//ロード時に日時をリアルタイム表示する
+window.onload = function(){
+	showDate();
+}
+</script>
 </body>
 </html>

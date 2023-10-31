@@ -1,4 +1,5 @@
 <!-- 上下番報告　現場選択ページ -->
+<%@page import="java.util.Calendar"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="java.util.ArrayList" %>
@@ -11,10 +12,11 @@
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.text.DateFormatSymbols" %>
+<%@ page import="util.Constant" %>
 
 <%
 // ***************************************************
-// work-1.jsp
+// stamp-1.jsp
 // ログインユーザーの直近のシフト一覧を表示する
 // ***************************************************
 %>
@@ -22,36 +24,25 @@
 <%
 LoginInfo loginInfo = (LoginInfo)request.getAttribute("loginInfo");
 List<ShiftInfo> listInfo = (List<ShiftInfo>)request.getAttribute("listInfo");
-//▼▼▼ 2022.08.19 HTML→JSP変換対応 ▼▼▼
 // シフトなし上番打刻
 String attendStamp = (String)request.getAttribute("attendStamp");
 // シフトなし下番打刻
 String leaveStamp = (String)request.getAttribute("leaveStamp");
-//▲▲▲ 2022.08.19 HTML→JSP変換対応 ▲▲▲
+
+// シフトなし上番打刻5分後
+String attendStampFive = (String)request.getAttribute("attendStampFive");
+// シフトなし下番打刻5分後
+String leaveStampFive = (String)request.getAttribute("leaveStampFive");
 
 // セッションがNULLだったらログイン画面を表示する
 if(loginInfo.sessionId == null){
 	// ログイン画面を表示する
 %>
-	<jsp:forward page="./login.jsp" />
+	<jsp:forward page="/login.jsp" />
 <%
 }
 %>
 <%!
-//現在日付を返す関数
-private String GetDate() {
-	LocalDateTime nowDate = LocalDateTime.now();
-	DateTimeFormatter dtf =DateTimeFormatter.ofPattern("yyyy年MM月dd日(E)");
-	String datestr = dtf.format(nowDate.plusHours(9));
-	return datestr;
-}
-//日付を返す関数
-private String GetTime() {
-	LocalDateTime nowDate = LocalDateTime.now();
-	DateTimeFormatter dtf =DateTimeFormatter.ofPattern("HH:mm");
-	String timestr = dtf.format(nowDate.plusHours(9));
-	return timestr;
-}
 //フォーマットを変更して日付を返す関数
 private String GetFormatshiftHiduke(String dateTime) {
 	String datestr = dateTime.substring(0, 4);
@@ -77,7 +68,8 @@ private String GetFormatshiftHiduke(String dateTime) {
 private String GetFormatStampDate(String dateTime) {
 	String datestr = null;
 	try{
-		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSSS");	
+		//SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSSS");
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = sdFormat.parse(dateTime);
 		sdFormat = new SimpleDateFormat("HH:mm");
 		datestr = sdFormat.format(date);
@@ -86,6 +78,32 @@ private String GetFormatStampDate(String dateTime) {
 		e.printStackTrace();
 	}
 	return datestr;
+}
+// カレンダーのシフトの色を返す
+private String CalShiftCol(String kinmuKubunName){
+	String shiftColor = null;
+	switch(kinmuKubunName){
+	  //0：昼　1：夜　2：昼夜　3：24勤務　4：その他
+	  case "0":
+	    shiftColor = "mor";
+		break;
+	  case "1":
+		shiftColor = "eve";
+		break;
+	  case "2":
+		shiftColor = "se";
+		break;
+	  case "3":
+		shiftColor = "all";
+		break;
+	  case "4":
+		shiftColor = "none";
+		break;
+	  default:
+		shiftColor = "none";
+		break;
+	}
+	return shiftColor;
 }
 %>
 
@@ -119,56 +137,6 @@ private String GetFormatStampDate(String dateTime) {
   -------------------------------------------------- -->
   <link rel="icon" type="image/png" href="./assets/images/favicon.png">
 
-<script>
-// 画面表示用のリアルタイム日付
-function showDate() {
-    var nowTime		= new Date();
-    // 時間を9時間進ませる
-    //nowTime.setHours(nowTime.getHours() + 9);
-    var nowYear		= nowTime.getFullYear();
-    var nowMonth	= nowTime.getMonth() + 1;
-    var nowDate		= nowTime.getDate();
-    var nowDay		= nowTime.getDay();
-    var dayname		= ['日','月','火','水','木','金','土'];
-    var dspDate		= nowYear + "年" + nowMonth + "月" + nowDate + "日" + "(" + dayname[nowDay] + ")" ;
-    document.getElementById("realDate").innerHTML = dspDate;
-
-    var nowHour		= ddigit(nowTime.getHours());
-    var nowMinute	= ddigit(nowTime.getMinutes());
-    var dspTime		= nowHour + ":" + nowMinute; 
-    document.getElementById("realTime").innerHTML = dspTime;
-}
-setInterval('showDate()',60000);
-
-//画面表示用のリアルタイム時間
-/***
-function showTime() {
-    var nowTime		= new Date();
-    // 時間を9時間進ませる
-    //nowTime.setHours(nowTime.getHours() + 9);
-    var nowHour		= ddigit(nowTime.getHours());
-    var nowMinute	= ddigit(nowTime.getMinutes());
-    var dspTime		= nowHour + ":" + nowMinute; 
-    document.getElementById("realTime").innerHTML = dspTime;
-}
-setInterval('showTime()',1000);
-***/
-//0合わせの為の関数
-function ddigit(num) {
-	var dd;
-	if( num < 10 ) {
-		dd = '0' + num;
-	}else{
-		dd = num;
-	}
-	return dd;
-}
-//ロード時に日時をリアルタイム表示する
-window.onload = function(){
-	showDate();
-}
-</script>
-
 </head>
 <body>
   <!-- ヘッダー部 -->
@@ -189,7 +157,7 @@ window.onload = function(){
         <form name="form1" action="<%= request.getContextPath() %>/InformationList" method="post">
           <button>
             <img src="./assets/images/mail.png" alt="">
-            <span class="num">123</span>
+            <span class="num"><%=Constant.UNREAD%></span>
           </button>
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
@@ -244,21 +212,22 @@ window.onload = function(){
       <h1 class="m-ttl">
         上下番報告
       </h1>
+<%
+//直近のシフトを表示するループ
+for(int i = 0; i < listInfo.size(); i ++) {
+%>
       <!-- シフトがある時 -->
       <div class="site mt-5">
         <p class="txt">現場を選択してください</p>
         <ul class="site-archive">
 
-<%
-for(int i = 0; i < listInfo.size(); i ++) {
-%>
           <!-- 現場(site-itemのclassでカラー変更＆アイコン画像の変更) -->
-          <li class="site-item mor">
+          <li class="site-item <%=CalShiftCol(listInfo.get(i).timeFlag)%>">
             <form action="<%= request.getContextPath() %>/AttendDetail" method="post" accept-charset="UTF-8">
-            <button onclick="location.href='stamp-2.html'">
+            <button>
               <div class="above row">
                 <div class="left">
-                  <img src="./assets/images/mor.png" alt="">
+                  <img src="./assets/images/<%=CalShiftCol(listInfo.get(i).timeFlag)%>.png" alt="">
                 </div>
                 <div class="right">
                   <div class="item-ttl">
@@ -267,7 +236,8 @@ for(int i = 0; i < listInfo.size(); i ++) {
                   </div>
                   <div class="item-time">
                     <span class="day"><%=GetFormatshiftHiduke(listInfo.get(i).shiftHiduke) %></span>
-                    <span class="time-zone"><%=listInfo.get(i).bgnTime %>～<%=listInfo.get(i).endTime %></span>
+                    <span class="time-zone">&nbsp;<%=listInfo.get(i).bgnTime %>～<%=listInfo.get(i).endTime %>&nbsp;</span>
+                    <span class="sub"><%=listInfo.get(i).note %></span>
                   </div>
                 </div>
               </div>
@@ -308,7 +278,7 @@ for(int i = 0; i < listInfo.size(); i ++) {
 %>
               </div>
               <div class="bottom">
-                <p>上番報告する<span class="arrow"><span>&#62;</span></span></p>
+                <p>上下番報告する<span class="arrow"><span>&#62;</span></span></p>
               </div>
             </button>
               <!-- サーブレットパラメータ用に隠し項目に格納 -->
@@ -328,6 +298,8 @@ for(int i = 0; i < listInfo.size(); i ++) {
               <input type="hidden" value="<%=listInfo.get(i).adrPostNo %>" name="adrPostNo">
               <input type="hidden" value="<%=listInfo.get(i).adrMain %>" name="adrMain">
               <input type="hidden" value="<%=listInfo.get(i).adrSub %>" name="adrSub">
+              <input type="hidden" value="<%=listInfo.get(i).id %>" name="shiftDataId">
+              <input type="hidden" value="<%=listInfo.get(i).timeFlag %>" name="timeFlag">
               <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
               <input type="hidden" value="<%=loginInfo.id %>" name="id">
               <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
@@ -343,48 +315,54 @@ for(int i = 0; i < listInfo.size(); i ++) {
               <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
             </form>
           </li>
+        </ul>
+      </div>
 <%
 }
 %>
-        </ul>
-      </div>
 
+
+
+<%
+//シフトがない場合にのみ出勤・退勤報告を表示する
+if(listInfo.size() <= 0){
+%>
       <!-- シフトがない時 -->
       <div class="n-site mt-5">
         <ul class="site-archive">
+
           <!-- 上番 -->
           <li class="site-item ac2">
             <form action="<%= request.getContextPath() %>/WorkStartConfirm" method="post" accept-charset="UTF-8">
-            <button onclick="location.href='stamp-9.html'">
+            <button>
               <div class="above row">
                 <div class="left">
                   <img src="./assets/images/go-w.png" alt="">
                 </div>
                 <div class="right">
                   <div class="item-ttl">
-                    <h2><span>上番報告する</span></h2>
+                    <h2><span>出勤報告する</span></h2>
                   </div>
                 </div>
               </div>
               <div class="middle">
 <%
-//▼▼▼ 2022.08.19 HTML→JSP変換対応 ▼▼▼
-if(attendStamp == null){
+	//出勤報告の打刻あるなしで打刻時間を表示
+	if(attendStamp == null){
 %>
                 <div class="stamp-time row">
-                  <div class="left"><span>上番報告</span></div>
+                  <div class="left"><span>出勤報告</span></div>
                   <div class="right">--:--<span>未</span></div>
                 </div>
 <%
-}else{
+	}else{
 %>
                 <div class="stamp-time row done">
-                  <div class="left"><span>上番報告</span></div>
+                  <div class="left"><span>出勤報告</span></div>
                   <div class="right"><%=GetFormatStampDate(attendStamp) %><span>済</span></div>
                 </div>
 <%
-}
-//▲▲▲ 2022.08.19 HTML→JSP変換対応 ▲▲▲
+	}
 %>
               </div>
             </button>
@@ -405,44 +383,45 @@ if(attendStamp == null){
               <input type="hidden" value="<%=leaveStamp %>" name="leaveStamp">
               <input type="hidden" value="0" name="shiftFlag"><!-- シフトなし -->
               <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+              <input type="hidden" value="<%=attendStampFive %>" name="attendStampFive">
+              <input type="hidden" value="<%=leaveStampFive %>" name="leaveStampFive">
             </form>
           </li>
 
           <!-- 下番 -->
           <li class="site-item ac3">
             <form action="<%= request.getContextPath() %>/WorkStartConfirm" method="post" accept-charset="UTF-8">
-            <button onclick="location.href='stamp-9.html'">
+            <button>
               <div class="above row">
                 <div class="left">
                   <img src="./assets/images/leave-w.png" alt="">
                 </div>
                 <div class="right">
                   <div class="item-ttl">
-                    <h2><span>下番報告する</span></h2>
+                    <h2><span>退勤報告する</span></h2>
                   </div>
                 </div>
               </div>
               <div class="middle">
 <%
-//▼▼▼ 2022.08.19 HTML→JSP変換対応 ▼▼▼
-if(leaveStamp == null){
+	//退勤報告の打刻あるなしで打刻時間を表示
+	if(leaveStamp == null){
 %>
                 <div class="stamp-time row">
-                  <div class="left"><span>下番報告</span></div>
+                  <div class="left"><span>退勤報告</span></div>
                   <div class="right">--:--<span>未</span></div>
                 </div>
               </div>
 <%
-}else{
+	}else{
 %>
                 <div class="stamp-time row done">
-                  <div class="left"><span>下番報告</span></div>
+                  <div class="left"><span>退勤報告</span></div>
                   <div class="right"><%=GetFormatStampDate(leaveStamp) %><span>済</span></div>
                 </div>
               </div>
 <%
-}
-//▲▲▲ 2022.08.19 HTML→JSP変換対応 ▲▲▲
+	}
 %>
             </button>
               <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
@@ -462,13 +441,17 @@ if(leaveStamp == null){
               <input type="hidden" value="<%=leaveStamp %>" name="leaveStamp">
               <input type="hidden" value="0" name="shiftFlag"><!-- シフトなし -->
               <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+              <input type="hidden" value="<%=attendStampFive %>" name="attendStampFive">
+              <input type="hidden" value="<%=leaveStampFive %>" name="leaveStampFive">
             </form>
           </li>
-
         </ul>
 
       </div>
-
+	
+<%
+}
+%>
     </section>
 
 
@@ -494,14 +477,57 @@ if(leaveStamp == null){
       </form>
     </div>
 
+<%
+//シフトがある場合に出勤・退勤報告を行えるボタンを表示
+if(listInfo.size() > 0){
+%>
+    <div class="btn">
+    <form name="form1" onclick="GetDateTime()" action="<%= request.getContextPath() %>/AttendList" method="post">
+      <button>出退勤の報告を行う</button>
+        <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
+        <input type="hidden" value="<%=loginInfo.id %>" name="id">
+        <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
+        <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
+        <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
+        <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
+        <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
+        <input type="hidden" value="<%=loginInfo.sessionId %>" name="sessionId">
+        <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
+        <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
+        <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+        <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+        <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
+        <input type="hidden" value="1" name="workFlag">
+    </form>
+    </div>
+<%
+}
+%>
+
   </main>
   <!-- メインコンテンツend -->
 
   <!-- フッター部 -->
   <footer>
     <ul>
-      <li><button onclick="location.href='#'">使い方</button></li>
-      <li><button onclick="location.href='#'">会社概要</button></li>
+<%
+if(Constant.RIYOBTN != null){
+	if(!Constant.RIYOBTN.equals("未設定")){
+%>
+      <li><button onclick="window.open('<%=Constant.RIYOURL%>', '_blank')"><%=Constant.RIYOBTN%></button></li>
+<%
+	}
+}
+%>
+<%
+if(Constant.GAIYOBTN != null){
+	if(!Constant.GAIYOBTN.equals("未設定")){
+%>
+      <li><button onclick="window.open('<%=Constant.GAIYOURL%>', '_blank')"><%=Constant.GAIYOBTN%></button></li>
+<%
+	}
+}
+%>
       <li>
         <form action="<%= request.getContextPath() %>/Logout" method="post" accept-charset="UTF-8">
         <button>ログアウト</button>
@@ -519,6 +545,43 @@ if(leaveStamp == null){
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <!-- bootstrap JS読み込み -->
   <script src="./assets/bootstrap/js/bootstrap.min.js"></script>
-  
+
+<script>
+// 画面表示用のリアルタイム日付
+function showDate() {
+    var nowTime		= new Date();
+    // 時間を9時間進ませる
+    //nowTime.setHours(nowTime.getHours() + 9);
+    var nowYear		= nowTime.getFullYear();
+    var nowMonth	= nowTime.getMonth() + 1;
+    var nowDate		= nowTime.getDate();
+    var nowDay		= nowTime.getDay();
+    var dayname		= ['日','月','火','水','木','金','土'];
+    var dspDate		= nowYear + "年" + nowMonth + "月" + nowDate + "日" + "(" + dayname[nowDay] + ")" ;
+    document.getElementById("realDate").innerHTML = dspDate;
+
+    var nowHour		= ddigit(nowTime.getHours());
+    var nowMinute	= ddigit(nowTime.getMinutes());
+    var dspTime		= nowHour + ":" + nowMinute; 
+    document.getElementById("realTime").innerHTML = dspTime;
+}
+setInterval('showDate()',60000);
+
+//0合わせの為の関数
+function ddigit(num) {
+	var dd;
+	if( num < 10 ) {
+		dd = '0' + num;
+	}else{
+		dd = num;
+	}
+	return dd;
+}
+//ロード時に日時をリアルタイム表示する
+window.onload = function(){
+	showDate();
+}
+</script>
+
 </body>
 </html>

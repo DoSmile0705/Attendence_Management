@@ -28,15 +28,12 @@ public class NoShiftStampCancel extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+     * 画面からのリクエストを受け取る
+     */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// リクエスト、レスポンスの文字コードセット
 		request.setCharacterEncoding("UTF-8");
@@ -73,6 +70,7 @@ public class NoShiftStampCancel extends HttpServlet {
         workInfo.add("0");
         workInfo.add("'" + delStampTime.substring(0,19) + "'");
         workInfo.add(loginInfo.id);
+        workInfo.add(0);
         workInfo.add(0);
 
 		// DBアクセスクラス

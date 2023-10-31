@@ -32,18 +32,13 @@ public class AttendList extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		//response.getWriter().append("Served at: ").append(request.getContextPath());
 		doPost(request,response);
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+    /**
+     * 画面からのリクエストを受け取る
+     */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	String loginid = "1";
 		// リクエスト、レスポンスの文字コードセット
@@ -56,8 +51,6 @@ public class AttendList extends HttpServlet {
         UtilConv utilConv = new UtilConv();
         // 画面項目の受け取り
         LoginInfo loginInfo = new LoginInfo();
-        /** ▼▼▼2022/7/28 Id → WorkerIndexに変更▼▼▼ **/
-        //loginInfo.id				= check.emptyOrNull(request.getParameter("loginid"));
         loginInfo.workerIndex		= check.emptyOrNull(request.getParameter("loginid"));
         loginInfo.id				= check.emptyOrNull(request.getParameter("id"));
         /** ▲▲▲2022/7/28 Id → WorkerIndexに変更▲▲▲ **/
@@ -72,13 +65,15 @@ public class AttendList extends HttpServlet {
         loginInfo.companyCode		= check.emptyOrNull(request.getParameter("companyCode"));
         loginInfo.companyName		= check.emptyOrNull(request.getParameter("companyName"));
         loginInfo.company_ID		= check.emptyOrNull(request.getParameter("company_ID"));
+        //出退勤報告を行うフラグ
+        String workFlag				= check.emptyOrNull(request.getParameter("workFlag"));
         // 打刻データ取得パラメータ用
         List workInfo =  new ArrayList();
         String stampTime = null;
-        // ▼▼▼ 2022.08.19 HTML→JSP変換対応 ▼▼▼
         String attendStamp = null;	// シフト外上番打刻
         String leaveStamp = null;	// シフト外下番打刻
-        // ▲▲▲ 2022.08.19 HTML→JSP変換対応 ▲▲▲
+        String attendStampFive	= null;	// シフト外上番の5分後の打刻
+        String leaveStampFive	= null;	// シフト外下番の5分後の打刻
     	try {
 
     		// シフト一覧取得
@@ -88,92 +83,143 @@ public class AttendList extends HttpServlet {
             // IDをキーに警備員マスタを取得
 	    	listInfo = shift.select(loginInfo.id);
 
+	    	String shiftBgnDate = "GETDATE()";	//シフト開始日時
+	    	String shiftEndDate = "GETDATE()";	//シフト終了日時
+	    	String keiyakuId    = "0";			//契約ID
 	    	/*** シフト一覧に打刻を取得する処理 ***/
 	    	for(int i = 0; i < listInfo.size(); i ++) {
-	    		// 1時間以内に上番打刻があったら上番時刻を取得する処理
+	    		shiftBgnDate = "'" + utilConv.GetWhereDate(listInfo.get(i).bgnTimeDate) + "'";
+	    		shiftEndDate = "'" + utilConv.GetWhereDate(listInfo.get(i).endTimeDate) + "'";
+	    		keiyakuId    = listInfo.get(i).keiyakuId;
+	    		// 上番時刻を取得※シフト開始日時の2時間前～シフト終了日時
 	    		// 上下番区分：上番をセット
+	    		workInfo = new ArrayList();
 	            workInfo.add(1);
 	            workInfo.add("HOUR");
-	            workInfo.add("-1");
-	            workInfo.add("DATEADD(HOUR,9,GETDATE())");
+                workInfo.add("-2");
+                workInfo.add(shiftBgnDate);
+                workInfo.add("HOUR");
+                workInfo.add("0");
+                workInfo.add(shiftEndDate);
 	            workInfo.add(listInfo.get(i).workerId);
 	            workInfo.add(listInfo.get(i).keiyakuId);
+	            workInfo.add(listInfo.get(i).id);
 
-	    		stampTime = stamp.select(workInfo);
+	    		stampTime = stamp.selectStamp(workInfo);
 
 	    		if(stampTime != null) {
 	    			listInfo.get(i).bgnStampTime = stampTime;
 	    		}
 
-	    		// 1時間以内に下番打刻があったら下番時刻を取得する
+	    		// 下番時刻を取得※シフト開始日時～シフト終了日時の2時間後
 	    		workInfo = new ArrayList();
 	    		stamp = new P_Time_StampData();
 	    		// 上下番区分：下番をセット
 	            workInfo.add(2);
 	            workInfo.add("HOUR");
-	            workInfo.add("-1");
-	            workInfo.add("DATEADD(HOUR,9,GETDATE())");
+                workInfo.add("0");
+                workInfo.add(shiftBgnDate);
+                workInfo.add("HOUR");
+                workInfo.add("2");
+                workInfo.add(shiftEndDate);
 	            workInfo.add(listInfo.get(i).workerId);
 	            workInfo.add(listInfo.get(i).keiyakuId);
+	            workInfo.add(listInfo.get(i).id);
 
-	            stampTime = stamp.select(workInfo);
+	            stampTime = stamp.selectStamp(workInfo);
 	    		if(stampTime != null) {
 	    			listInfo.get(i).endStampTime = stampTime;
 	    		}
 	    	}
 	    		
-	    	// ▼▼▼ 2022.08.19 HTML→JSP変換対応 ▼▼▼
+    		//************************************************
 	    	/***シフトに関係ない打刻を取得する***/
-    		// 1時間以内に上番打刻があったら上番時刻を取得する
+    		//************************************************
+    		//16時間以内に上番打刻があったら上番時刻を取得する
     		workInfo = new ArrayList();
     		stamp = new P_Time_StampData();
     		// 上下番区分：上番をセット
             workInfo.add(1);
             workInfo.add("HOUR");
-            workInfo.add("-1");
+            workInfo.add("-16");
+            workInfo.add("DATEADD(HOUR,9,GETDATE())");
+            workInfo.add("MINUTE");
+            workInfo.add("0");
             workInfo.add("DATEADD(HOUR,9,GETDATE())");
             workInfo.add(loginInfo.id);
             workInfo.add(0);
+            workInfo.add(0);
 
-            attendStamp = stamp.select(workInfo);
+            //打刻があるかどうか取得する処理
+            attendStamp = stamp.selectFreeStamp(workInfo);
+            if(attendStamp != null){
+           		workInfo = new ArrayList();
+                workInfo.add(1);
+                workInfo.add(loginInfo.id);
+                workInfo.add(0);
+                workInfo.add(0);
+        		//5分以降の打刻を取得
+                attendStampFive = stamp.selectFiveMinuteAfter(workInfo);
+            }
 
-    		// 1時間以内に下番打刻があったら下番時刻を取得する
+    		//16時間以内に下番打刻があったら下番時刻を取得する
     		workInfo = new ArrayList();
     		stamp = new P_Time_StampData();
     		// 上下番区分：下番をセット
             workInfo.add(2);
             workInfo.add("HOUR");
-            workInfo.add("-1");
+            workInfo.add("-16");
+            workInfo.add("DATEADD(HOUR,9,GETDATE())");
+            workInfo.add("MINUTE");
+            workInfo.add("0");
             workInfo.add("DATEADD(HOUR,9,GETDATE())");
             workInfo.add(loginInfo.id);
             workInfo.add(0);
+            workInfo.add(0);
 
-            leaveStamp = stamp.select(workInfo);
-            // ▲▲▲ 2022.08.19 HTML→JSP変換対応 ▲▲▲
-
-	    	// 緯度を暗号化する
-	    	if(loginInfo.geoIdo_Value != null) {
-	    		loginInfo.geoIdo_Value = utilConv.encrypt(loginInfo.geoIdo_Value);
-	    	}
-	    	// 経度を暗号化する
-	    	if(loginInfo.geoKeido_Value != null) {
-	    		loginInfo.geoKeido_Value = utilConv.encrypt(loginInfo.geoKeido_Value);
-	    	}
+            leaveStamp = stamp.selectFreeStamp(workInfo);
+            //下番よりも上番の方が新しい場合⇒下番日時をクリア
+            if(utilConv.dateComp(attendStamp, leaveStamp)) {
+           		workInfo = new ArrayList();
+                workInfo.add("2");
+                workInfo.add("HOUR");
+                workInfo.add("0");
+                workInfo.add("'" + leaveStamp.subSequence(0, 19) + "'");
+                workInfo.add(loginInfo.id);
+                workInfo.add(0);
+                workInfo.add(0);
+                //取得した下番打刻を無効にする
+        		stamp.update(workInfo);        		
+        		//下番打刻をリセット
+            	leaveStamp = null;
+            }
+            if(leaveStamp != null){
+           		workInfo = new ArrayList();
+                workInfo.add(2);
+                workInfo.add(loginInfo.id);
+                workInfo.add(0);
+                workInfo.add(0);
+        		//5分以降の打刻を取得
+                leaveStampFive = stamp.selectFiveMinuteAfter(workInfo);
+            }
 
 	    }catch(Exception e) {
         	e.printStackTrace();
 	    }
         request.setAttribute("listInfo", listInfo);
         request.setAttribute("loginInfo", loginInfo);
-        // ▼▼▼ 2022.08.19 HTML→JSP変換対応 ▼▼▼
         request.setAttribute("attendStamp", attendStamp);
         request.setAttribute("leaveStamp", leaveStamp);
-        // ▲▲▲ 2022.08.19 HTML→JSP変換対応 ▲▲▲
-        // ▼▼▼ 2022.08.16 HTML→JSP変換対応 ▼▼▼
-		//RequestDispatcher dispatch = request.getRequestDispatcher("jsp/shiftlist.jsp");
-		RequestDispatcher dispatch = request.getRequestDispatcher("stamp/stamp-1.jsp");
-        // ▲▲▲ 2022.08.16 HTML→JSP変換対応 ▲▲▲
-        dispatch.forward(request, response);
+        request.setAttribute("attendStampFive", attendStampFive);
+        request.setAttribute("leaveStampFive", leaveStampFive);
+        //出退勤報告のみを行う場合は専用ページへ
+        if(workFlag == null) {
+    		RequestDispatcher dispatch = request.getRequestDispatcher("stamp/stamp-1.jsp");
+            dispatch.forward(request, response);
+        }else{
+    		RequestDispatcher dispatch = request.getRequestDispatcher("stamp/stamp-13.jsp");
+            dispatch.forward(request, response);
+        }
 	}
 
 }

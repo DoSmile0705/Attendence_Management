@@ -15,11 +15,14 @@ import javax.servlet.http.HttpSession;
 import dbaccess.P_MSG_MessageData;
 import dbaccess.P_MW_Worker;
 import dbaccess.P_Shift_SheetDataUp;
+import dbaccess.P_System_Value;
 import dbaccess.P_Time_StampData;
+import util.Constant;
 import util.DataCheck;
 import util.LoginInfo;
 import util.MessageData;
 import util.ShiftInfo;
+import util.SystemValue;
 import util.UtilConv;
 
 /**
@@ -28,18 +31,13 @@ import util.UtilConv;
 public class Login extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		//response.getWriter().append("Served at: ").append(request.getContextPath());
 		doPost(request,response);
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+     * 画面からのリクエストを受け取る
+     */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// リクエスト、レスポンスの文字コードセット
 		request.setCharacterEncoding("UTF-8");
@@ -58,38 +56,28 @@ public class Login extends HttpServlet {
         String url			= request.getHeader("REFERER");
         String companyCode	= check.emptyOrNull(request.getParameter("companyCode"));
         String companyName	= check.emptyOrNull(request.getParameter("companyName"));
-        // お知らせ一覧格納用
+        String geoIdo		= check.emptyOrNull(request.getParameter("geoIdo"));
+        String geoKeido		= check.emptyOrNull(request.getParameter("geoKeido"));
+        //お知らせ一覧格納用
         List<MessageData> msgInfo =  new ArrayList<>();
+        //システムバリュー格納用
+        List<SystemValue> systemValueList = new ArrayList<>();
         // 本日のシフト
         ShiftInfo shiftInfo = new ShiftInfo();
         String deptStamp = null;
         String onTimeStamp = null;
-        // ▼▼▼ 2022.8.10.パスワードに空文字が設定されている場合の対応 ▼▼▼
+
+        //変換クラス
+        UtilConv conv = new UtilConv();
         // 入力されたパスワードがnullだったら空文字を設定
         if(password1 == null) {
         	password1 = "";
         }
-        // ▲▲▲ 2022.8.10.パスワードに空文字が設定されている場合の対応 ▲▲▲
-        // ▼▼▼ 2022.9.8.メールアドレスに空文字が設定されている場合の対応 ▼▼▼
         // 入力されたメールアドレスがnullだったら空文字を設定
         if(mailaddress == null) {
         	mailaddress = "";
         }
-        // ▲▲▲ 2022.9.8.メールアドレスに空文字が設定されている場合の対応 ▲▲▲
-
         // 遷移元を判定する
-        /***2022.7.11 試しに判定を変えてみる
-        if (url.endsWith("AttendDetail")
-        		|| url.endsWith("AttendList")
-        		|| url.endsWith("DeptConfirm")
-        		|| url.endsWith("DeptExecute")
-        		|| url.endsWith("WorkStartConfirm")
-        		|| url.endsWith("WorkStartExecute")
-        		|| url.endsWith("WorkEndConfirm")
-        		|| url.endsWith("WorkEndExecute")) {
-        2022.7.11 試しに判定を変えてみる
-        //if (!url.endsWith("azurewebsites.net") && !url.endsWith("AttendManagement/") && !url.endsWith("Login") && !url.endsWith("Driver")){
-        2022.8.5 セッションがなかったらに変更***/
         if (sessionId != null){
         	password1	= utilConv.decrypt(password1);
         	mailaddress	= utilConv.decrypt(mailaddress);
@@ -115,10 +103,7 @@ public class Login extends HttpServlet {
             request.setAttribute("password1", password1);
             request.setAttribute("mailaddress", mailaddress);
             request.setAttribute("companyCode", companyCode);
-            // ▼▼▼ 2022.08.15 HTML→JSP変換対応 ▼▼▼
-    		//RequestDispatcher dispatch = request.getRequestDispatcher("jsp/login.jsp");
     		RequestDispatcher dispatch = request.getRequestDispatcher("/login.jsp");
-            // ▲▲▲ 2022.08.15 HTML→JSP変換対応 ▲▲▲
             dispatch.forward(request, response);
 
         // ログインできないユーザー
@@ -128,10 +113,7 @@ public class Login extends HttpServlet {
             request.setAttribute("password1", password1);
             request.setAttribute("companyCode", companyCode);
             request.setAttribute("mailaddress", mailaddress);
-            // ▼▼▼ 2022.08.15 HTML→JSP変換対応 ▼▼▼
-    		//RequestDispatcher dispatch = request.getRequestDispatcher("jsp/login.jsp");
     		RequestDispatcher dispatch = request.getRequestDispatcher("/login.jsp");
-            // ▲▲▲ 2022.08.15 HTML→JSP変換対応 ▲▲▲
             dispatch.forward(request, response);
 
         // メールアドレスが未入力もしくは照合できない場合はエラー
@@ -140,35 +122,23 @@ public class Login extends HttpServlet {
             request.setAttribute("loginid", loginid);
             request.setAttribute("password1", password1);
             request.setAttribute("companyCode", companyCode);
-            // ▼▼▼ 2022.08.15 HTML→JSP変換対応 ▼▼▼
-    		//RequestDispatcher dispatch = request.getRequestDispatcher("jsp/login.jsp");
     		RequestDispatcher dispatch = request.getRequestDispatcher("/login.jsp");
-            // ▲▲▲ 2022.08.15 HTML→JSP変換対応 ▲▲▲
             dispatch.forward(request, response);
         }else if(!mailaddress.equals(loginInfo.email_Value)) {
             request.setAttribute("dispMsg", "メールアドレスを正しく入力してください");
             request.setAttribute("loginid", loginid);
             request.setAttribute("password1", password1);
             request.setAttribute("companyCode", companyCode);
-            // ▼▼▼ 2022.08.15 HTML→JSP変換対応 ▼▼▼
-    		//RequestDispatcher dispatch = request.getRequestDispatcher("jsp/login.jsp");
     		RequestDispatcher dispatch = request.getRequestDispatcher("/login.jsp");
-            // ▲▲▲ 2022.08.15 HTML→JSP変換対応 ▲▲▲
             dispatch.forward(request, response);
         // パスワードが未入力もしくは照合できない場合はエラー
         }else if(password1 == null || !password1.equals(loginInfo.loginInfo1_Value)) {
-            // ▼▼▼ 2022.8.10.パスワードに空文字が設定されている場合の対応 ▼▼▼
-            // 入力されたパスワードが空文字、かつエラーの場合はnullを設定
            	password1 = null;
-            // ▲▲▲ 2022.8.10.パスワードに空文字が設定されている場合の対応 ▲▲▲
             request.setAttribute("dispMsg", "パスワードを正しく入力してください");
             request.setAttribute("loginid", loginid);
             request.setAttribute("mailaddress", mailaddress);
             request.setAttribute("companyCode", companyCode);
-            // ▼▼▼ 2022.08.15 HTML→JSP変換対応 ▼▼▼
-    		//RequestDispatcher dispatch = request.getRequestDispatcher("jsp/login.jsp");
     		RequestDispatcher dispatch = request.getRequestDispatcher("/login.jsp");
-            // ▲▲▲ 2022.08.15 HTML→JSP変換対応 ▲▲▲
             dispatch.forward(request, response);
 
         // 会社識別番号が未入力もしくは照合できない場合はエラー
@@ -177,10 +147,7 @@ public class Login extends HttpServlet {
             request.setAttribute("loginid", loginid);
             request.setAttribute("password1", password1);
             request.setAttribute("mailaddress", mailaddress);
-            // ▼▼▼ 2022.08.15 HTML→JSP変換対応 ▼▼▼
-    		//RequestDispatcher dispatch = request.getRequestDispatcher("jsp/login.jsp");
     		RequestDispatcher dispatch = request.getRequestDispatcher("/login.jsp");
-            // ▲▲▲ 2022.08.15 HTML→JSP変換対応 ▲▲▲
             dispatch.forward(request, response);
 
         // ログイン成功
@@ -196,21 +163,23 @@ public class Login extends HttpServlet {
                 P_MSG_MessageData msg = new P_MSG_MessageData();
                 // ログインIDをキーにメッセージを取得
                 msgInfo = msg.select(loginInfo.id);
+                // ログインIDをキーに未読メッセージを取得
+                Constant.UNREAD = msg.selectIsRead(loginInfo.id);
                 /*** 本日のシフトを取得する ***/
         		// DBアクセスクラス
     	    	P_Shift_SheetDataUp shift = new P_Shift_SheetDataUp();
                 // ログインIDをキー本日のシフトを取得
     	    	shiftInfo = shift.todaysShift(loginInfo.id);
-
+    	    	
     	    	/*** 出勤報告の未／済を取得する ***/
     	        // P_Time_StampData検索のパラメータ用
     	        List workInfo =  new ArrayList();
                 workInfo.add(0);
                 workInfo.add("HOUR");
-                // 1時間以内に打刻があったら「済」
-                workInfo.add("-1");
-                workInfo.add("DATEADD(HOUR,9,GETDATE())");
+                workInfo.add("-12");
+	            workInfo.add("DATEADD(HOUR,9,GETDATE())");
                 workInfo.add(loginInfo.id);
+                workInfo.add(0);
                 workInfo.add(0);
 
         		// DBアクセスクラス
@@ -223,10 +192,10 @@ public class Login extends HttpServlet {
     	        workInfo =  new ArrayList();
                 workInfo.add(3);
                 workInfo.add("HOUR");
-                // 1時間以内に打刻があったら「済」
-                workInfo.add("-1");
-                workInfo.add("DATEADD(HOUR,9,GETDATE())");
+                workInfo.add("-12");
+	            workInfo.add("DATEADD(HOUR,9,GETDATE())");
                 workInfo.add(loginInfo.id);
+                workInfo.add(0);
                 workInfo.add(0);
 
                 onTimeStamp = stamp.select(workInfo);
@@ -236,9 +205,53 @@ public class Login extends HttpServlet {
         			HttpSession session = request.getSession(true);
         			sessionId = session.getId();
         	    }
+    	    	/*** 定時報告の未／済を取得する ***/
+                P_System_Value PSV = new P_System_Value();
+                systemValueList = PSV.select();
+
+                Constant.RIYOBTN	= "未設定";
+                Constant.GAIYOBTN	= "未設定";
+                Constant.KIYAKUBTN	= "未設定";
+                if(systemValueList.size() > 0) {
+                	for(int i = 0; i < systemValueList.size(); i ++) {
+                		switch(systemValueList.get(i).systemValueCD) {
+                			case "1":
+                                Constant.RIYOURL	= systemValueList.get(i).systemValueText;
+                                Constant.RIYOBTN	= systemValueList.get(i).systemNote;
+                				break;
+                			case "2":
+                                Constant.GAIYOURL	= systemValueList.get(i).systemValueText;
+                                Constant.GAIYOBTN	= systemValueList.get(i).systemNote;
+                				break;
+                			case "3":
+                                Constant.KIYAKUURL	= systemValueList.get(i).systemValueText;
+                                Constant.KIYAKUBTN	= systemValueList.get(i).systemNote;
+                				break;
+                			default:
+                				break;
+                		}
+                	}
+                }
+
     	    }catch(Exception e) {
             	e.printStackTrace();
             }
+        	/***位置情報がすでに暗号化されているか確認***/
+        	//暗号化していなかったら暗号化、していたらそのままセット
+        	if(!utilConv.isAlpha(geoIdo)) {
+        		// 端末から取得した緯度を暗号化
+            	loginInfo.geoIdo_Value = utilConv.encrypt(geoIdo);
+        	}else {
+            	loginInfo.geoIdo_Value = geoIdo;
+        	}
+        	//暗号化していなかったら暗号化、していたらそのままセット
+        	if(!utilConv.isAlpha(geoKeido)) {
+        		// 端末から取得した経度を暗号化
+            	loginInfo.geoKeido_Value = utilConv.encrypt(geoKeido);
+        	}else {
+            	loginInfo.geoKeido_Value = geoKeido;
+        	}
+        	/***位置情報がすでに暗号化されているか確認***/
     		// セッションを暗号化して画面に渡す
             loginInfo.sessionId = utilConv.encrypt(sessionId);
             request.setAttribute("sessionId", loginInfo.sessionId);
@@ -252,6 +265,7 @@ public class Login extends HttpServlet {
             request.setAttribute("deptStamp", deptStamp);
             // 定時報告を画面に渡す
             request.setAttribute("onTimeStamp", onTimeStamp);
+            /***デバッグ用切り替え***/
             RequestDispatcher dispatch = request.getRequestDispatcher("/index.jsp");
             //RequestDispatcher dispatch = request.getRequestDispatcher("/index2.jsp");
             dispatch.forward(request, response);

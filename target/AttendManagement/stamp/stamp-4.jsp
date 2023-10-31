@@ -9,6 +9,7 @@
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.text.DateFormatSymbols" %>
+<%@ page import="util.Constant" %>
 <%
 // ***************************************************
 // stamp-4.jsp
@@ -21,13 +22,17 @@
 LoginInfo loginInfo = (LoginInfo)request.getAttribute("loginInfo");
 ShiftInfo shiftInfo = (ShiftInfo)request.getAttribute("shiftInfo");
 String stampFlag = (String)request.getAttribute("stampFlag");
+//stringDateは絶対に連携されないはず
 String stringDate = (String)request.getAttribute("stringDate");
+ShiftInfo nextShiftInfo = (ShiftInfo)request.getAttribute("nextShiftInfo");
+//GPS情報の受け取り
+String gpsSuccessFlg = (String)request.getAttribute("gpsSuccessFlg");
 
 // セッションがNULLだったらログイン画面を表示する
 if(loginInfo.sessionId == null){
 	// ログイン画面を表示する
 %>
-	<jsp:forward page="login.jsp" />
+	<jsp:forward page="/login.jsp" />
 <%
 }
 %>
@@ -57,7 +62,7 @@ private String GetFormatshiftHiduke(String dateTime) {
 private String GetFormatStampDate(String dateTime) {
 	String datestr = null;
 	try{
-		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSSS");	
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = sdFormat.parse(dateTime);
 		sdFormat = new SimpleDateFormat("HH:mm");
 		datestr = sdFormat.format(date);
@@ -67,18 +72,31 @@ private String GetFormatStampDate(String dateTime) {
 	}
 	return datestr;
 }
-// シフトが昼か夜かを判定
-private String MorOREve(String bgnTime) {
-	String bgclr = null;
-	int time = Integer.valueOf(bgnTime.substring(0,2));
-	// 勤務開始が18時より早い場合は昼間
-	if(time < 18){
-		bgclr = "mor";
-	}else{
-		bgclr = "eve";
+// カレンダーのシフトの色を返す
+private String CalShiftCol(String kinmuKubunName){
+	String shiftColor = null;
+	switch(kinmuKubunName){
+	  //0：昼　1：夜　2：昼夜　3：24勤務　4：その他
+	  case "0":
+	    shiftColor = "mor";
+		break;
+	  case "1":
+		shiftColor = "eve";
+		break;
+	  case "2":
+		shiftColor = "se";
+		break;
+	  case "3":
+		shiftColor = "all";
+		break;
+	  case "4":
+		shiftColor = "none";
+		break;
+	  default:
+		shiftColor = "none";
+		break;
 	}
-	return bgclr;
-	
+	return shiftColor;
 }
 %>
 <!DOCTYPE html>
@@ -105,61 +123,11 @@ private String MorOREve(String bgnTime) {
   <!-- bootstrap CSS読み込み -->
   <link href="./assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <!-- スタイルシート読み込み -->
-  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="stylesheet" href="./assets/css/style.css?<%=(new SimpleDateFormat("yyyyMMddHHmmssSSS")).format(new Date())%>">
 
   <!-- Favicon
   -------------------------------------------------- -->
   <link rel="icon" type="image/png" href="./assets/images/favicon.png">
-
-<script>
-// 画面表示用のリアルタイム日付
-function showDate() {
-    var nowTime		= new Date();
-    // 時間を9時間進ませる
-    //nowTime.setHours(nowTime.getHours() + 9);
-    var nowYear		= nowTime.getFullYear();
-    var nowMonth	= nowTime.getMonth() + 1;
-    var nowDate		= nowTime.getDate();
-    var nowDay		= nowTime.getDay();
-    var dayname		= ['日','月','火','水','木','金','土'];
-    var dspDate		= nowYear + "年" + nowMonth + "月" + nowDate + "日" + "(" + dayname[nowDay] + ")" ;
-    document.getElementById("realDate").innerHTML = dspDate;
-
-    var nowHour		= ddigit(nowTime.getHours());
-    var nowMinute	= ddigit(nowTime.getMinutes());
-    var dspTime		= nowHour + ":" + nowMinute; 
-    document.getElementById("realTime").innerHTML = dspTime;
-}
-setInterval('showDate()',60000);
-
-//画面表示用のリアルタイム時間
-/***
-function showTime() {
-    var nowTime		= new Date();
-    // 時間を9時間進ませる
-    //nowTime.setHours(nowTime.getHours() + 9);
-    var nowHour		= ddigit(nowTime.getHours());
-    var nowMinute	= ddigit(nowTime.getMinutes());
-    var dspTime		= nowHour + ":" + nowMinute; 
-    document.getElementById("realTime").innerHTML = dspTime;
-}
-setInterval('showTime()',1000);
-***/
-//0合わせの為の関数
-function ddigit(num) {
-	var dd;
-	if( num < 10 ) {
-		dd = '0' + num;
-	}else{
-		dd = num;
-	}
-	return dd;
-}
-//ロード時に日時をリアルタイム表示する
-window.onload = function(){
-	showDate();
-}
-</script>
 
 </head>
 <body>
@@ -181,7 +149,7 @@ window.onload = function(){
           <form name="form1" action="<%= request.getContextPath() %>/InformationList" method="post">
           <button>
             <img src="./assets/images/mail.png" alt="">
-            <span class="num">123</span>
+            <span class="num"><%=Constant.UNREAD%></span>
           </button>
             <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
             <input type="hidden" value="<%=loginInfo.id %>" name="id">
@@ -207,9 +175,10 @@ window.onload = function(){
           </button>
 <%
 // シフト情報がある場合は出力
-if(shiftInfo != null){
+if(shiftInfo.shiftHiduke != null){
 %>
             <input type="hidden" value="<%=shiftInfo.shiftHiduke %>" name="shiftHiduke">
+            <input type="hidden" value="<%=shiftInfo.note %>" name="shiftNote">
             <input type="hidden" value="<%=shiftInfo.bgnTime %>" name="bgnTime">
             <input type="hidden" value="<%=shiftInfo.bgnTimeDate %>" name="bgnTimeDate">
             <input type="hidden" value="<%=shiftInfo.endTime %>" name="endTime">
@@ -225,6 +194,8 @@ if(shiftInfo != null){
             <input type="hidden" value="<%=shiftInfo.adrPostNo %>" name="adrPostNo">
             <input type="hidden" value="<%=shiftInfo.adrMain %>" name="adrMain">
             <input type="hidden" value="<%=shiftInfo.adrSub %>" name="adrSub">
+            <input type="hidden" value="<%=shiftInfo.id %>" name="shiftDataId">
+            <input type="hidden" value="<%=shiftInfo.timeFlag %>" name="timeFlag">
 <%
 }
 %>
@@ -259,10 +230,10 @@ if(shiftInfo != null){
   <main class="d-stamp">
 <%
 // シフト情報がある場合は出力
-if(shiftInfo != null){
+if(shiftInfo.bgnTime != null){
 %>
     <!-- 現場(site-itemのclassでカラー変更＆アイコン画像の変更) -->
-    <div class="site-item <%=MorOREve(shiftInfo.bgnTime)%>">
+    <div class="site-item <%=CalShiftCol(shiftInfo.timeFlag)%>">
 <%
 }else{
 %>
@@ -274,12 +245,12 @@ if(shiftInfo != null){
 
 <%
 // シフト情報がある場合は出力
-if(shiftInfo != null){
+if(shiftInfo.shiftHiduke != null){
 %>
       <div class="item-inner">
         <div class="above row">
           <div class="left">
-            <img src="./assets/images/mor.png" alt="">
+            <img src="./assets/images/<%=CalShiftCol(shiftInfo.timeFlag)%>.png" alt="">
           </div>
           <div class="right">
             <div class="item-ttl">
@@ -292,10 +263,6 @@ if(shiftInfo != null){
             </div>
           </div>
         </div>
-        <!-- 現場詳細ボタン -->
-        <!-- <div class="btn">
-          <a class="white" href="../top.html">現場の詳細</a>
-        </div> -->
       </div>
 <%
 }
@@ -308,10 +275,11 @@ if(stampFlag.equals("1")){
         <div class="stamp-time row done">
 <%
     // シフトがある場合
-    if(shiftInfo != null){
+    if(shiftInfo.bgnStampTime != null){
 %>
           <div class="left"><span>上番報告</span></div><div class="right"><%=GetFormatStampDate(shiftInfo.bgnStampTime) %><span>済</span></div>
 <%
+	//必ずシフトがあるはずのなので、このルートは通らないはず
     }else{
 %>
           <div class="left"><span>上番報告</span></div><div class="right"><%=GetFormatStampDate(stringDate) %><span>済</span></div>
@@ -321,11 +289,20 @@ if(stampFlag.equals("1")){
         </div>
       </div>
     </div>
-    
+
     <p class="m-txt mt-6">
       上番報告が完了しました。<br>
       今日も一日頑張ってください。
     </p>
+<%
+	if(gpsSuccessFlg.equals("success")){
+%>
+        <p class="gpsInfo">
+          GPS送信
+        </p>
+<%
+	}
+%>
 <%
 }else{
 %>
@@ -333,10 +310,11 @@ if(stampFlag.equals("1")){
         <div class="stamp-time row done">
 <%
     // シフトがある場合
-    if(shiftInfo != null){
+    if(shiftInfo.endStampTime != null){
 %>
           <div class="left"><span>下番報告</span></div><div class="right"><%=GetFormatStampDate(shiftInfo.endStampTime) %><span>済</span></div>
 <%
+	//必ずシフトがあるはずのなので、このルートは通らないはず
     }else{
 %>
           <div class="left"><span>下番報告</span></div><div class="right"><%=GetFormatStampDate(stringDate) %><span>済</span></div>
@@ -352,19 +330,95 @@ if(stampFlag.equals("1")){
       お疲れ様でした。
     </p>
 <%
+	if(gpsSuccessFlg.equals("success")){
+%>
+        <p class="gpsInfo">
+          GPS送信
+        </p>
+<%
+	}
+%>
+<%
 }
 %>
-
-
+<!-- 次の現場の情報 -->
+<%
+// シフト情報がある場合は出力
+if(nextShiftInfo.shiftHiduke != null){
+%>
+    <br>
+    <div class="left"><span>次の現場</span></div>
+    <div class="site-item <%=CalShiftCol(nextShiftInfo.timeFlag)%>">
+      <div class="item-inner">
+        <div class="above row">
+          <div class="left">
+            <img src="./assets/images/<%=CalShiftCol(shiftInfo.timeFlag)%>.png" alt="">
+          </div>
+          <div class="right">
+            <div class="item-ttl">
+              <h2><%=nextShiftInfo.kinmuBashoName %></h2>
+              <span class="sub"><%=nextShiftInfo.gyomuKubunName %>・<%=nextShiftInfo.kinmuKubunName %>・<%=nextShiftInfo.keiyakuKubunName %></span>
+            </div>
+            <div class="item-time">
+              <span class="day"><%=GetFormatshiftHiduke(nextShiftInfo.shiftHiduke) %></span>
+              <span class="time-zone"><%=nextShiftInfo.bgnTime %>～<%=nextShiftInfo.endTime %></span>
+            </div>
+          </div>
+        </div>
+        <!-- 現場詳細ボタン -->
+        <div class="btn">
+        <form action="<%= request.getContextPath() %>/AttendDetail" method="post" accept-charset="UTF-8">
+          <button class="white">現場の詳細</button>
+          <input type="hidden" value="<%=nextShiftInfo.shiftHiduke %>" name="shiftHiduke">
+          <input type="hidden" value="<%=nextShiftInfo.note %>" name="shiftNote">
+          <input type="hidden" value="<%=nextShiftInfo.bgnTime %>" name="bgnTime">
+          <input type="hidden" value="<%=nextShiftInfo.bgnTimeDate %>" name="bgnTimeDate">
+          <input type="hidden" value="<%=nextShiftInfo.endTime %>" name="endTime">
+          <input type="hidden" value="<%=nextShiftInfo.endTimeDate %>" name="endTimeDate">
+          <input type="hidden" value="<%=nextShiftInfo.gyomuKubunName %>" name="gyomuKubunName">
+          <input type="hidden" value="<%=nextShiftInfo.keiyakuKubunName %>" name="keiyakuKubunName">
+          <input type="hidden" value="<%=nextShiftInfo.kinmuBashoName %>" name="kinmuBashoName">
+          <input type="hidden" value="<%=nextShiftInfo.kinmuKubunName %>" name="kinmuKubunName">
+          <input type="hidden" value="<%=nextShiftInfo.workerId %>" name="workerId">
+          <input type="hidden" value="<%=nextShiftInfo.keiyakuId %>" name="keiyakuId">
+          <input type="hidden" value="<%=nextShiftInfo.bgnStampTime %>" name="bgnStampTime">
+          <input type="hidden" value="<%=nextShiftInfo.endStampTime %>" name="endStampTime">
+          <input type="hidden" value="<%=nextShiftInfo.adrPostNo %>" name="adrPostNo">
+          <input type="hidden" value="<%=nextShiftInfo.adrMain %>" name="adrMain">
+          <input type="hidden" value="<%=nextShiftInfo.adrSub %>" name="adrSub">
+          <input type="hidden" value="<%=nextShiftInfo.id %>" name="shiftDataId">
+          <input type="hidden" value="<%=nextShiftInfo.timeFlag %>" name="timeFlag">
+          <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
+          <input type="hidden" value="<%=loginInfo.id %>" name="id">
+          <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
+          <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
+          <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
+          <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
+          <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
+          <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
+          <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
+          <input type="hidden" value="<%=loginInfo.sessionId %>" name="sessionId">
+          <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+          <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
+          <input type="hidden" value="1" name="linkFlg">
+          <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+        </form>
+        </div>
+      </div>
+    </div>
+<%
+}
+%>
     <!-- 現場選択に戻る -->
     <div class="btn mt-6">
       <form name="form1" action="<%= request.getContextPath() %>/AttendList" method="post">
-      <button onclick="location.href='stamp-1.html'" class="white">現場選択に戻る</button>
+      <button class="white">現場選択に戻る</button>
 <%
 // シフト情報がある場合は出力
-if(shiftInfo != null){
+if(shiftInfo.shiftHiduke != null){
 %>
         <input type="hidden" value="<%=shiftInfo.shiftHiduke %>" name="shiftHiduke">
+        <input type="hidden" value="<%=shiftInfo.note %>" name="shiftNote">
         <input type="hidden" value="<%=shiftInfo.bgnTime %>" name="bgnTime">
         <input type="hidden" value="<%=shiftInfo.bgnTimeDate %>" name="bgnTimeDate">
         <input type="hidden" value="<%=shiftInfo.endTime %>" name="endTime">
@@ -380,6 +434,8 @@ if(shiftInfo != null){
         <input type="hidden" value="<%=shiftInfo.adrPostNo %>" name="adrPostNo">
         <input type="hidden" value="<%=shiftInfo.adrMain %>" name="adrMain">
         <input type="hidden" value="<%=shiftInfo.adrSub %>" name="adrSub">
+        <input type="hidden" value="<%=shiftInfo.id %>" name="shiftDataId">
+        <input type="hidden" value="<%=shiftInfo.timeFlag %>" name="timeFlag">
 <%
 }
 %>
@@ -404,12 +460,13 @@ if(shiftInfo != null){
     <!-- トップ画面に戻る -->
     <div class="btn mt-6">
       <form action="<%= request.getContextPath() %>/Login" method="post" accept-charset="UTF-8">
-      <button onclick="location.href='../top.html'" class="white">トップ画面に戻る</button>
+      <button class="white">トップ画面に戻る</button>
 <%
 // シフト情報がある場合は出力
-if(shiftInfo != null){
+if(shiftInfo.shiftHiduke != null){
 %>
         <input type="hidden" value="<%=shiftInfo.shiftHiduke %>" name="shiftHiduke">
+        <input type="hidden" value="<%=shiftInfo.note %>" name="shiftNote">
         <input type="hidden" value="<%=shiftInfo.bgnTime %>" name="bgnTime">
         <input type="hidden" value="<%=shiftInfo.bgnTimeDate %>" name="bgnTimeDate">
         <input type="hidden" value="<%=shiftInfo.endTime %>" name="endTime">
@@ -425,6 +482,8 @@ if(shiftInfo != null){
         <input type="hidden" value="<%=shiftInfo.adrPostNo %>" name="adrPostNo">
         <input type="hidden" value="<%=shiftInfo.adrMain %>" name="adrMain">
         <input type="hidden" value="<%=shiftInfo.adrSub %>" name="adrSub">
+        <input type="hidden" value="<%=shiftInfo.id %>" name="shiftDataId">
+        <input type="hidden" value="<%=shiftInfo.timeFlag %>" name="timeFlag">
 <%
 }
 %>
@@ -452,8 +511,24 @@ if(shiftInfo != null){
   <!-- フッター部 -->
   <footer>
     <ul>
-      <li><button onclick="location.href='#'">使い方</button></li>
-      <li><button onclick="location.href='#'">会社概要</button></li>
+<%
+if(Constant.RIYOBTN != null){
+	if(!Constant.RIYOBTN.equals("未設定")){
+%>
+      <li><button onclick="window.open('<%=Constant.RIYOURL%>', '_blank')"><%=Constant.RIYOBTN%></button></li>
+<%
+	}
+}
+%>
+<%
+if(Constant.GAIYOBTN != null){
+	if(!Constant.GAIYOBTN.equals("未設定")){
+%>
+      <li><button onclick="window.open('<%=Constant.GAIYOURL%>', '_blank')"><%=Constant.GAIYOBTN%></button></li>
+<%
+	}
+}
+%>
       <li>
         <form action="<%= request.getContextPath() %>/Logout" method="post" accept-charset="UTF-8">
         <button>ログアウト</button>
@@ -471,6 +546,43 @@ if(shiftInfo != null){
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <!-- bootstrap JS読み込み -->
   <script src="./assets/bootstrap/js/bootstrap.min.js"></script>
-  
+
+<script>
+// 画面表示用のリアルタイム日付
+function showDate() {
+    var nowTime		= new Date();
+    // 時間を9時間進ませる
+    //nowTime.setHours(nowTime.getHours() + 9);
+    var nowYear		= nowTime.getFullYear();
+    var nowMonth	= nowTime.getMonth() + 1;
+    var nowDate		= nowTime.getDate();
+    var nowDay		= nowTime.getDay();
+    var dayname		= ['日','月','火','水','木','金','土'];
+    var dspDate		= nowYear + "年" + nowMonth + "月" + nowDate + "日" + "(" + dayname[nowDay] + ")" ;
+    document.getElementById("realDate").innerHTML = dspDate;
+
+    var nowHour		= ddigit(nowTime.getHours());
+    var nowMinute	= ddigit(nowTime.getMinutes());
+    var dspTime		= nowHour + ":" + nowMinute; 
+    document.getElementById("realTime").innerHTML = dspTime;
+}
+setInterval('showDate()',60000);
+
+//0合わせの為の関数
+function ddigit(num) {
+	var dd;
+	if( num < 10 ) {
+		dd = '0' + num;
+	}else{
+		dd = num;
+	}
+	return dd;
+}
+//ロード時に日時をリアルタイム表示する
+window.onload = function(){
+	showDate();
+}
+</script>
+
 </body>
 </html>

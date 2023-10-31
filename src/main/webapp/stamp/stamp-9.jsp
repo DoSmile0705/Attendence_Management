@@ -1,4 +1,4 @@
-<!-- 上下番報告ページ（シフト無し） -->
+<!-- 上退勤報告ページ（シフト無し） -->
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="java.text.SimpleDateFormat" %>
@@ -9,6 +9,7 @@
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.text.DateFormatSymbols" %>
+<%@ page import="util.Constant" %>
 <%
 // ***************************************************
 // stamp-9.jsp
@@ -23,12 +24,16 @@ String stampFlag = (String)request.getAttribute("stampFlag");		// 打刻種別
 String attendStamp = (String)request.getAttribute("attendStamp");
 //シフトなし下番打刻
 String leaveStamp = (String)request.getAttribute("leaveStamp");
+//シフトなし上番打刻
+String attendStampFive = (String)request.getAttribute("attendStampFive");
+//シフトなし下番打刻
+String leaveStampFive = (String)request.getAttribute("leaveStampFive");
 
 // セッションがNULLだったらログイン画面を表示する
 if(loginInfo.sessionId == null){
 	// ログイン画面を表示する
 %>
-	<jsp:forward page="./login.jsp" />
+	<jsp:forward page="/login.jsp" />
 <%
 }
 %>
@@ -62,74 +67,6 @@ if(loginInfo.sessionId == null){
   -------------------------------------------------- -->
   <link rel="icon" type="image/png" href="./assets/images/favicon.png">
 
-<script>
-// 画面表示用のリアルタイム日付
-function showDate() {
-    var nowTime		= new Date();
-    // 時間を9時間進ませる
-    //nowTime.setHours(nowTime.getHours() + 9);
-    var nowYear		= nowTime.getFullYear();
-    var nowMonth	= nowTime.getMonth() + 1;
-    var nowDate		= nowTime.getDate();
-    var nowDay		= nowTime.getDay();
-    var dayname		= ['日','月','火','水','木','金','土'];
-    var dspDate		= nowYear + "年" + nowMonth + "月" + nowDate + "日" + "(" + dayname[nowDay] + ")" ;
-    document.getElementById("realDate").innerHTML = dspDate;
-    document.getElementById("realDate2").innerHTML = dspDate;
-
-    var nowHour		= ddigit(nowTime.getHours());
-    var nowMinute	= ddigit(nowTime.getMinutes());
-    var dspTime		= nowHour + ":" + nowMinute; 
-    document.getElementById("realTime").innerHTML = dspTime;
-    document.getElementById("realTime2").innerHTML = dspTime;
-}
-setInterval('showDate()',60000);
-
-//画面表示用のリアルタイム時間
-/***
-function showTime() {
-    var nowTime		= new Date();
-    // 時間を9時間進ませる
-    //nowTime.setHours(nowTime.getHours() + 9);
-    var nowHour		= ddigit(nowTime.getHours());
-    var nowMinute	= ddigit(nowTime.getMinutes());
-    var dspTime		= nowHour + ":" + nowMinute; 
-    document.getElementById("realTime").innerHTML = dspTime;
-    document.getElementById("realTime2").innerHTML = dspTime;
-}
-setInterval('showTime()',1000);
-***/
-//0合わせの為の関数
-function ddigit(num) {
-	var dd;
-	if( num < 10 ) {
-		dd = '0' + num;
-	}else{
-		dd = num;
-	}
-	return dd;
-}
-//パラメータ用のリアルタイム時間
-function GetDateTime() {
-    var nowDateTime		= new Date();
-    var nowYear			= ddigit(nowDateTime.getFullYear());
-    var nowMonth		= ddigit(nowDateTime.getMonth() + 1);
-    var nowDate			= ddigit(nowDateTime.getDate());
-    var nowHours		= ddigit(nowDateTime.getHours());
-    var nowMinites		= ddigit(nowDateTime.getMinutes());
-    var nowSrconds		= ddigit(nowDateTime.getSeconds());
-    var nowMilliseconds	= ddigit(nowDateTime.getMilliseconds());
-    var dspDateTime		= nowYear + "-" + nowMonth + "-" + nowDate + " " + nowHours + ":" + nowMinites + ":" + nowSrconds + "." + nowMilliseconds; 
-	document.getElementById('stringDate').value = dspDateTime;
-}
-setInterval('GetDateTime()',60000);
-//ロード時に日時をリアルタイム表示する
-window.onload = function(){
-	showDate();
-	GetDateTime();
-}
-</script>
-
 </head>
 <body>
   <!-- ヘッダー部 -->
@@ -148,9 +85,9 @@ window.onload = function(){
       <div class="row">
         <div class="ico mail">
           <form name="form1" action="<%= request.getContextPath() %>/InformationList" method="post">
-          <button onclick="location.href='../news/news-1.html'">
+          <button>
             <img src="./assets/images/mail.png" alt="">
-            <span class="num">123</span>
+            <span class="num"><%=Constant.UNREAD%></span>
           </button>
             <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
             <input type="hidden" value="<%=loginInfo.id %>" name="id">
@@ -170,7 +107,7 @@ window.onload = function(){
         </div>
         <div class="ico">
           <form action="<%= request.getContextPath() %>/Login" method="post" accept-charset="UTF-8">
-          <button onclick="location.href='../top.html'">
+          <button>
             <img src="./assets/images/home.png" alt="">
           </button>
             <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
@@ -218,7 +155,7 @@ if(stampFlag.equals("1")){
         <div class="right">
           <p>
             上記の時間で<br>
-            上番を報告します。<br>
+            出勤を報告します。<br>
             よろしいですか？<br>
           </p>
         </div>
@@ -233,7 +170,7 @@ if(stampFlag.equals("1")){
         <div class="right">
           <p>
             上記の時間で<br>
-            下番を報告します。<br>
+            退勤を報告します。<br>
             よろしいですか？<br>
           </p>
         </div>
@@ -247,10 +184,10 @@ if(stampFlag.equals("1")){
 if(stampFlag.equals("1")){
 %>
     <!-- classをd-noneｓで非表示 -->
-      <!-- 上番報告ボタン -->
+      <!-- 出勤報告ボタン -->
       <div class="btn mt-5">
-        <form onclick="GetDateTime()" action="<%= request.getContextPath() %>/NoShiftStampExe" method="post" accept-charset="UTF-8">
-        <button>上番報告</button>
+        <form id="noShiftStampExe" action="<%= request.getContextPath() %>/NoShiftStampExe" method="post" accept-charset="UTF-8">
+        <button type="button" onclick="doPreSubmit(this.form);">出勤報告</button>
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
           <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
@@ -270,12 +207,12 @@ if(stampFlag.equals("1")){
       </div>
 
 <%
-if(attendStamp != null){
+if(attendStamp != null && attendStampFive == null){
 %>
       <!-- 上番取り消しボタン -->
       <div class="btn mt-5">
         <form action="<%= request.getContextPath() %>/NoShiftCancelConfirm" method="post" accept-charset="UTF-8">
-        <button onclick="location.href='stamp-11.html'" class="red">上番取り消し</button>
+        <button class="red">出勤報告取り消し</button>
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
           <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
@@ -301,10 +238,10 @@ if(attendStamp != null){
 <%
 if(stampFlag.equals("2")){
 %>
-      <!-- 下番報告ボタン -->
+      <!-- 退勤報告ボタン -->
       <div class="btn mt-5">
-        <form onclick="GetDateTime()" action="<%= request.getContextPath() %>/NoShiftStampExe" method="post" accept-charset="UTF-8">
-        <button>下番報告</button>
+        <form id="noShiftStampExe" action="<%= request.getContextPath() %>/NoShiftStampExe" method="post" accept-charset="UTF-8">
+        <button type="button" onclick="doPreSubmit(this.form);">退勤報告</button>
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
           <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
@@ -323,12 +260,12 @@ if(stampFlag.equals("2")){
         </form>
       </div>
 <%
-    if(leaveStamp != null){
+    if(leaveStamp != null && leaveStampFive == null){
 %>
       <!-- 下番取り消しボタン -->
       <div class="btn mt-5">
         <form action="<%= request.getContextPath() %>/NoShiftCancelConfirm" method="post" accept-charset="UTF-8">
-        <button onclick="location.href='stamp-11.html'" class="red">下番取り消し</button>
+        <button class="red">退勤報告取り消し</button>
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
           <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
@@ -365,8 +302,24 @@ if(stampFlag.equals("2")){
   <!-- フッター部 -->
   <footer>
     <ul>
-      <li><button onclick="location.href='#'">使い方</button></li>
-      <li><button onclick="location.href='#'">会社概要</button></li>
+<%
+if(Constant.RIYOBTN != null){
+	if(!Constant.RIYOBTN.equals("未設定")){
+%>
+      <li><button onclick="window.open('<%=Constant.RIYOURL%>', '_blank')"><%=Constant.RIYOBTN%></button></li>
+<%
+	}
+}
+%>
+<%
+if(Constant.GAIYOBTN != null){
+	if(!Constant.GAIYOBTN.equals("未設定")){
+%>
+      <li><button onclick="window.open('<%=Constant.GAIYOURL%>', '_blank')"><%=Constant.GAIYOBTN%></button></li>
+<%
+	}
+}
+%>
       <li>
         <form action="<%= request.getContextPath() %>/Logout" method="post" accept-charset="UTF-8">
         <button>ログアウト</button>
@@ -382,8 +335,70 @@ if(stampFlag.equals("2")){
   -------------------------------------------------- -->
   <!-- Jquery読み込み -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <!-- 共通部品JS読み込み -->
+  <script src="./assets/js/script.js?<%=(new SimpleDateFormat("yyyyMMddHHmmssSSS")).format(new Date())%>"></script>
   <!-- bootstrap JS読み込み -->
   <script src="./assets/bootstrap/js/bootstrap.min.js"></script>
-  
+
+<script>
+// 画面表示用のリアルタイム日付
+function showDate() {
+    var nowTime		= new Date();
+    // 時間を9時間進ませる
+    //nowTime.setHours(nowTime.getHours() + 9);
+    var nowYear		= nowTime.getFullYear();
+    var nowMonth	= nowTime.getMonth() + 1;
+    var nowDate		= nowTime.getDate();
+    var nowDay		= nowTime.getDay();
+    var dayname		= ['日','月','火','水','木','金','土'];
+    var dspDate		= nowYear + "年" + nowMonth + "月" + nowDate + "日" + "(" + dayname[nowDay] + ")" ;
+    document.getElementById("realDate").innerHTML = dspDate;
+    document.getElementById("realDate2").innerHTML = dspDate;
+
+    var nowHour		= ddigit(nowTime.getHours());
+    var nowMinute	= ddigit(nowTime.getMinutes());
+    var dspTime		= nowHour + ":" + nowMinute; 
+    document.getElementById("realTime").innerHTML = dspTime;
+    document.getElementById("realTime2").innerHTML = dspTime;
+}
+setInterval('showDate()',60000);
+
+//0合わせの為の関数
+function ddigit(num) {
+	var dd;
+	if( num < 10 ) {
+		dd = '0' + num;
+	}else{
+		dd = num;
+	}
+	return dd;
+}
+//パラメータ用のリアルタイム時間
+function GetDateTime() {
+    var nowDateTime		= new Date();
+    var nowYear			= ddigit(nowDateTime.getFullYear());
+    var nowMonth		= ddigit(nowDateTime.getMonth() + 1);
+    var nowDate			= ddigit(nowDateTime.getDate());
+    var nowHours		= ddigit(nowDateTime.getHours());
+    var nowMinites		= ddigit(nowDateTime.getMinutes());
+    var nowSrconds		= ddigit(nowDateTime.getSeconds());
+    var nowMilliseconds	= ddigit(nowDateTime.getMilliseconds());
+    var dspDateTime		= nowYear + "-" + nowMonth + "-" + nowDate + " " + nowHours + ":" + nowMinites + ":" + nowSrconds + "." + nowMilliseconds; 
+	document.getElementById('stringDate').value = dspDateTime;
+}
+setInterval('GetDateTime()',60000);
+//ロード時に日時をリアルタイム表示する
+window.onload = function(){
+	showDate();
+	GetDateTime();
+}
+
+//サブミット前に時刻情報とGPS情報を取得する
+function doPreSubmit(frm){
+	GetDateTime();
+	getGpsData(frm);
+}
+</script>
+
 </body>
 </html>

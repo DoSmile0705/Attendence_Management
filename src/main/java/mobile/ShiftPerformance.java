@@ -10,12 +10,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dbaccess.P_Kinmu_RequestData;
-import dbaccess.P_Shift_SheetDataUp;
+import dbaccess.P_Kinmu_Data;
 import util.DataCheck;
+import util.KinmuData;
 import util.LoginInfo;
-import util.RequestData;
-import util.ShiftInfo;
 import util.UtilConv;
 
 /**
@@ -29,30 +27,24 @@ public class ShiftPerformance extends HttpServlet {
      */
     public ShiftPerformance() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request,response);
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+     * 画面からのリクエストを受け取る
+     */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// リクエスト、レスポンスの文字コードセット
 		request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
 	    // 検索結果格納用
-        List<ShiftInfo> listInfo =  new ArrayList<>();
-	    List<RequestData> requestList = new ArrayList<>();
+	    List<KinmuData> kinmuData = new ArrayList<>();
         DataCheck check = new DataCheck();
         // 画面項目の受け取り
         LoginInfo loginInfo = new LoginInfo();
-        //loginInfo.id				= check.emptyOrNull(request.getParameter("loginid"));
         loginInfo.workerIndex		= check.emptyOrNull(request.getParameter("loginid"));
         loginInfo.id				= check.emptyOrNull(request.getParameter("id"));
         loginInfo.loginInfo1_Value	= check.emptyOrNull(request.getParameter("password1"));
@@ -89,31 +81,24 @@ public class ShiftPerformance extends HttpServlet {
         	nowDate = utilConv.GetForShiftList(month, addMonth);
         }
     	try {
-    		/***1か月分のシフトを取得***/
-    		// DBアクセスクラス
-	    	P_Shift_SheetDataUp shift = new P_Shift_SheetDataUp();
-            // ログインIDをキーに警備員マスタを取得
-	    	listInfo = shift.getShiftList(loginInfo.id, nowDate);
-
-    		/***1か月分の申請を取得***/
+    		/***1か月分の実績を取得***/
 	        // 申請データアクセス用
-	        P_Kinmu_RequestData pkrd	= new P_Kinmu_RequestData();
-			workInfo.add(loginInfo.company_ID);
+	        P_Kinmu_Data pkd	= new P_Kinmu_Data();
+			//workInfo.add(loginInfo.workerIndex);
 			workInfo.add(loginInfo.id);
 			workInfo.add(utilConv.GetForRequestMin(nowDate));
 			workInfo.add(utilConv.GetForRequestMax(nowDate));
             // 申請データを取得
-			requestList = pkrd.selectMonthly(workInfo);
+			kinmuData = pkd.select(workInfo);
 
     	}catch(Exception e) {
         	e.printStackTrace();
 	    }
-        request.setAttribute("listInfo", listInfo);
         request.setAttribute("loginInfo", loginInfo);
-        request.setAttribute("requestList", requestList);
+        request.setAttribute("kinmuData", kinmuData);
         // 対象月※形式が2パターンあるので注意「yyyy-MM-dd」「yyyy-MM-dd HH:mm:ss.sssss」
         request.setAttribute("nowDate", nowDate);
-		RequestDispatcher dispatch = request.getRequestDispatcher("work/work-1.jsp");
+		RequestDispatcher dispatch = request.getRequestDispatcher("work/work-9.jsp");
         dispatch.forward(request, response);
 	}
 

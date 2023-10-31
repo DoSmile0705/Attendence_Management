@@ -33,13 +33,12 @@ public class InformationPageLink extends HttpServlet {
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		//response.getWriter().append("Served at: ").append(request.getContextPath());
 		doPost(request,response);
 	}
+
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+     * 画面からのリクエストを受け取る
+     */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	
 		// リクエスト、レスポンスの文字コードセット
@@ -66,6 +65,10 @@ public class InformationPageLink extends HttpServlet {
         loginInfo.companyName		= check.emptyOrNull(request.getParameter("companyName"));
         loginInfo.company_ID		= check.emptyOrNull(request.getParameter("company_ID"));
         String pageCnt				= check.emptyOrNull(request.getParameter("pageCnt"));
+        //ページカウントがnullの場合⇒トップページからなので必ず1ページ
+        if(pageCnt == null) {
+        	pageCnt = "1";
+        }
         MessageData msgData = new MessageData();
         msgData.id					= check.emptyOrNull(request.getParameter("DataId"));
     	// 復号化するためのクラス
@@ -90,27 +93,23 @@ public class InformationPageLink extends HttpServlet {
         workInfo.add(msgData.id);											// DataId
         workInfo.add("'" + sendGUID + "'");									// GuidKey1
         workInfo.add("''");													// GuidKey2
-        workInfo.add(0);													// ConnectPage
+        //workInfo.add(0);													// ConnectPage
+        workInfo.add(pageCnt);												// ConnectPage
         workInfo.add("'" + utilConv.encrypt(loginInfo.workerIndex) + "'");	// ConnectKey1
 
         try{
         	// 連係情報を一時テーブルに保存
         	P_Temp_PageConnect temp = new P_Temp_PageConnect();
             temp.insert(workInfo);
-            //▼▼▼2022.9.12 URLをP_MC_Companyテーブルから取得▼▼▼
             workInfo = new ArrayList();
             workInfo.add(loginInfo.companyCode);
             company = com.select(workInfo);
-            //▲▲▲2022.9.12 URLをP_MC_Companyテーブルから取得▲▲▲
         }catch(Exception e) {
         	e.printStackTrace();
         }
         
-        //▼▼▼2022.9.12 C#側のURLを修正▼▼▼
-        //String url = "https://asp.net/Messageview/"
         String url = company.passCode
         		+ "Messageview"
-        //▲▲▲2022.9.12 C#側のURLを修正▲▲▲
         		+ "?id="		+ msgData.id
         		+ "&key1="		+ sendGUID
         		+ "&key2="		+ dummy1GUID

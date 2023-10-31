@@ -10,6 +10,7 @@
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.text.DateFormatSymbols" %>
+<%@ page import="util.Constant" %>
 <%
 // ***************************************************
 // stamp-3.jsp
@@ -21,10 +22,6 @@ String stringDate = (String)request.getAttribute("stringDate");
 LoginInfo loginInfo = (LoginInfo)request.getAttribute("loginInfo");
 ShiftInfo shiftInfo = (ShiftInfo)request.getAttribute("shiftInfo");
 String stampFlag = (String)request.getAttribute("stampFlag");		// 打刻種別
-//シフトなし上番打刻
-String attendStamp = (String)request.getAttribute("attendStamp");
-//シフトなし下番打刻
-String leaveStamp = (String)request.getAttribute("leaveStamp");
 //シフトフラグ
 String shiftFlag = (String)request.getAttribute("shiftFlag");
 
@@ -32,7 +29,7 @@ String shiftFlag = (String)request.getAttribute("shiftFlag");
 if(loginInfo.sessionId == null){
 	// ログイン画面を表示する
 %>
-	<jsp:forward page="./login.jsp" />
+	<jsp:forward page="/login.jsp" />
 <%
 }
 %>
@@ -58,18 +55,31 @@ private String GetFormatshiftHiduke(String dateTime) {
 	}
 	return datestr;
 }
-// シフトが昼か夜かを判定
-private String MorOREve(String bgnTime) {
-	String bgclr = null;
-	int time = Integer.valueOf(bgnTime.substring(0,2));
-	// 勤務開始が18時より早い場合は昼間
-	if(time < 18){
-		bgclr = "mor";
-	}else{
-		bgclr = "eve";
+// カレンダーのシフトの色を返す
+private String CalShiftCol(String kinmuKubunName){
+	String shiftColor = null;
+	switch(kinmuKubunName){
+	  //0：昼　1：夜　2：昼夜　3：24勤務　4：その他
+	  case "0":
+	    shiftColor = "mor";
+		break;
+	  case "1":
+		shiftColor = "eve";
+		break;
+	  case "2":
+		shiftColor = "se";
+		break;
+	  case "3":
+		shiftColor = "all";
+		break;
+	  case "4":
+		shiftColor = "none";
+		break;
+	  default:
+		shiftColor = "none";
+		break;
 	}
-	return bgclr;
-	
+	return shiftColor;
 }
 %>
 
@@ -103,74 +113,6 @@ private String MorOREve(String bgnTime) {
   -------------------------------------------------- -->
   <link rel="icon" type="image/png" href="./assets/images/favicon.png">
 
-<script>
-// 画面表示用のリアルタイム日付
-function showDate() {
-    var nowTime		= new Date();
-    // 時間を9時間進ませる
-    //nowTime.setHours(nowTime.getHours() + 9);
-    var nowYear		= nowTime.getFullYear();
-    var nowMonth	= nowTime.getMonth() + 1;
-    var nowDate		= nowTime.getDate();
-    var nowDay		= nowTime.getDay();
-    var dayname		= ['日','月','火','水','木','金','土'];
-    var dspDate		= nowYear + "年" + nowMonth + "月" + nowDate + "日" + "(" + dayname[nowDay] + ")" ;
-    document.getElementById("realDate").innerHTML = dspDate;
-    document.getElementById("realDate2").innerHTML = dspDate;
-    
-    var nowHour		= ddigit(nowTime.getHours());
-    var nowMinute	= ddigit(nowTime.getMinutes());
-    var dspTime		= nowHour + ":" + nowMinute; 
-    document.getElementById("realTime").innerHTML = dspTime;
-    document.getElementById("realTime2").innerHTML = dspTime;
-}
-setInterval('showDate()',60000);
-
-//画面表示用のリアルタイム時間
-/***
-function showTime() {
-    var nowTime		= new Date();
-    // 時間を9時間進ませる
-    //nowTime.setHours(nowTime.getHours() + 9);
-    var nowHour		= ddigit(nowTime.getHours());
-    var nowMinute	= ddigit(nowTime.getMinutes());
-    var dspTime		= nowHour + ":" + nowMinute; 
-    document.getElementById("realTime").innerHTML = dspTime;
-    document.getElementById("realTime2").innerHTML = dspTime;
-}
-setInterval('showTime()',1000);
-***/
-//パラメータ用のリアルタイム時間
-function GetDateTime() {
-    var nowDateTime		= new Date();
-    var nowYear			= ddigit(nowDateTime.getFullYear());
-    var nowMonth		= ddigit(nowDateTime.getMonth() + 1);
-    var nowDate			= ddigit(nowDateTime.getDate());
-    var nowHours		= ddigit(nowDateTime.getHours());
-    var nowMinites		= ddigit(nowDateTime.getMinutes());
-    var nowSrconds		= ddigit(nowDateTime.getSeconds());
-    var nowMilliseconds	= ddigit(nowDateTime.getMilliseconds());
-    var dspDateTime		= nowYear + "-" + nowMonth + "-" + nowDate + " " + nowHours + ":" + nowMinites + ":" + nowSrconds + "." + nowMilliseconds; 
-	document.getElementById('stringDate').value = dspDateTime;
-}
-setInterval('GetDateTime()',60000);
-//0合わせの為の関数
-function ddigit(num) {
-	var dd;
-	if( num < 10 ) {
-		dd = '0' + num;
-	}else{
-		dd = num;
-	}
-	return dd;
-}
-//ロード時に日時をリアルタイム表示する
-window.onload = function(){
-	showDate();
-	GetDateTime();
-}
-</script>
-
 </head>
 <body>
   <!-- ヘッダー部 -->
@@ -191,7 +133,7 @@ window.onload = function(){
           <form name="form1" action="<%= request.getContextPath() %>/InformationList" method="post">
           <button>
             <img src="./assets/images/mail.png" alt="">
-            <span class="num">123</span>
+            <span class="num"><%=Constant.UNREAD%></span>
           </button>
             <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
             <input type="hidden" value="<%=loginInfo.id %>" name="id">
@@ -248,11 +190,11 @@ window.onload = function(){
 if(shiftInfo.shiftHiduke != null){
 %>
     <!-- 現場(site-itemのclassでカラー変更＆アイコン画像の変更) -->
-    <div class="site-item <%=MorOREve(shiftInfo.bgnTime)%>">
+    <div class="site-item <%=CalShiftCol(shiftInfo.timeFlag)%>">
       <div class="item-inner">
         <div class="above row">
           <div class="left">
-            <img src="./assets/images/mor.png" alt="">
+            <img src="./assets/images/<%=CalShiftCol(shiftInfo.timeFlag)%>.png" alt="">
           </div>
           <div class="right">
             <div class="item-ttl">
@@ -327,11 +269,11 @@ if(stampFlag.equals("1")){
 // シフト一覧から選択した場合
 if(shiftInfo.shiftHiduke != null){
 %>
-<form onclick="GetDateTime()" action="<%= request.getContextPath() %>/WorkStartExecute" method="post" accept-charset="UTF-8">
+<form id="workStartExecute"  action="<%= request.getContextPath() %>/WorkStartExecute" method="post" accept-charset="UTF-8">
 <%
 }else{
 %>
-<form onclick="GetDateTime()" action="<%= request.getContextPath() %>/WorkExecute" method="post" accept-charset="UTF-8">
+<form id="workExecute"  action="<%= request.getContextPath() %>/WorkExecute" method="post" accept-charset="UTF-8">
 <%
 }
 %>
@@ -339,12 +281,12 @@ if(shiftInfo.shiftHiduke != null){
 // 打刻種別：上番
 if(stampFlag.equals("1")){
 %>
-        <button>上番報告する</button>
+        <button type="button" onclick="doPreSubmit(this.form);">上番報告する</button>
 <%
 // 打刻種別：下番
 } else {
 %>
-        <button>下番報告する</button>
+        <button type="button" onclick="doPreSubmit(this.form);">下番報告する</button>
 <%
 }
 %>
@@ -365,6 +307,8 @@ if(stampFlag.equals("1")){
           <input type="hidden" value="<%=shiftInfo.adrPostNo %>" name="adrPostNo">
           <input type="hidden" value="<%=shiftInfo.adrMain %>" name="adrMain">
           <input type="hidden" value="<%=shiftInfo.adrSub %>" name="adrSub">
+          <input type="hidden" value="<%=shiftInfo.id %>" name="shiftDataId">
+          <input type="hidden" value="<%=shiftInfo.timeFlag %>" name="timeFlag">
           <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
           <input type="hidden" value="<%=loginInfo.id %>" name="id">
           <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
@@ -396,8 +340,24 @@ if(stampFlag.equals("1")){
   <!-- フッター部 -->
   <footer>
     <ul>
-      <li><button onclick="location.href='#'">使い方</button></li>
-      <li><button onclick="location.href='#'">会社概要</button></li>
+<%
+if(Constant.RIYOBTN != null){
+	if(!Constant.RIYOBTN.equals("未設定")){
+%>
+      <li><button onclick="window.open('<%=Constant.RIYOURL%>', '_blank')"><%=Constant.RIYOBTN%></button></li>
+<%
+	}
+}
+%>
+<%
+if(Constant.GAIYOBTN != null){
+	if(!Constant.GAIYOBTN.equals("未設定")){
+%>
+      <li><button onclick="window.open('<%=Constant.GAIYOURL%>', '_blank')"><%=Constant.GAIYOBTN%></button></li>
+<%
+	}
+}
+%>
       <li>
         <form action="<%= request.getContextPath() %>/Logout" method="post" accept-charset="UTF-8">
         <button>ログアウト</button>
@@ -413,8 +373,70 @@ if(stampFlag.equals("1")){
   -------------------------------------------------- -->
   <!-- Jquery読み込み -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <!-- 共通部品JS読み込み -->
+  <script src="./assets/js/script.js?<%=(new SimpleDateFormat("yyyyMMddHHmmssSSS")).format(new Date())%>"></script>
   <!-- bootstrap JS読み込み -->
   <script src="./assets/bootstrap/js/bootstrap.min.js"></script>
-  
+
+<script>
+// 画面表示用のリアルタイム日付
+function showDate() {
+    var nowTime		= new Date();
+    // 時間を9時間進ませる
+    //nowTime.setHours(nowTime.getHours() + 9);
+    var nowYear		= nowTime.getFullYear();
+    var nowMonth	= nowTime.getMonth() + 1;
+    var nowDate		= nowTime.getDate();
+    var nowDay		= nowTime.getDay();
+    var dayname		= ['日','月','火','水','木','金','土'];
+    var dspDate		= nowYear + "年" + nowMonth + "月" + nowDate + "日" + "(" + dayname[nowDay] + ")" ;
+    document.getElementById("realDate").innerHTML = dspDate;
+    document.getElementById("realDate2").innerHTML = dspDate;
+    
+    var nowHour		= ddigit(nowTime.getHours());
+    var nowMinute	= ddigit(nowTime.getMinutes());
+    var dspTime		= nowHour + ":" + nowMinute; 
+    document.getElementById("realTime").innerHTML = dspTime;
+    document.getElementById("realTime2").innerHTML = dspTime;
+}
+setInterval('showDate()',60000);
+
+//パラメータ用のリアルタイム時間
+function GetDateTime() {
+    var nowDateTime		= new Date();
+    var nowYear			= ddigit(nowDateTime.getFullYear());
+    var nowMonth		= ddigit(nowDateTime.getMonth() + 1);
+    var nowDate			= ddigit(nowDateTime.getDate());
+    var nowHours		= ddigit(nowDateTime.getHours());
+    var nowMinites		= ddigit(nowDateTime.getMinutes());
+    var nowSrconds		= ddigit(nowDateTime.getSeconds());
+    var nowMilliseconds	= ddigit(nowDateTime.getMilliseconds());
+    var dspDateTime		= nowYear + "-" + nowMonth + "-" + nowDate + " " + nowHours + ":" + nowMinites + ":" + nowSrconds + "." + nowMilliseconds; 
+	document.getElementById('stringDate').value = dspDateTime;
+}
+setInterval('GetDateTime()',60000);
+//0合わせの為の関数
+function ddigit(num) {
+	var dd;
+	if( num < 10 ) {
+		dd = '0' + num;
+	}else{
+		dd = num;
+	}
+	return dd;
+}
+//ロード時に日時をリアルタイム表示する
+window.onload = function(){
+	showDate();
+	GetDateTime();
+}
+
+//サブミット前に時刻情報とGPS情報を取得する
+function doPreSubmit(frm){
+	GetDateTime();
+	getGpsData(frm);
+}
+</script>
+
 </body>
 </html>

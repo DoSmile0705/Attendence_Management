@@ -1,9 +1,7 @@
 package util;
 
 /**
- * 
  * 会社情報コンテナクラス
- * 
  */
 public class Company {
     public String id;

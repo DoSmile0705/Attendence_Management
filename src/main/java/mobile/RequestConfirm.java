@@ -1,6 +1,8 @@
 package mobile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -8,9 +10,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dbaccess.P_MK_RequestData;
 import util.DataCheck;
 import util.LoginInfo;
 import util.RequestData;
+import util.RequestMasterData;
 import util.ShiftInfo;
 
 /**
@@ -27,15 +31,12 @@ public class RequestConfirm extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+     * 画面からのリクエストを受け取る
+     */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// リクエスト、レスポンスの文字コードセット
 		request.setCharacterEncoding("UTF-8");
@@ -44,6 +45,7 @@ public class RequestConfirm extends HttpServlet {
         // シフト情報パラメータ受け取り
         ShiftInfo shiftInfo = new ShiftInfo();
         shiftInfo.shiftHiduke		= check.emptyOrNull(request.getParameter("shiftHiduke"));
+        shiftInfo.note				= check.emptyOrNull(request.getParameter("shiftNote"));
         shiftInfo.bgnTimeDate		= check.emptyOrNull(request.getParameter("bgnTimeDate"));
         shiftInfo.bgnTime			= check.emptyOrNull(request.getParameter("bgnTime"));
         shiftInfo.endTimeDate		= check.emptyOrNull(request.getParameter("endTimeDate"));
@@ -59,6 +61,8 @@ public class RequestConfirm extends HttpServlet {
         shiftInfo.adrPostNo			= check.emptyOrNull(request.getParameter("adrPostNo"));
         shiftInfo.adrMain			= check.emptyOrNull(request.getParameter("adrMain"));
         shiftInfo.adrSub			= check.emptyOrNull(request.getParameter("adrSub"));
+        shiftInfo.id				= check.emptyOrNull(request.getParameter("shiftDataId"));
+        shiftInfo.timeFlag			= check.emptyOrNull(request.getParameter("timeFlag"));
         // ログイン情報の受け取り
         LoginInfo loginInfo = new LoginInfo();
         loginInfo.workerIndex		= check.emptyOrNull(request.getParameter("loginid"));
@@ -97,7 +101,24 @@ public class RequestConfirm extends HttpServlet {
         // 申請削除フラグ
         String deleteFlag			= check.emptyOrNull(request.getParameter("deleteFlag"));
 
-    	request.setAttribute("shiftInfo", shiftInfo);
+        //申請データがnullの場合はシフトデータから日付をもらう※日時表示の辻褄合わせ
+        if(requestData.kinmuHiduke == null) {
+        	requestData.kinmuHiduke = shiftInfo.shiftHiduke;
+        }
+        
+        //リクエストマスターデータを取得
+        List<RequestMasterData> requestMasterList =  new ArrayList<>();
+        P_MK_RequestData PMKRD = new P_MK_RequestData();
+        // 一時テーブル格納パラメータ用
+        List workInfo =  new ArrayList();
+        workInfo.add(loginInfo.company_ID);
+        try {
+            requestMasterList = PMKRD.select(workInfo);
+        }catch(Exception e) {
+	    	e.printStackTrace();
+        }
+
+        request.setAttribute("shiftInfo", shiftInfo);
         request.setAttribute("loginInfo", loginInfo);
         request.setAttribute("requestData", requestData);
         request.setAttribute("categoryFlag", categoryFlag);
@@ -109,6 +130,7 @@ public class RequestConfirm extends HttpServlet {
         request.setAttribute("textarea", textarea);
         request.setAttribute("name", name);
         request.setAttribute("deleteFlag", deleteFlag);
+        request.setAttribute("requestMasterList", requestMasterList);	//リクエストマスターデータ
         if(requestFlag.equals("0")) {
         	// 早出申請
         	if(categoryFlag.equals("1")) {

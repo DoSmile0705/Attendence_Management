@@ -30,9 +30,13 @@ public class InformationList extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
 
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doPost(request,response);
+	}
+
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+     * 画面からのリクエストを受け取る
+     */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// リクエスト、レスポンスの文字コードセット
 		request.setCharacterEncoding("UTF-8");
@@ -106,10 +110,7 @@ public class InformationList extends HttpServlet {
             	}
             	
                 /*** お知らせ一覧を取得する処理 ***/
-            	// ▼▼▼ 2022.08.06 お知らせ一覧が9件しか出ない為、改修 ▼▼▼
-                //for(int i = dspCnt - 10; i < maxCnt - 1; i ++) {
                 for(int i = dspCnt - 10; i < maxCnt; i ++) {
-               	// ▲▲▲ 2022.08.06 お知らせ一覧が9件しか出ない為、改修 ▲▲▲
                 	MessageData msgData = new MessageData();
                 	msgData.id					= msgInfo.get(i).id;
                 	msgData.headerName			= msgInfo.get(i).headerName;
@@ -157,10 +158,7 @@ public class InformationList extends HttpServlet {
         // 全ページ数を画面に返す
         request.setAttribute("pageNum", pageNum);
 
-        // ▼▼▼ 2022.08.12 HTML→JSP変換対応 ▼▼▼
-        //RequestDispatcher dispatch = request.getRequestDispatcher("jsp/infoList.jsp");
         RequestDispatcher dispatch = request.getRequestDispatcher("news/news-1.jsp");
-        // ▲▲▲ 2022.08.12 HTML→JSP変換対応 ▲▲▲
         dispatch.forward(request, response);
 	}
 }

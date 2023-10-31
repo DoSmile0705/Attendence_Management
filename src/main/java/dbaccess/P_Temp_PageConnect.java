@@ -15,7 +15,7 @@ public class P_Temp_PageConnect {
 
 	/**
 	   * insertメソッド
-	   * P_TEMP_PageLinkにデータを登録する
+	   * P_Temp_PageConnectにデータを登録する
 	   * @param　	workInfo 登録情報
 	   * @return	なし
 	   */

@@ -456,6 +456,83 @@
     <servlet-class>mobile.ShiftPerformance</servlet-class>
       
   </servlet>
+  <servlet>
+  	<description>
+  	</description>
+  	<display-name>PerformanceList</display-name>
+  	<servlet-name>PerformanceList</servlet-name>
+  	<servlet-class>mobile.PerformanceList</servlet-class>
+  </servlet>
+  <servlet>
+  	<description>
+  	</description>
+  	<display-name>ShiftApplyHoliday</display-name>
+  	<servlet-name>ShiftApplyHoliday</servlet-name>
+  	<servlet-class>mobile.ShiftApplyHoliday</servlet-class>
+  </servlet>
+  <servlet>
+  	<description>
+  	</description>
+  	<display-name>ShiftApplyExecute</display-name>
+  	<servlet-name>ShiftApplyExecute</servlet-name>
+  	<servlet-class>mobile.ShiftApplyExecute</servlet-class>
+  </servlet>
+  <servlet>
+  	<description>
+  	</description>
+  	<display-name>SafetyConfirm</display-name>
+  	<servlet-name>SafetyConfirm</servlet-name>
+  	<servlet-class>mobile.SafetyConfirm</servlet-class>
+  </servlet>
+  <servlet>
+  	<description>
+  	</description>
+  	<display-name>SafetyContact</display-name>
+  	<servlet-name>SafetyContact</servlet-name>
+  	<servlet-class>mobile.SafetyContact</servlet-class>
+  </servlet>
+  <servlet>
+  	<description>
+  	</description>
+  	<display-name>LaborNoticeShow</display-name>
+  	<servlet-name>LaborNoticeShow</servlet-name>
+  	<servlet-class>mobile.LaborNoticeShow</servlet-class>
+  </servlet>
+  <servlet>
+  	<description>
+  	</description>
+  	<display-name>LaborNoticeRes</display-name>
+  	<servlet-name>LaborNoticeRes</servlet-name>
+  	<servlet-class>mobile.LaborNoticeRes</servlet-class>
+  </servlet>
+  <servlet>
+  	<description>
+  	</description>
+  	<display-name>LaborNoticePageLink</display-name>
+  	<servlet-name>LaborNoticePageLink</servlet-name>
+  	<servlet-class>mobile.LaborNoticePageLink</servlet-class>
+  </servlet>
+  <servlet>
+  	<description>
+  	</description>
+  	<display-name>EmployAgreeRes</display-name>
+  	<servlet-name>EmployAgreeRes</servlet-name>
+  	<servlet-class>mobile.EmployAgreeRes</servlet-class>
+  </servlet>
+  <servlet>
+  	<description>
+  	</description>
+  	<display-name>EmployAgreePageLink</display-name>
+  	<servlet-name>EmployAgreePageLink</servlet-name>
+  	<servlet-class>mobile.EmployAgreePageLink</servlet-class>
+  </servlet>
+  <servlet>
+  	<description>
+  	</description>
+  	<display-name>EmployAgreeList</display-name>
+  	<servlet-name>EmployAgreeList</servlet-name>
+  	<servlet-class>mobile.EmployAgreeList</servlet-class>
+  </servlet>
     
   <servlet-mapping>
       	
@@ -759,6 +836,50 @@
       	
     <url-pattern>/ShiftPerformance</url-pattern>
       
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>PerformanceList</servlet-name>
+  	<url-pattern>/PerformanceList</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>ShiftApplyHoliday</servlet-name>
+  	<url-pattern>/ShiftApplyHoliday</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>ShiftApplyExecute</servlet-name>
+  	<url-pattern>/ShiftApplyExecute</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>SafetyConfirm</servlet-name>
+  	<url-pattern>/SafetyConfirm</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>SafetyContact</servlet-name>
+  	<url-pattern>/SafetyContact</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>LaborNoticeShow</servlet-name>
+  	<url-pattern>/LaborNoticeShow</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>LaborNoticeRes</servlet-name>
+  	<url-pattern>/LaborNoticeRes</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>LaborNoticePageLink</servlet-name>
+  	<url-pattern>/LaborNoticePageLink</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>EmployAgreeRes</servlet-name>
+  	<url-pattern>/EmployAgreeRes</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>EmployAgreePageLink</servlet-name>
+  	<url-pattern>/EmployAgreePageLink</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>EmployAgreeList</servlet-name>
+  	<url-pattern>/EmployAgreeList</url-pattern>
   </servlet-mapping>
   
 </web-app>

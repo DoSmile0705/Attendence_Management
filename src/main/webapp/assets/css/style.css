@@ -113,6 +113,15 @@ button {
   margin-top: 3rem;
 }
 
+
+
+.stay {
+  /*touch-action: none;*/
+  position: sticky;
+  background-color: #FFFFFF;
+  top: 50px;
+}
+
 .btn a, .btn button {
   display: block;
   width: 100%;
@@ -1232,7 +1241,11 @@ body .p-work .cal .cal-contents table td.all {
 body .p-work .cal .cal-contents table td.se {
   background: linear-gradient(144deg, #5EAC25, #5EAC25 50%, #0F0080 51%, #0F0080);
 }
-
+/*▼▼▼2022.10.19 【追加】▼▼▼*/
+body .p-work .cal .cal-contents table td.red {
+  background-color: #E52D5F;
+}
+/*▲▲▲2022.10.19 【追加】▲▲▲*/
 body .p-work .cal .cal-contents table td.current span {
   display: block;
   background-color: #E52D5F;
@@ -1294,7 +1307,6 @@ body .p-work .dcal .dcal-archive .dcal-item .left .d {
   font-size: 3rem;
   font-weight: bold;
 }
-
 body .p-work .dcal .dcal-archive .dcal-item .left .dow {
   font-size: 2.3rem;
   margin-top: -1.5rem;
@@ -1507,4 +1519,10 @@ body footer ul li a, body footer ul li button {
   padding: 1.5rem 0;
   font-weight: bold;
 }
+
+p.gpsInfo {
+  font-size: 0.9rem !important;
+  text-align: center;
+}
+} 
 /*# sourceMappingURL=style.css.map */

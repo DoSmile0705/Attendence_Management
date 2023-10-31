@@ -26,12 +26,15 @@ public class WorkStartConfirm extends HttpServlet {
      */
     public WorkStartConfirm() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doPost(request,response);
+	}
+
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+     * 画面からのリクエストを受け取る
+     */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// リクエスト、レスポンスの文字コードセット
 		request.setCharacterEncoding("UTF-8");
@@ -41,6 +44,7 @@ public class WorkStartConfirm extends HttpServlet {
         // シフト情報パラメータ受け取り
         ShiftInfo shiftInfo = new ShiftInfo();
         shiftInfo.shiftHiduke		= check.emptyOrNull(request.getParameter("shiftHiduke"));
+        shiftInfo.note				= check.emptyOrNull(request.getParameter("shiftNote"));
         shiftInfo.bgnTimeDate		= check.emptyOrNull(request.getParameter("bgnTimeDate"));
         shiftInfo.bgnTime			= check.emptyOrNull(request.getParameter("bgnTime"));
         shiftInfo.endTimeDate		= check.emptyOrNull(request.getParameter("endTimeDate"));
@@ -56,13 +60,12 @@ public class WorkStartConfirm extends HttpServlet {
         shiftInfo.adrPostNo			= check.emptyOrNull(request.getParameter("adrPostNo"));
         shiftInfo.adrMain			= check.emptyOrNull(request.getParameter("adrMain"));
         shiftInfo.adrSub			= check.emptyOrNull(request.getParameter("adrSub"));
+        shiftInfo.id				= check.emptyOrNull(request.getParameter("shiftDataId"));
+        shiftInfo.timeFlag			= check.emptyOrNull(request.getParameter("timeFlag"));
         // ログイン情報の受け取り
         LoginInfo loginInfo = new LoginInfo();
-        /** ▼▼▼2022/7/28 Id → WorkerIndexに変更▼▼▼ **/
-        //loginInfo.id				= check.emptyOrNull(request.getParameter("loginid"));
         loginInfo.workerIndex		= check.emptyOrNull(request.getParameter("loginid"));
         loginInfo.id				= check.emptyOrNull(request.getParameter("id"));
-        /** ▲▲▲2022/7/28 Id → WorkerIndexに変更▲▲▲ **/
         loginInfo.loginInfo1_Value	= check.emptyOrNull(request.getParameter("password1"));
         loginInfo.loginInfo2_Value	= check.emptyOrNull(request.getParameter("password2"));
         loginInfo.email_Value		= check.emptyOrNull(request.getParameter("mailaddress"));
@@ -81,6 +84,8 @@ public class WorkStartConfirm extends HttpServlet {
         String attendStamp			= check.emptyOrNull(request.getParameter("attendStamp"));
         String leaveStamp			= check.emptyOrNull(request.getParameter("leaveStamp"));
         String shiftFlag			= check.emptyOrNull(request.getParameter("shiftFlag"));
+        String attendStampFive		= check.emptyOrNull(request.getParameter("attendStampFive"));
+        String leaveStampFive		= check.emptyOrNull(request.getParameter("leaveStampFive"));
 
         PrintWriter out = response.getWriter();
 
@@ -96,10 +101,7 @@ public class WorkStartConfirm extends HttpServlet {
             request.setAttribute("shiftInfo", shiftInfo);
             request.setAttribute("loginInfo", loginInfo);
             request.setAttribute("stampFlag", stampFlag);	// 打刻種別
-            // ▼▼▼ 2022.08.16 HTML→JSP変換対応 ▼▼▼
-    		//RequestDispatcher dispatch = request.getRequestDispatcher("jsp/cancelConfirm.jsp");
     		RequestDispatcher dispatch = request.getRequestDispatcher("stamp/stamp-7.jsp");
-            // ▲▲▲ 2022.08.16 HTML→JSP変換対応 ▲▲▲
             dispatch.forward(request, response);
         } else {
         	if(shiftFlag == null) {
@@ -107,13 +109,8 @@ public class WorkStartConfirm extends HttpServlet {
                 request.setAttribute("shiftInfo", shiftInfo);
                 request.setAttribute("loginInfo", loginInfo);
                 request.setAttribute("stampFlag", stampFlag);	// 打刻種別
-                request.setAttribute("attendStamp", attendStamp);
-                request.setAttribute("leaveStamp", leaveStamp);
                 request.setAttribute("shiftFlag", shiftFlag);
-                // ▼▼▼ 2022.08.16 HTML→JSP変換対応 ▼▼▼
-        		//RequestDispatcher dispatch = request.getRequestDispatcher("jsp/startConfirm.jsp");
         		RequestDispatcher dispatch = request.getRequestDispatcher("stamp/stamp-3.jsp");
-                // ▲▲▲ 2022.08.16 HTML→JSP変換対応 ▲▲▲
                 dispatch.forward(request, response);
             // シフトなしの場合はstamp-9へ
         	}else {
@@ -122,6 +119,8 @@ public class WorkStartConfirm extends HttpServlet {
                 request.setAttribute("stampFlag", stampFlag);	// 打刻種別
                 request.setAttribute("attendStamp", attendStamp);
                 request.setAttribute("leaveStamp", leaveStamp);
+                request.setAttribute("attendStampFive", attendStampFive);
+                request.setAttribute("leaveStampFive", leaveStampFive);
                 request.setAttribute("shiftFlag", shiftFlag);
         		RequestDispatcher dispatch = request.getRequestDispatcher("stamp/stamp-9.jsp");
                 dispatch.forward(request, response);
@@ -129,5 +128,4 @@ public class WorkStartConfirm extends HttpServlet {
         }
 		
 	}
-
 }
