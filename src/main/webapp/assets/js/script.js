@@ -30,6 +30,15 @@ function stopAllLoad() {
 // GPSを取得する
 function getGpsData(frm) {
 	
+	// 緯度、経度を初期化
+	if(document.getElementsByName("geoIdo") != null){
+		$('input[name="geoIdo"]').val("");
+	}
+	
+	if(document.getElementsByName("geoKeido") != null){
+    	$('input[name="geoKeido"]').val("");
+	}
+    
 	navigator.geolocation.getCurrentPosition((position) => {
 
 		// 緯度取得

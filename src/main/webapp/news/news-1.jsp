@@ -74,7 +74,7 @@ private String GetFormatInfoDate(String dateTime) {
   <!-- bootstrap CSS読み込み -->
   <link href="./assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <!-- スタイルシート読み込み -->
-  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="stylesheet" href="./assets/css/style.css?<%=(new SimpleDateFormat("yyyyMMddHHmmssSSS")).format(new Date())%>">
 
   <!-- Favicon
   -------------------------------------------------- -->

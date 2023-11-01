@@ -5,6 +5,8 @@
 <%@ page import="util.ShiftInfo" %>
 <%@ page import="util.RequestData" %>
 <%@ page import="util.Constant" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.util.Date" %>
 <%
 // ***************************************************
 // work-8.jsp
@@ -49,7 +51,7 @@ if(loginInfo.sessionId == null){
   <!-- bootstrap CSS読み込み -->
   <link href="./assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <!-- スタイルシート読み込み -->
-  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="stylesheet" href="./assets/css/style.css?<%=(new SimpleDateFormat("yyyyMMddHHmmssSSS")).format(new Date())%>">
 
   <!-- Favicon
   -------------------------------------------------- -->
