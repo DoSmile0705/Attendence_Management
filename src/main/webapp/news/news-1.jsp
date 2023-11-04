@@ -443,5 +443,6 @@ window.onload = function(){
 	showDate();
 }
 </script>
+	<jsp:include page="../loading.jsp" />
 </body>
 </html>

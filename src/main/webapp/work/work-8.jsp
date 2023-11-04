@@ -286,5 +286,6 @@ function GetDateTime() {
 setInterval('GetDateTime()',60000);
 </script>
 
+	<jsp:include page="../loading.jsp" />
 </body>
 </html>

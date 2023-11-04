@@ -14,5 +14,6 @@ LocalDateTime nowDate = LocalDateTime.now(ZoneId.of("Asia/Tokyo"));
 </head>
 <body>
 <%=nowDate%>
+	<jsp:include page="loading.jsp" />
 </body>
 </html>

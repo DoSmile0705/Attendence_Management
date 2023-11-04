@@ -38,7 +38,13 @@ function getGpsData(frm) {
 	if(document.getElementsByName("geoKeido") != null){
     	$('input[name="geoKeido"]').val("");
 	}
-    
+	
+	// サブミット処理時にローディング画面を表示する
+	if(!$("#disp_blocker").length){
+		//ブロッカーの表示
+		showDispBlocker();
+	}
+	
 	navigator.geolocation.getCurrentPosition((position) => {
 
 		// 緯度取得

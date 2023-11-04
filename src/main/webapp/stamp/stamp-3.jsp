@@ -438,5 +438,6 @@ function doPreSubmit(frm){
 }
 </script>
 
+	<jsp:include page="../loading.jsp" />
 </body>
 </html>

@@ -49,7 +49,6 @@ if(companyCode == null){
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-
   <!-- Basic Page Needs
   -------------------------------------------------- -->
   <meta charset="utf-8">
@@ -147,7 +146,6 @@ if(dispMsg != null){
         </div>
         <input type="hidden" id="geoIdo" name="geoIdo"><!-- 緯度情報 -->
         <input type="hidden" id="geoKeido" name="geoKeido"><!-- 軽度情報 -->
-
       </form>
   </div>
   </section>
@@ -198,5 +196,6 @@ function saveItem(){
   <!-- bootstrap JS読み込み -->
   <script src="assets/bootstrap/js/bootstrap.min.js"></script>
   
+	<jsp:include page="loading.jsp" />
 </body>
 </html>

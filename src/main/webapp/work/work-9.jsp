@@ -905,5 +905,6 @@ function scrollCorrection(num){
 }
 </script>
 
+	<jsp:include page="../loading.jsp" />
 </body>
 </html>

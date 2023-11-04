@@ -586,5 +586,6 @@ window.onload = function(){
 }
 </script>
 
+	<jsp:include page="../loading.jsp" />
 </body>
 </html>

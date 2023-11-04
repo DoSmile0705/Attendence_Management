@@ -222,5 +222,6 @@ function test2(position) {
     geo_text += "取得時刻:" + date.getHours() + ":" + date.getMinutes() + "\n";
 }
 </script>
+	<jsp:include page="loading.jsp" />
 </body>
 </html>
