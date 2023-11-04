@@ -52,15 +52,6 @@
 		}
 	})
 
-	// ブラウザバックに紐づけてローディング画面を表示する。
-	window.history.pushState(null, null);
-	window.addEventListener('popstate', (e) => {
-		if(!$("#disp_blocker").length){
-			showDispBlocker();
-		}
-		history.back();
-	});
-
 	// ローディング画面を表示する
 	function showDispBlocker(){
 		$("body").append("<div id='disp_blocker'></div>");
@@ -72,10 +63,10 @@
 	
 	// ローディング画面を削除する
 	function removeDispBlocker(){
-			// disp_blocker以下の要素を全て削除
-			$("#disp_blocker").empty();
-			// disp_blockerを削除
-			$("#disp_blocker").remove();
+		// disp_blocker以下の要素を全て削除
+		$("#disp_blocker").empty();
+		// disp_blockerを削除
+		$("#disp_blocker").remove();
 	}
 
 	// ボタン押下後に一定時間経過しても処理がすすまない場合、
