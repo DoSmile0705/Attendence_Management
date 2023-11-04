@@ -64,7 +64,7 @@ function getGpsData(frm) {
 		// submit実行
 		frm.submit();
 	// GPS未送信時のsubmit実行
-	},frm.submit());
+	},function(){frm.submit()});
 		
 }
 
