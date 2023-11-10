@@ -7,5 +7,6 @@
 </head>
 <body>
 
+	<jsp:include page="loading.jsp" />
 </body>
 </html>

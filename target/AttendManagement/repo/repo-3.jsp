@@ -95,6 +95,8 @@ private String GetFormatStampTime(String dateTime) {
   <link href="./assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <!-- スタイルシート読み込み -->
   <link rel="stylesheet" href="./assets/css/style.css?<%=(new SimpleDateFormat("yyyyMMddHHmmssSSS")).format(new Date())%>">
+  <!-- 警備ポータル用スタイルシート読み込み -->
+  <link rel="stylesheet" href="./assets/css/AttendManegement.css?<%=(new SimpleDateFormat("yyyyMMddHHmmssSSS")).format(new Date())%>">
 
   <!-- Favicon
   -------------------------------------------------- -->
@@ -336,5 +338,6 @@ window.onload = function(){
 }
 </script>
 
+	<jsp:include page="../loading.jsp" />
 </body>
 </html>

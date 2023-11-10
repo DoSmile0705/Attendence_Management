@@ -116,7 +116,7 @@ public String decrypt (String text) {
 <%=request.getParameter("password2") %>
 <%=request.getParameter("mailaddress") %>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-<script src="assets/js/script.js"></script>
+<script src="assets/js/script.js?<%=(new SimpleDateFormat("yyyyMMddHHmmssSSS")).format(new Date())%>"></script>
 <form action="<%= request.getContextPath() %>/Driver" method="post">
   <div class="container-fluid bg-info">
     ポータルサイト利用開始
@@ -222,5 +222,6 @@ function test2(position) {
     geo_text += "取得時刻:" + date.getHours() + ":" + date.getMinutes() + "\n";
 }
 </script>
+	<jsp:include page="loading.jsp" />
 </body>
 </html>

@@ -30,6 +30,21 @@ function stopAllLoad() {
 // GPSを取得する
 function getGpsData(frm) {
 	
+	// 緯度、経度を初期化
+	if(document.getElementsByName("geoIdo") != null){
+		$('input[name="geoIdo"]').val("");
+	}
+	
+	if(document.getElementsByName("geoKeido") != null){
+    	$('input[name="geoKeido"]').val("");
+	}
+	
+	// サブミット処理時にローディング画面を表示する
+	if(!$("#disp_blocker").length){
+		//ブロッカーの表示
+		showDispBlocker();
+	}
+	
 	navigator.geolocation.getCurrentPosition((position) => {
 
 		// 緯度取得
@@ -49,7 +64,7 @@ function getGpsData(frm) {
 		// submit実行
 		frm.submit();
 	// GPS未送信時のsubmit実行
-	},frm.submit());
+	},function(){frm.submit()});
 		
 }
 

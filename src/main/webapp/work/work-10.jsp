@@ -731,11 +731,11 @@ for(int j = 0; j < GetDayOfMonth(GetFormatYYYYMM(nowDate)); j ++){
 				num ++;
 %>
                       <li class="work-item" style=background-color:<%=shiftReq.get(k).backColorFlag%>>
-      		        <form action="<%= request.getContextPath() %>/ShiftApplyHoliday" method="post" accept-charset="UTF-8">
 <%
 				//翌日以降のシフトのみ申請可能
 				if(Integer.parseInt(GetNowDateYYYYMMDD()) < Integer.parseInt(shiftReq.get(k).hiduke)){
 %>
+      		        <form action="<%= request.getContextPath() %>/ShiftApplyHoliday" method="post" accept-charset="UTF-8">
                         <button>
                           <div class="w-ttl"><%=shiftReq.get(k).requestName %></div>
                         </button>
@@ -799,11 +799,11 @@ for(int j = 0; j < GetDayOfMonth(GetFormatYYYYMM(nowDate)); j ++){
 %>
 					
 					<li class="work-item gray">
-					  <form action="<%= request.getContextPath() %>/ShiftApplyHoliday" method="post" accept-charset="UTF-8">
 <%
 					//翌日以降のシフトのみ申請可能
 					if(Integer.parseInt(GetNowDateYYYYMMDD()) < Integer.parseInt(GetDateYYYYMM(nowDate) + String.format("%02d", j + 1))){
 %>
+					  <form action="<%= request.getContextPath() %>/ShiftApplyHoliday" method="post" accept-charset="UTF-8">
 					  <button>
 					     <div class="w-ttl">未申請</div>
 					  </button>
@@ -887,11 +887,11 @@ for(int j = 0; j < GetDayOfMonth(GetFormatYYYYMM(nowDate)); j ++){
 		if(!shiftFlag){
 %>
 			<li class="work-item gray">
-			  <form action="<%= request.getContextPath() %>/ShiftApplyHoliday" method="post" accept-charset="UTF-8">
 <%
 			//翌日以降のシフトのみ申請可能
 			if(Integer.parseInt(GetNowDateYYYYMMDD()) < Integer.parseInt(GetDateYYYYMM(nowDate) + String.format("%02d", j + 1))){
 %>
+			  <form action="<%= request.getContextPath() %>/ShiftApplyHoliday" method="post" accept-charset="UTF-8">
 			  <button>
 			     <div class="w-ttl">未申請</div>
 			  </button>

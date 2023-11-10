@@ -1,6 +1,8 @@
 <!-- ログイン画面 -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="util.LoginInfo" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.util.Date" %>
 <%@ page import="java.lang.Object" %>
 <%@ page import="util.Constant" %>
 <%
@@ -47,7 +49,6 @@ if(companyCode == null){
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-
   <!-- Basic Page Needs
   -------------------------------------------------- -->
   <meta charset="utf-8">
@@ -68,7 +69,7 @@ if(companyCode == null){
   <!-- bootstrap CSS読み込み -->
   <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <!-- スタイルシート読み込み -->
-  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/style.css?<%=(new SimpleDateFormat("yyyyMMddHHmmssSSS")).format(new Date())%>">
 
   <!-- Favicon
   -------------------------------------------------- -->
@@ -143,9 +144,10 @@ if(dispMsg != null){
         <div class="submit">
           <button type="submit" onclick="saveItem()">利用開始</button>
         </div>
+
+
         <input type="hidden" id="geoIdo" name="geoIdo"><!-- 緯度情報 -->
         <input type="hidden" id="geoKeido" name="geoKeido"><!-- 軽度情報 -->
-
       </form>
   </div>
   </section>
@@ -196,5 +198,6 @@ function saveItem(){
   <!-- bootstrap JS読み込み -->
   <script src="assets/bootstrap/js/bootstrap.min.js"></script>
   
+	<jsp:include page="loading.jsp" />
 </body>
 </html>

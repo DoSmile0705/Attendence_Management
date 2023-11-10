@@ -300,4 +300,5 @@ for(int i = 0; i < msgInfo.size(); i ++) {
 労働通知書雇用契約書確認
 <br><br>
 労働規約&nbsp&nbsp使い方&nbsp&nbspフッター&nbsp&nbsp初めに戻る
+	<jsp:include page="loading.jsp" />
 </html>
