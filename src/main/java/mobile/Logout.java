@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * Servlet implementation class Logout
@@ -35,6 +36,11 @@ public class Logout extends HttpServlet {
         response.setContentType("text/html; charset=UTF-8");
         // ログアウト処理
         request.logout();
+    	// セッションのワーカーID削除
+		HttpSession session = request.getSession(true);
+		session.removeAttribute("workerId");
+		// ログアウトフラグを設定
+        request.setAttribute("logOutFlg", "true");
         // ログイン画面へ
 		RequestDispatcher dispatch = request.getRequestDispatcher("login.jsp");
         dispatch.forward(request, response);

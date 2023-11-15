@@ -26,6 +26,7 @@ String password1 = (String)request.getAttribute("password1");
 //サーブレットからの遷移でない場合はURLのパラメータ「パスワード」を取得
 if(password1 == null){
 	password1 = request.getParameter("password1");
+	System.out.println("password1:" + password1);
 }
 
 String password2 = (String)request.getAttribute("password2");
@@ -35,8 +36,13 @@ String mailaddress = (String)request.getAttribute("mailaddress");
 //サーブレットからの遷移でない場合はURLのパラメータ「メールアドレス」を取得
 if(mailaddress == null){
 	mailaddress = request.getParameter("mailaddress");
+	System.out.println("mailaddress:" + mailaddress);
 }
 String dispMsg = (String)request.getAttribute("dispMsg");
+// メッセージがNULLであれば空文字を設定
+if(dispMsg == null){
+	dispMsg = "";
+}
 
 //サーブレットから「会社識別番号」を取得
 String companyCode = (String)request.getAttribute("companyCode");
@@ -44,6 +50,14 @@ String companyCode = (String)request.getAttribute("companyCode");
 if(companyCode == null){
 	companyCode = request.getParameter("companyCode");
 }
+
+//サーブレットから「ログアウトフラグ」を取得
+String logOutFlg = (String)request.getAttribute("logOutFlg");
+//ログアウトフラグがNULLであれば空文字を設定
+if(logOutFlg == null){
+	logOutFlg = "";
+}
+
 %>
 
 <!DOCTYPE html>
@@ -70,6 +84,13 @@ if(companyCode == null){
   <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <!-- スタイルシート読み込み -->
   <link rel="stylesheet" href="assets/css/style.css?<%=(new SimpleDateFormat("yyyyMMddHHmmssSSS")).format(new Date())%>">
+
+   <!-- Script
+  -------------------------------------------------- -->
+  <!-- Jquery読み込み -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <!-- bootstrap JS読み込み -->
+  <script src="assets/bootstrap/js/bootstrap.min.js"></script>
 
   <!-- Favicon
   -------------------------------------------------- -->
@@ -142,8 +163,12 @@ if(dispMsg != null){
 
 
         <div class="submit">
-          <button type="submit" onclick="saveItem()">利用開始</button>
+          <button type="submit" id="submitId" onclick="saveItem()">利用開始</button>
         </div>
+
+        <input type="hidden" id="loginTransitionFlg" name="loginTransitionFlg" value="true"><!-- 初回ログインフラグ -->
+        <input type="hidden" id="logOutFlg" name="logOutFlg" value="<%=logOutFlg %>"><!-- ログアウトフラグ -->
+        <input type="hidden" id="dispMsg" name="dispMsg" value="<%=dispMsg %>"><!-- 表示メッセージ -->
         <input type="hidden" id="geoIdo" name="geoIdo"><!-- 緯度情報 -->
         <input type="hidden" id="geoKeido" name="geoKeido"><!-- 軽度情報 -->
       </form>
@@ -152,22 +177,6 @@ if(dispMsg != null){
 
 <script>
 // ブラウザに保存されているログイン情報を呼び出す
-window.onload = function(){
-	if(localStorage.getItem('loginid') != null){
-		document.getElementById("loginid").value = localStorage.getItem('loginid');
-	}
-	if(localStorage.getItem('password1') != null){
-		document.getElementById("password1").value = localStorage.getItem('password1');
-	}
-	if(localStorage.getItem('companyCode') != null){
-		document.getElementById("companyCode").value = localStorage.getItem('companyCode');
-	}
-	if(localStorage.getItem('mailaddress') != null){
-		document.getElementById("mailaddress").value = localStorage.getItem('mailaddress');
-	}
-	// 位置情報を取得する処理
-    navigator.geolocation.getCurrentPosition(test2);
-}
 function test2(position) {
 
     var latitude  = position.coords.latitude;
@@ -187,14 +196,54 @@ function saveItem(){
 		localStorage.setItem('mailaddress', document.getElementById("mailaddress").value);
 	}
 }
-</script>
 
-   <!-- Script
-  -------------------------------------------------- -->
-  <!-- Jquery読み込み -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <!-- bootstrap JS読み込み -->
-  <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+function removeStorage(){
+	localStorage.removeItem('loginid');
+	localStorage.removeItem('password1');
+	localStorage.removeItem('companyCode');
+	localStorage.removeItem('mailaddress');
+	alert("ストレージ削除");
+}
+
+$(document).ready(function(){
+
+	// ログイン失敗時には以降の処理を実施市内
+	if(document.getElementById("dispMsg").value != ""){
+		return false;
+	}
+	
+	// リンクから送られてきた値が全て入っている場合、ログイン情報を保存するチェックボックスにチェックを入れる
+	if(document.getElementById("loginid").value != "" && document.getElementById("password1").value != "" 
+		&& document.getElementById("companyCode").value != "" && document.getElementById("mailaddress").value != "" ){
+		document.getElementById("save").checked = true;
+	}
+	
+	if(document.getElementById("loginid").value == "" && localStorage.getItem('loginid') != null){
+		document.getElementById("loginid").value = localStorage.getItem('loginid');
+	}
+	if(document.getElementById("password1").value == "" && localStorage.getItem('password1') != null){
+		document.getElementById("password1").value = localStorage.getItem('password1');
+	}
+	if(document.getElementById("companyCode").value == "" && localStorage.getItem('companyCode') != null){
+		document.getElementById("companyCode").value = localStorage.getItem('companyCode');
+	}
+	if(document.getElementById("mailaddress").value == "" && localStorage.getItem('mailaddress') != null){
+		document.getElementById("mailaddress").value = localStorage.getItem('mailaddress');
+	}
+	// 位置情報を取得する処理
+    navigator.geolocation.getCurrentPosition(test2);
+
+	if(document.getElementById("logOutFlg").value != ""){
+		return false;
+	}
+    
+    if(document.getElementById("loginid").value != "" && document.getElementById("password1").value != ""
+        && document.getElementById("companyCode").value != "" && document.getElementById("mailaddress").value != ""){
+    	document.getElementById("submitId").click();
+    }
+
+});
+</script>
   
 	<jsp:include page="loading.jsp" />
 </body>

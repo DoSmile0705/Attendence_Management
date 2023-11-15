@@ -17,6 +17,7 @@ import dbaccess.P_MW_Worker;
 import dbaccess.P_Shift_SheetDataUp;
 import dbaccess.P_System_Value;
 import dbaccess.P_Time_StampData;
+import util.Authorization;
 import util.Constant;
 import util.DataCheck;
 import util.LoginInfo;
@@ -39,6 +40,16 @@ public class Login extends HttpServlet {
      * 画面からのリクエストを受け取る
      */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		// ログイン直後以外セッションのチェックを実施する。
+		if(request.getParameter("loginTransitionFlg") == null) {
+			if(Authorization.isSessionValidChk(request) == false) {
+				RequestDispatcher dispatch = request.getRequestDispatcher("login.jsp");
+				dispatch.forward(request, response);
+				return;
+			}
+		}
+		
 		// リクエスト、レスポンスの文字コードセット
 		request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
@@ -251,6 +262,11 @@ public class Login extends HttpServlet {
         	}else {
             	loginInfo.geoKeido_Value = geoKeido;
         	}
+        	
+        	// セッションにワーカーIDを設定する
+			HttpSession session = request.getSession(true);
+			session.setAttribute("workerId", loginInfo.id);
+			
         	/***位置情報がすでに暗号化されているか確認***/
     		// セッションを暗号化して画面に渡す
             loginInfo.sessionId = utilConv.encrypt(sessionId);
