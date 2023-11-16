@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import dbaccess.P_Shift_SheetDataUp;
 import dbaccess.P_Time_StampData;
+import util.Authorization;
 import util.DataCheck;
 import util.LoginInfo;
 import util.ShiftInfo;
@@ -37,6 +38,14 @@ public class WorkStartExecute extends HttpServlet {
      */
 	@SuppressWarnings("unchecked")
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		// セッションがなければログイン画面に遷移する。
+		if(Authorization.isSessionValidChk(request) == false) {
+			RequestDispatcher dispatch = request.getRequestDispatcher("login.jsp");
+			dispatch.forward(request, response);
+			return;
+		}
+		
 		// リクエスト、レスポンスの文字コードセット
 		request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");

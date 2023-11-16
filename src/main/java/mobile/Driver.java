@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import util.Authorization;
 import util.LoginInfo;
 
 /**
@@ -28,6 +29,14 @@ public class Driver extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		// セッションがなければログイン画面に遷移する。
+		if(Authorization.isSessionValidChk(request) == false) {
+			RequestDispatcher dispatch = request.getRequestDispatcher("login.jsp");
+			dispatch.forward(request, response);
+			return;
+		}
+		
 		// リクエスト、レスポンスの文字コードセット
 		request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");

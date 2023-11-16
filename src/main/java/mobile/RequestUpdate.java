@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dbaccess.P_Kinmu_RequestData;
+import util.Authorization;
 import util.DataCheck;
 import util.LoginInfo;
 import util.RequestData;
@@ -37,6 +38,14 @@ public class RequestUpdate extends HttpServlet {
      * 画面からのリクエストを受け取る
      */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		// セッションがなければログイン画面に遷移する。
+		if(Authorization.isSessionValidChk(request) == false) {
+			RequestDispatcher dispatch = request.getRequestDispatcher("login.jsp");
+			dispatch.forward(request, response);
+			return;
+		}
+		
 		// リクエスト、レスポンスの文字コードセット
 		request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");

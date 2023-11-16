@@ -14,6 +14,7 @@ import dbaccess.P_Kinmu_RequestData;
 import dbaccess.P_MK_RequestKubun;
 import dbaccess.P_Shift_Request;
 import dbaccess.P_Shift_SheetDataUp;
+import util.Authorization;
 import util.DataCheck;
 import util.LoginInfo;
 import util.RequestData;
@@ -43,6 +44,14 @@ public class ShiftApplyExecute extends HttpServlet {
      * 画面からのリクエストを受け取る
      */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		// セッションがなければログイン画面に遷移する。
+		if(Authorization.isSessionValidChk(request) == false) {
+			RequestDispatcher dispatch = request.getRequestDispatcher("login.jsp");
+			dispatch.forward(request, response);
+			return;
+		}
+		
 		// リクエスト、レスポンスの文字コードセット
 		request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");

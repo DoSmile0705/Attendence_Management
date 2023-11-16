@@ -26,7 +26,6 @@ String password1 = (String)request.getAttribute("password1");
 //サーブレットからの遷移でない場合はURLのパラメータ「パスワード」を取得
 if(password1 == null){
 	password1 = request.getParameter("password1");
-	System.out.println("password1:" + password1);
 }
 
 String password2 = (String)request.getAttribute("password2");
@@ -36,7 +35,6 @@ String mailaddress = (String)request.getAttribute("mailaddress");
 //サーブレットからの遷移でない場合はURLのパラメータ「メールアドレス」を取得
 if(mailaddress == null){
 	mailaddress = request.getParameter("mailaddress");
-	System.out.println("mailaddress:" + mailaddress);
 }
 String dispMsg = (String)request.getAttribute("dispMsg");
 // メッセージがNULLであれば空文字を設定
