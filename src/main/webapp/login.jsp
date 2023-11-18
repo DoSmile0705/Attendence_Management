@@ -37,7 +37,7 @@ if(mailaddress == null){
 	mailaddress = request.getParameter("mailaddress");
 }
 String dispMsg = (String)request.getAttribute("dispMsg");
-// メッセージがNULLであれば空文字を設定
+// メッセージがNULLであれば空文字を設定 自動ログイン失敗時に再度自動ログインしないように利用
 if(dispMsg == null){
 	dispMsg = "";
 }
@@ -195,17 +195,9 @@ function saveItem(){
 	}
 }
 
-function removeStorage(){
-	localStorage.removeItem('loginid');
-	localStorage.removeItem('password1');
-	localStorage.removeItem('companyCode');
-	localStorage.removeItem('mailaddress');
-	alert("ストレージ削除");
-}
-
 $(document).ready(function(){
 
-	// ログイン失敗時には以降の処理を実施市内
+	// ログイン失敗時には以降の処理を実施しない
 	if(document.getElementById("dispMsg").value != ""){
 		return false;
 	}
@@ -215,7 +207,8 @@ $(document).ready(function(){
 		&& document.getElementById("companyCode").value != "" && document.getElementById("mailaddress").value != "" ){
 		document.getElementById("save").checked = true;
 	}
-	
+
+	// リンクから送られてきた値がない、かつローカルストレージに値がある場合にはローカルストレージの値を設定する
 	if(document.getElementById("loginid").value == "" && localStorage.getItem('loginid') != null){
 		document.getElementById("loginid").value = localStorage.getItem('loginid');
 	}
@@ -228,13 +221,16 @@ $(document).ready(function(){
 	if(document.getElementById("mailaddress").value == "" && localStorage.getItem('mailaddress') != null){
 		document.getElementById("mailaddress").value = localStorage.getItem('mailaddress');
 	}
+	
 	// 位置情報を取得する処理
     navigator.geolocation.getCurrentPosition(test2);
 
+	// ログアウト後は自動ログインしない
 	if(document.getElementById("logOutFlg").value != ""){
 		return false;
 	}
-    
+
+    // 画面表示時、入力項目が全て設定されている場合自動的にログインする
     if(document.getElementById("loginid").value != "" && document.getElementById("password1").value != ""
         && document.getElementById("companyCode").value != "" && document.getElementById("mailaddress").value != ""){
     	document.getElementById("submitId").click();

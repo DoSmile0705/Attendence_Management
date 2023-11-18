@@ -263,7 +263,7 @@ public class Login extends HttpServlet {
             	loginInfo.geoKeido_Value = geoKeido;
         	}
         	
-        	// セッションにワーカーIDを設定する
+        	// セッションにワーカーIDを設定する セッションが有効かどうかの判断に使用
 			HttpSession session = request.getSession(true);
 			session.setAttribute("workerId", loginInfo.id);
 			
