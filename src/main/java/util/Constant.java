@@ -17,7 +17,7 @@ public class Constant {
 	public static String dbName		= System.getenv("SQLAZURECONNSTR_dbId");
 	public static String user		= System.getenv("SQLCONNSTR_useId");
 	public static String password	= System.getenv("SQLCONNSTR_pass");
-	public static final String URL	= String.format("jdbc:sqlserver://%s:1433;database=%s;user=%s;password=%s;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;", hostName, dbName, user, password);
+	public static final String URL	= String.format("jdbc:sqlserver://sacportal-futu.database.windows.net:1433;database=Futu_Data;user=dbadmin@sacportal-futu;password=sac001SAC001;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;", hostName, dbName, user, password);
     //*/
 	// JDBCドライバ
 	public static final String DRIVER			= "com.microsoft.sqlserver.jdbc.SQLServerDriver";

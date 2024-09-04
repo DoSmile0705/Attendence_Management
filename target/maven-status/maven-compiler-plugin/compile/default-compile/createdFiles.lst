@@ -20,6 +20,7 @@ dbaccess\P_System_Value.class
 dbaccess\P_Kinmu_RequestData.class
 util\OtherGuard.class
 mobile\AttendList.class
+util\Authorization.class
 mobile\SafetyContact.class
 mobile\RequestUpdate.class
 util\SafetyInfo.class
