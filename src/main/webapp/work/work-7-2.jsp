@@ -15,7 +15,7 @@
 <%
 // ***************************************************
 // work-7.jsp
-// 経費申請
+// 交通申請
 // ***************************************************
 %>
 <%
@@ -205,7 +205,7 @@ private String GetFormatshiftHiduke(String dateTime) {
     <section class="inner">
       <!-- ページタイトル -->
       <h1 class="m-ttl">
-        経費申請
+        交通申請
       </h1>
     </section>
 
@@ -224,7 +224,7 @@ private String GetFormatshiftHiduke(String dateTime) {
         <!-- ボタン -->
         <form method="post" action="<%= request.getContextPath() %>/RequestProcess" method="post" accept-charset="UTF-8">
 
-          <label for="name">経費申請</label>
+          <label for="name">交通申請</label>
           <p><span><%=name %></span>円</p>
 
           <label for="textarea">その他・申請内容</label>

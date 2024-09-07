@@ -515,6 +515,43 @@ if(shiftInfo.endStampTime != null){
         <h2>現在の申請状況</h2>
         <ul class="status-archive">
 <%
+if(requestEarly.certification != null){
+	switch(requestEarly.certification){
+	    case "0":	// 申請
+%>
+          <li class="row"><span class="ttl">早出申請</span><span class="tag ac2"><span>申請中</span></li>
+<%
+			break;
+	    case "1":	// 受理
+%>
+          <li class="row"><span class="ttl">早出申請</span><span class="tag ac1"><span>申請受理</span></li>
+<%
+			break;
+	    case "2":	// 却下
+%>
+          <li class="row"><span class="ttl">早出申請</span><span class="tag red"><span>申請却下</span></li>
+<%
+			break;
+	    case "3":	// 確定
+%>
+          <li class="row"><span class="ttl">早出申請</span><span class="tag ac1"><span>申請確定</span></li>
+<%
+			break;
+	    default:
+%>
+          <li class="row"><span class="ttl">早出申請</span><span class="tag ac1"><span>未申請</span></li>
+<%
+			break;
+	}
+	
+}else{
+%>
+          <li class="row"><span class="ttl">早出申請</span><span class="tag ac1"><span>未申請</span></li>
+<%
+}
+%>
+
+<%
 if(requestOver.certification != null){
 	switch(requestOver.certification){
 	    case "0":	// 申請
@@ -556,71 +593,71 @@ if(requestTransport.certification != null){
 	switch(requestTransport.certification){
 	    case "0":	// 申請
 %>
-          <li class="row"><span class="ttl">交通費・経費申請</span><span class="tag ac2"><span>申請中</span></li>
+          <li class="row"><span class="ttl">経費申請</span><span class="tag ac2"><span>申請中</span></li>
 <%
 			break;
 	    case "1":	// 受理
 %>
-          <li class="row"><span class="ttl">交通費・経費申請</span><span class="tag ac1"><span>申請受理</span></li>
+          <li class="row"><span class="ttl">経費申請</span><span class="tag ac1"><span>申請受理</span></li>
 <%
 			break;
 	    case "2":	// 却下
 %>
-          <li class="row"><span class="ttl">交通費・経費申請</span><span class="tag red"><span>申請却下</span></li>
+          <li class="row"><span class="ttl">経費申請</span><span class="tag red"><span>申請却下</span></li>
 <%
 			break;
 	    case "3":	// 確定
 %>
-          <li class="row"><span class="ttl">交通費・経費申請</span><span class="tag ac1"><span>申請確定</span></li>
+          <li class="row"><span class="ttl">経費申請</span><span class="tag ac1"><span>申請確定</span></li>
 <%
 			break;
 	    default:
 %>
-          <li class="row"><span class="ttl">交通費・経費申請</span><span class="tag ac1"><span>未申請</span></li>
+          <li class="row"><span class="ttl">経費申請</span><span class="tag ac1"><span>未申請</span></li>
 <%
 			break;
 	}
 	
 }else{
 %>
-          <li class="row"><span class="ttl">交通費・経費申請</span><span class="tag ac1"><span>未申請</span></li>
+          <li class="row"><span class="ttl">経費申請</span><span class="tag ac1"><span>未申請</span></li>
 <%
 }
 %>
 
 <%
-if(requestEarly.certification != null){
-	switch(requestEarly.certification){
+if(requestTransport.certification != null){
+	switch(requestTransport.certification){
 	    case "0":	// 申請
 %>
-          <li class="row"><span class="ttl">早出申請</span><span class="tag ac2"><span>申請中</span></li>
+          <li class="row"><span class="ttl">交通費</span><span class="tag ac2"><span>申請中</span></li>
 <%
 			break;
 	    case "1":	// 受理
 %>
-          <li class="row"><span class="ttl">早出申請</span><span class="tag ac1"><span>申請受理</span></li>
+          <li class="row"><span class="ttl">交通費</span><span class="tag ac1"><span>申請受理</span></li>
 <%
 			break;
 	    case "2":	// 却下
 %>
-          <li class="row"><span class="ttl">早出申請</span><span class="tag red"><span>申請却下</span></li>
+          <li class="row"><span class="ttl">交通費</span><span class="tag red"><span>申請却下</span></li>
 <%
 			break;
 	    case "3":	// 確定
 %>
-          <li class="row"><span class="ttl">早出申請</span><span class="tag ac1"><span>申請確定</span></li>
+          <li class="row"><span class="ttl">交通費</span><span class="tag ac1"><span>申請確定</span></li>
 <%
 			break;
 	    default:
 %>
-          <li class="row"><span class="ttl">早出申請</span><span class="tag ac1"><span>未申請</span></li>
+          <li class="row"><span class="ttl">交通費</span><span class="tag ac1"><span>未申請</span></li>
 <%
 			break;
 	}
 	
 }else{
 %>
-          <li class="row"><span class="ttl">早出申請</span><span class="tag ac1"><span>未申請</span></li>
+          <li class="row"><span class="ttl">交通費</span><span class="tag ac1"><span>未申請</span></li>
 <%
 }
 %>
@@ -632,6 +669,54 @@ if(requestEarly.certification != null){
 
     <!-- ボタン -->
     <div class="term-con">
+    <div class="btn">
+        <form action="<%= request.getContextPath() %>/RequestConfirm" method="post" accept-charset="UTF-8">
+        <button>早出申請</button>
+          <input type="hidden" value="<%=shiftInfo.shiftHiduke %>" name="shiftHiduke">
+          <input type="hidden" value="<%=shiftInfo.note %>" name="shiftNote">
+          <input type="hidden" value="<%=shiftInfo.bgnTime %>" name="bgnTime">
+          <input type="hidden" value="<%=shiftInfo.bgnTimeDate %>" name="bgnTimeDate">
+          <input type="hidden" value="<%=shiftInfo.endTime %>" name="endTime">
+          <input type="hidden" value="<%=shiftInfo.endTimeDate %>" name="endTimeDate">
+          <input type="hidden" value="<%=shiftInfo.gyomuKubunName %>" name="gyomuKubunName">
+          <input type="hidden" value="<%=shiftInfo.keiyakuKubunName %>" name="keiyakuKubunName">
+          <input type="hidden" value="<%=shiftInfo.kinmuBashoName %>" name="kinmuBashoName">
+          <input type="hidden" value="<%=shiftInfo.kinmuKubunName %>" name="kinmuKubunName">
+          <input type="hidden" value="<%=shiftInfo.workerId %>" name="workerId">
+          <input type="hidden" value="<%=shiftInfo.keiyakuId %>" name="keiyakuId">
+          <input type="hidden" value="<%=shiftInfo.bgnStampTime %>" name="bgnStampTime">
+          <input type="hidden" value="<%=shiftInfo.endStampTime %>" name="endStampTime">
+          <input type="hidden" value="<%=shiftInfo.adrPostNo %>" name="adrPostNo">
+          <input type="hidden" value="<%=shiftInfo.adrMain %>" name="adrMain">
+          <input type="hidden" value="<%=shiftInfo.adrSub %>" name="adrSub">
+          <input type="hidden" value="<%=shiftInfo.id %>" name="shiftDataId">
+          <input type="hidden" value="<%=shiftInfo.timeFlag %>" name="timeFlag">
+          <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
+          <input type="hidden" value="<%=loginInfo.id %>" name="id">
+          <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
+          <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
+          <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
+          <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
+          <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
+          <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
+          <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
+          <input type="hidden" value="<%=loginInfo.sessionId %>" name="sessionId">
+          <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+          <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
+          <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+          <input type="hidden" value="<%=requestEarly.kinmuHiduke %>" name="kinmuHiduke">
+          <input type="hidden" value="<%=requestEarly.category %>" name="category">
+          <input type="hidden" value="<%=requestEarly.timeValue %>" name="timeValue">
+          <input type="hidden" value="<%=requestEarly.setTimeValue %>" name="setTimeValue">
+          <input type="hidden" value="<%=requestEarly.value %>" name="value">
+          <input type="hidden" value="<%=requestEarly.setValue %>" name="setValue">
+          <input type="hidden" value="<%=requestEarly.note %>" name="note">
+          <input type="hidden" value="<%=requestEarly.causeFlag %>" name="causeFlag">
+          <input type="hidden" value="<%=requestEarly.certification %>" name="certification">
+          <input type="hidden" value="1" name="categoryFlag">
+          <input type="hidden" value="0" name="requestFlag">
+        </form>
+      </div>
       <div class="btn">
         <form action="<%= request.getContextPath() %>/RequestConfirm" method="post" accept-charset="UTF-8">
         <button>残業申請</button>
@@ -682,7 +767,7 @@ if(requestEarly.certification != null){
       </div>
       <div class="btn">
         <form action="<%= request.getContextPath() %>/RequestConfirm" method="post" accept-charset="UTF-8">
-        <button>交通費・経費申請</button>
+        <button>経費申請</button>
           <input type="hidden" value="<%=shiftInfo.shiftHiduke %>" name="shiftHiduke">
           <input type="hidden" value="<%=shiftInfo.note %>" name="shiftNote">
           <input type="hidden" value="<%=shiftInfo.bgnTime %>" name="bgnTime">
@@ -730,7 +815,7 @@ if(requestEarly.certification != null){
       </div>
       <div class="btn">
         <form action="<%= request.getContextPath() %>/RequestConfirm" method="post" accept-charset="UTF-8">
-        <button>早出申請</button>
+        <button>交通費申請</button>
           <input type="hidden" value="<%=shiftInfo.shiftHiduke %>" name="shiftHiduke">
           <input type="hidden" value="<%=shiftInfo.note %>" name="shiftNote">
           <input type="hidden" value="<%=shiftInfo.bgnTime %>" name="bgnTime">
@@ -763,19 +848,20 @@ if(requestEarly.certification != null){
           <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
           <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
           <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
-          <input type="hidden" value="<%=requestEarly.kinmuHiduke %>" name="kinmuHiduke">
-          <input type="hidden" value="<%=requestEarly.category %>" name="category">
-          <input type="hidden" value="<%=requestEarly.timeValue %>" name="timeValue">
-          <input type="hidden" value="<%=requestEarly.setTimeValue %>" name="setTimeValue">
-          <input type="hidden" value="<%=requestEarly.value %>" name="value">
-          <input type="hidden" value="<%=requestEarly.setValue %>" name="setValue">
-          <input type="hidden" value="<%=requestEarly.note %>" name="note">
-          <input type="hidden" value="<%=requestEarly.causeFlag %>" name="causeFlag">
-          <input type="hidden" value="<%=requestEarly.certification %>" name="certification">
-          <input type="hidden" value="1" name="categoryFlag">
+          <input type="hidden" value="<%=requestTransport.kinmuHiduke %>" name="kinmuHiduke">
+          <input type="hidden" value="<%=requestTransport.category %>" name="category">
+          <input type="hidden" value="<%=requestTransport.timeValue %>" name="timeValue">
+          <input type="hidden" value="<%=requestTransport.setTimeValue %>" name="setTimeValue">
+          <input type="hidden" value="<%=requestTransport.value %>" name="value">
+          <input type="hidden" value="<%=requestTransport.setValue %>" name="setValue">
+          <input type="hidden" value="<%=requestTransport.note %>" name="note">
+          <input type="hidden" value="<%=requestTransport.causeFlag %>" name="causeFlag">
+          <input type="hidden" value="<%=requestTransport.certification %>" name="certification">
+          <input type="hidden" value="12" name="categoryFlag">
           <input type="hidden" value="0" name="requestFlag">
         </form>
       </div>
+      
     </div>
     <!-- 前の画面に戻る -->
     <div class="btn mt-8">

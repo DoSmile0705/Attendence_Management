@@ -15,7 +15,7 @@
 <%
 // ***************************************************
 // work-6.jsp
-// 交通費申請確認を行う
+// 経費申請確認を行う
 // ***************************************************
 %>
 <%
@@ -197,7 +197,7 @@ private boolean JudgeRequest(RequestData requestData){
     <section class="inner">
       <!-- ページタイトル -->
       <h1 class="m-ttl">
-        交通費・経費申請
+        経費申請
       </h1>
     </section>
 
@@ -221,27 +221,27 @@ if(requestData.certification != null){
 	switch(requestData.certification){
 		case "0":
 %>
-          <li class="row"><span class="ttl">交通費・経費申請</span><span class="tag ac2"><span>申請中</span></li>
+          <li class="row"><span class="ttl">経費申請</span><span class="tag ac2"><span>申請中</span></li>
 <%
 			break;
 		case "1":
 %>
-          <li class="row"><span class="ttl">交通費・経費申請</span><span class="tag ac1"><span>申請受理</span></li>
+          <li class="row"><span class="ttl">経費申請</span><span class="tag ac1"><span>申請受理</span></li>
 <%
 			break;
 		case "2":
 %>
-          <li class="row"><span class="ttl">交通費・経費申請</span><span class="tag red"><span>申請却下</span></li>
+          <li class="row"><span class="ttl">経費申請</span><span class="tag red"><span>申請却下</span></li>
 <%
 			break;
 		case "3":
 %>
-          <li class="row"><span class="ttl">交通費・経費申請</span><span class="tag ac1"><span>申請確定</span></li>
+          <li class="row"><span class="ttl">経費申請</span><span class="tag ac1"><span>申請確定</span></li>
 <%
 			break;
 		default:
 %>
-          <li class="row"><span class="ttl">交通費・経費申請</span><span class="tag ac1"><span>未申請</span></li>
+          <li class="row"><span class="ttl">経費申請</span><span class="tag ac1"><span>未申請</span></li>
 <%
 			break;
 	}
@@ -249,7 +249,7 @@ if(requestData.certification != null){
 <%
 }else{
 %>
-          <li class="row"><span class="ttl">交通費・経費申請</span><span class="tag ac1"><span>未申請</span></li>
+          <li class="row"><span class="ttl">経費申請</span><span class="tag ac1"><span>未申請</span></li>
 <%
 }
 %>
@@ -262,7 +262,7 @@ if(requestData.certification != null){
         <!-- ボタン -->
         <form method="post" onclick="GetRequestDate()" action="<%= request.getContextPath() %>/RequestConfirm" method="post" accept-charset="UTF-8">
 
-          <label for="name">経費申請（交通費等）</label>
+          <label for="name">経費</label>
 <%
 //勤務リクエストデータの時刻がNULLでない
 if(requestData.value != null){

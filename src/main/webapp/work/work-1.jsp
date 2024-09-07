@@ -1148,8 +1148,8 @@ for(int j = 0; j < GetDayOfMonth(GetFormatYYYYMM(nowDate)); j ++){
 							break;
 						//***残業申請 END***
 
-						//***交通費・経費申請 START***
-						case "11":	//交通費・経費申請
+						//***経費申請 START***
+						case "11":	//経費申請
 
 							//承認が「9」の場合は削除済
 							if(!requestList.get(k).certification.equals("9")){
@@ -1160,7 +1160,7 @@ for(int j = 0; j < GetDayOfMonth(GetFormatYYYYMM(nowDate)); j ++){
                 <li class="work-item ac2">
 		        <form action="<%= request.getContextPath() %>/RequestConfirm" method="post" accept-charset="UTF-8">
                   <button>
-                    <div class="w-ttl">交通費・経費申請　申請中</div>
+                    <div class="w-ttl">経費申請　申請中</div>
                   </button>
                     <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
                     <input type="hidden" value="<%=loginInfo.id %>" name="id">
@@ -1195,7 +1195,7 @@ for(int j = 0; j < GetDayOfMonth(GetFormatYYYYMM(nowDate)); j ++){
                 <li class="work-item ac1">
 		        <form action="<%= request.getContextPath() %>/RequestConfirm" method="post" accept-charset="UTF-8">
                   <button>
-                    <div class="w-ttl">交通費・経費申請　受理申請</div>
+                    <div class="w-ttl">経費申請　受理申請</div>
                   </button>
                     <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
                     <input type="hidden" value="<%=loginInfo.id %>" name="id">
@@ -1230,7 +1230,7 @@ for(int j = 0; j < GetDayOfMonth(GetFormatYYYYMM(nowDate)); j ++){
                 <li class="work-item red">
 		        <form action="<%= request.getContextPath() %>/RequestConfirm" method="post" accept-charset="UTF-8">
                   <button>
-                    <div class="w-ttl">交通費・経費申請　申請却下</div>
+                    <div class="w-ttl">経費申請　申請却下</div>
                   </button>
                     <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
                     <input type="hidden" value="<%=loginInfo.id %>" name="id">
@@ -1265,7 +1265,7 @@ for(int j = 0; j < GetDayOfMonth(GetFormatYYYYMM(nowDate)); j ++){
                 <li class="work-item ac1">
 		        <form action="<%= request.getContextPath() %>/RequestConfirm" method="post" accept-charset="UTF-8">
                   <button>
-                    <div class="w-ttl">交通費・経費申請　申請確定</div>
+                    <div class="w-ttl">経費申請　申請確定</div>
                   </button>
                     <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
                     <input type="hidden" value="<%=loginInfo.id %>" name="id">
@@ -1300,7 +1300,7 @@ for(int j = 0; j < GetDayOfMonth(GetFormatYYYYMM(nowDate)); j ++){
                 <li class="work-item ac1">
 		        <form action="<%= request.getContextPath() %>/RequestConfirm" method="post" accept-charset="UTF-8">
                   <button>
-                    <div class="w-ttl">交通費・経費申請　未申請</div>
+                    <div class="w-ttl">経費申請　未申請</div>
                   </button>
                     <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
                     <input type="hidden" value="<%=loginInfo.id %>" name="id">
@@ -1334,7 +1334,195 @@ for(int j = 0; j < GetDayOfMonth(GetFormatYYYYMM(nowDate)); j ++){
 									}
 								}
 							break;
-	//***交通費・経費申請 END***
+	//***経費申請 END***
+
+						//***交通費 START***
+						case "12":	//交通費
+
+							//承認が「9」の場合は削除済
+							if(!requestList.get(k).certification.equals("9")){
+
+								switch(requestList.get(k).certification){
+									case "0":	//申請中
+%>
+                <li class="work-item ac2">
+		        <form action="<%= request.getContextPath() %>/RequestConfirm" method="post" accept-charset="UTF-8">
+                  <button>
+                    <div class="w-ttl">経費申請　申請中</div>
+                  </button>
+                    <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
+                    <input type="hidden" value="<%=loginInfo.id %>" name="id">
+                    <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
+                    <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
+                    <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
+                    <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
+                    <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
+                    <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
+                    <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
+                    <input type="hidden" value="<%=loginInfo.sessionId %>" name="sessionId">
+                    <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+                    <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
+                    <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+                    <input type="hidden" value="<%=requestList.get(k).kinmuHiduke %>" name="kinmuHiduke">
+                    <input type="hidden" value="<%=requestList.get(k).category %>" name="category">
+                    <input type="hidden" value="<%=requestList.get(k).timeValue %>" name="timeValue">
+                    <input type="hidden" value="<%=requestList.get(k).setTimeValue %>" name="setTimeValue">
+                    <input type="hidden" value="<%=requestList.get(k).value %>" name="value">
+                    <input type="hidden" value="<%=requestList.get(k).setValue %>" name="setValue">
+                    <input type="hidden" value="<%=requestList.get(k).note %>" name="note">
+                    <input type="hidden" value="<%=requestList.get(k).causeFlag %>" name="causeFlag">
+                    <input type="hidden" value="<%=requestList.get(k).certification %>" name="certification">
+                    <input type="hidden" value="12" name="categoryFlag">
+                    <input type="hidden" value="0" name="requestFlag">
+		        </form>
+                </li>
+<%
+										break;
+									case "1":	//受理
+%>
+                <li class="work-item ac1">
+		        <form action="<%= request.getContextPath() %>/RequestConfirm" method="post" accept-charset="UTF-8">
+                  <button>
+                    <div class="w-ttl">経費申請　受理申請</div>
+                  </button>
+                    <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
+                    <input type="hidden" value="<%=loginInfo.id %>" name="id">
+                    <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
+                    <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
+                    <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
+                    <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
+                    <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
+                    <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
+                    <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
+                    <input type="hidden" value="<%=loginInfo.sessionId %>" name="sessionId">
+                    <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+                    <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
+                    <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+                    <input type="hidden" value="<%=requestList.get(k).kinmuHiduke %>" name="kinmuHiduke">
+                    <input type="hidden" value="<%=requestList.get(k).category %>" name="category">
+                    <input type="hidden" value="<%=requestList.get(k).timeValue %>" name="timeValue">
+                    <input type="hidden" value="<%=requestList.get(k).setTimeValue %>" name="setTimeValue">
+                    <input type="hidden" value="<%=requestList.get(k).value %>" name="value">
+                    <input type="hidden" value="<%=requestList.get(k).setValue %>" name="setValue">
+                    <input type="hidden" value="<%=requestList.get(k).note %>" name="note">
+                    <input type="hidden" value="<%=requestList.get(k).causeFlag %>" name="causeFlag">
+                    <input type="hidden" value="<%=requestList.get(k).certification %>" name="certification">
+                    <input type="hidden" value="12" name="categoryFlag">
+                    <input type="hidden" value="0" name="requestFlag">
+		        </form>
+                </li>
+<%
+										break;
+									case "2":	//却下
+%>
+                <li class="work-item red">
+		        <form action="<%= request.getContextPath() %>/RequestConfirm" method="post" accept-charset="UTF-8">
+                  <button>
+                    <div class="w-ttl">経費申請　申請却下</div>
+                  </button>
+                    <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
+                    <input type="hidden" value="<%=loginInfo.id %>" name="id">
+                    <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
+                    <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
+                    <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
+                    <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
+                    <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
+                    <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
+                    <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
+                    <input type="hidden" value="<%=loginInfo.sessionId %>" name="sessionId">
+                    <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+                    <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
+                    <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+                    <input type="hidden" value="<%=requestList.get(k).kinmuHiduke %>" name="kinmuHiduke">
+                    <input type="hidden" value="<%=requestList.get(k).category %>" name="category">
+                    <input type="hidden" value="<%=requestList.get(k).timeValue %>" name="timeValue">
+                    <input type="hidden" value="<%=requestList.get(k).setTimeValue %>" name="setTimeValue">
+                    <input type="hidden" value="<%=requestList.get(k).value %>" name="value">
+                    <input type="hidden" value="<%=requestList.get(k).setValue %>" name="setValue">
+                    <input type="hidden" value="<%=requestList.get(k).note %>" name="note">
+                    <input type="hidden" value="<%=requestList.get(k).causeFlag %>" name="causeFlag">
+                    <input type="hidden" value="<%=requestList.get(k).certification %>" name="certification">
+                    <input type="hidden" value="12" name="categoryFlag">
+                    <input type="hidden" value="0" name="requestFlag">
+		        </form>
+                </li>
+<%
+										break;
+									case "3":	//確定
+%>
+                <li class="work-item ac1">
+		        <form action="<%= request.getContextPath() %>/RequestConfirm" method="post" accept-charset="UTF-8">
+                  <button>
+                    <div class="w-ttl">経費申請　申請確定</div>
+                  </button>
+                    <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
+                    <input type="hidden" value="<%=loginInfo.id %>" name="id">
+                    <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
+                    <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
+                    <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
+                    <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
+                    <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
+                    <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
+                    <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
+                    <input type="hidden" value="<%=loginInfo.sessionId %>" name="sessionId">
+                    <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+                    <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
+                    <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+                    <input type="hidden" value="<%=requestList.get(k).kinmuHiduke %>" name="kinmuHiduke">
+                    <input type="hidden" value="<%=requestList.get(k).category %>" name="category">
+                    <input type="hidden" value="<%=requestList.get(k).timeValue %>" name="timeValue">
+                    <input type="hidden" value="<%=requestList.get(k).setTimeValue %>" name="setTimeValue">
+                    <input type="hidden" value="<%=requestList.get(k).value %>" name="value">
+                    <input type="hidden" value="<%=requestList.get(k).setValue %>" name="setValue">
+                    <input type="hidden" value="<%=requestList.get(k).note %>" name="note">
+                    <input type="hidden" value="<%=requestList.get(k).causeFlag %>" name="causeFlag">
+                    <input type="hidden" value="<%=requestList.get(k).certification %>" name="certification">
+                    <input type="hidden" value="12" name="categoryFlag">
+                    <input type="hidden" value="0" name="requestFlag">
+		        </form>
+                </li>
+<%
+										break;
+									default:	//申請中
+%>
+                <li class="work-item ac1">
+		        <form action="<%= request.getContextPath() %>/RequestConfirm" method="post" accept-charset="UTF-8">
+                  <button>
+                    <div class="w-ttl">経費申請　未申請</div>
+                  </button>
+                    <input type="hidden" value="<%=loginInfo.workerIndex %>" name="loginid">
+                    <input type="hidden" value="<%=loginInfo.id %>" name="id">
+                    <input type="hidden" value="<%=loginInfo.loginInfo1_Value %>" name="password1">
+                    <input type="hidden" value="<%=loginInfo.loginInfo2_Value %>" name="password2">
+                    <input type="hidden" value="<%=loginInfo.email_Value %>" name="mailaddress">
+                    <input type="hidden" value="<%=loginInfo.firstName_Value %>" name="firstName_Value">
+                    <input type="hidden" value="<%=loginInfo.lastName_Value %>" name="lastName_Value">
+                    <input type="hidden" value="<%=loginInfo.companyCode %>" name="companyCode">
+                    <input type="hidden" value="<%=loginInfo.companyName %>" name="companyName">
+                    <input type="hidden" value="<%=loginInfo.sessionId %>" name="sessionId">
+                    <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
+                    <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
+                    <input type="hidden" value="<%=loginInfo.company_ID %>" name="company_ID">
+                    <input type="hidden" value="<%=requestList.get(k).kinmuHiduke %>" name="kinmuHiduke">
+                    <input type="hidden" value="<%=requestList.get(k).category %>" name="category">
+                    <input type="hidden" value="<%=requestList.get(k).timeValue %>" name="timeValue">
+                    <input type="hidden" value="<%=requestList.get(k).setTimeValue %>" name="setTimeValue">
+                    <input type="hidden" value="<%=requestList.get(k).value %>" name="value">
+                    <input type="hidden" value="<%=requestList.get(k).setValue %>" name="setValue">
+                    <input type="hidden" value="<%=requestList.get(k).note %>" name="note">
+                    <input type="hidden" value="<%=requestList.get(k).causeFlag %>" name="causeFlag">
+                    <input type="hidden" value="<%=requestList.get(k).certification %>" name="certification">
+                    <input type="hidden" value="12" name="categoryFlag">
+                    <input type="hidden" value="0" name="requestFlag">
+
+		        </form>
+                </li>
+<%
+										break;
+									}
+								}
+							break;
+	//***経費申請 END***
 						default:
 							break;
 					}

@@ -317,6 +317,7 @@ if(onTimeStamp == null){
       <input type="hidden" value="<%=loginInfo.geoIdo_Value %>" name="geoIdo">
       <input type="hidden" value="<%=loginInfo.geoKeido_Value %>" name="geoKeido">
       <!-- シフト申請から遷移したことを示すフラグ -->
+      <%-- Flag indicating transition from shift application --%>
       <input type="hidden" value="1" name="subFlag">
     </form>
     </div>

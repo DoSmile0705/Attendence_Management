@@ -151,14 +151,23 @@ public class RequestConfirm extends HttpServlet {
                 dispatch.forward(request, response);
            	// 交通費・経費申請
         	}else {
-        		RequestDispatcher dispatch = request.getRequestDispatcher("work/work-6.jsp");
-                dispatch.forward(request, response);
+                if(categoryFlag.equals("11")) {
+                    RequestDispatcher dispatch = request.getRequestDispatcher("work/work-6.jsp");
+                    dispatch.forward(request, response);
+                }else if(categoryFlag.equals("12")) {
+                    RequestDispatcher dispatch = request.getRequestDispatcher("work/work-6-2.jsp");
+                    dispatch.forward(request, response);
+                }
         	}
         		
         }else {
-        	// 交通費・経費申請
+        	// 経費申請
         	if(categoryFlag.equals("11")) {
         		RequestDispatcher dispatch = request.getRequestDispatcher("work/work-7.jsp");
+                dispatch.forward(request, response);
+            // 交通費申請
+        	}else if(categoryFlag.equals("12")) {
+        		RequestDispatcher dispatch = request.getRequestDispatcher("work/work-7-2.jsp");
                 dispatch.forward(request, response);
             // 早出、残業申請
         	}else {
