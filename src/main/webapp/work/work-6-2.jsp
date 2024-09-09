@@ -269,7 +269,7 @@ if(requestData.value != null){
 	//認証が「9」の場合※削除UPDATE済みのデータ
 	if(requestData.certification.equals("9")){
 %>
-          <input class="txt price" type="number" min="1" style="text-align:right" name="name" id="name" value="0" required>円
+          <input class="txt price" type="number" min="1" style="text-align:right" name="name" id="name" value="0" required  onfocus="clearInitialValue(this)">円
 <%
 	//勤務リクエストデータが登録済
 	}else{
@@ -279,7 +279,7 @@ if(requestData.value != null){
 	}
 }else{
 %>
-          <input class="txt price" type="number" min="1" style="text-align:right" name="name" id="name" value="0" required>円
+          <input class="txt price" type="number" min="1" style="text-align:right" name="name" id="name" value="0" required  onfocus="clearInitialValue(this)">円
 <%
 }
 %>
@@ -510,6 +510,13 @@ function GetRequestDate(){
 //ロード時に日時をリアルタイム表示する
 window.onload = function(){
 	showDate();
+}
+
+// Function to clear the initial value when the field is focused
+function clearInitialValue(input) {
+  if (input.value === "0") {
+    input.value = "";  // Clear the value if it's "0"
+  }
 }
 </script>
 
